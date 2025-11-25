@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DomainModel.Restrictions;
+using Microsoft.Extensions.Configuration;
 
 namespace DataMapper;
 
@@ -33,6 +34,26 @@ public class RawRestrictions
 
     [ConfigurationKeyName("PERSIMP")]
     public int MaxBorrowedBooksGivenPerDay { get; init; }
+
+    public ClientRestrictions ToClientRestrictions() => new()
+    {
+        MaxDomains = MaxDomains,
+        MaxBorrowedBooksPerPeriod = MaxBorrowedBooksPerPeriod,
+        PeriodInDays = PeriodInDays,
+        MaxBorrowedBooksAtOnce = MaxBorrowedBooksAtOnce,
+        MaxBorrowedBooksFromSameDomain = MaxBorrowedBooksFromSameDomain,
+        SameDomainLimitMonthCount = SameDomainLimitMonthCount,
+        MaxExtensionDays = MaxExtensionDays,
+        MinDaysIntervalForSameBook = MinDaysIntervalForSameBook,
+        MaxBorrowedBooksPerDay = MaxBorrowedBooksPerDay,
+    };
+
+    public ClientRestrictions ToPrivilegedClientRestrictions() => ToClientRestrictions();
+
+    public EmployeeRestrictions ToEmployeeRestrictions() => new()
+    {
+        MaxBorrowedBooksGivenPerDay = MaxBorrowedBooksGivenPerDay
+    };
 
     public override string ToString() =>
         $"""
