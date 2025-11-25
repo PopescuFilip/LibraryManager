@@ -1,14 +1,12 @@
 ﻿namespace DomainModel.Restrictions;
 
-public class ClientRestrictions
-{
-    public int MaxDomains { get; init; }
-    public int MaxBorrowedBooksPerPeriod { get; init; }
-    public int PeriodInDays { get; init; }
-    public int MaxBorrowedBooksAtOnce { get; init; }
-    public int MaxBorrowedBooksFromSameDomain { get; init; }
-    public int SameDomainLimitMonthCount { get; init; }
-    public int MaxExtensionDays { get; init; }
-    public int MinDaysIntervalForSameBook { get; init; }
-    public int MaxBorrowedBooksPerDay { get; init; }
-}
+public record class ClientRestrictions(
+    int MaxDomains,
+    int MaxBorrowedBooksPerPeriod,
+    int PeriodInDays,
+    int MaxBorrowedBooksAtOnce,
+    int MaxBorrowedBooksFromSameDomain,
+    int SameDomainLimitMonthCount,
+    int MaxExtensionDays,
+    int MinDaysIntervalForSameBook,
+    int MaxBorrowedBooksPerDay);

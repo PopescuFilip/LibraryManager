@@ -1,6 +1,3 @@
 ﻿namespace DomainModel.Restrictions;
 
-public class EmployeeRestrictions
-{
-    public int MaxBorrowedBooksGivenPerDay { get; init; }
-}
+public record class EmployeeRestrictions(int MaxBorrowedBooksGivenPerDay);
