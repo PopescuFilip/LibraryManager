@@ -36,7 +36,6 @@ public class RawRestrictions
     public int MaxBorrowedBooksGivenPerDay { get; init; }
 
     public ClientRestrictions ToClientRestrictions() => new(
-        MaxDomains: MaxDomains,
         MaxBorrowedBooksPerPeriod: MaxBorrowedBooksPerPeriod,
         PeriodInDays: PeriodInDays,
         MaxBorrowedBooksAtOnce: MaxBorrowedBooksAtOnce,
@@ -47,9 +46,9 @@ public class RawRestrictions
         MaxBorrowedBooksPerDay: MaxBorrowedBooksPerDay
         );
 
-    public EmployeeRestrictions ToEmployeeRestrictions() => new(
-        MaxBorrowedBooksGivenPerDay: MaxBorrowedBooksPerDay
-        );
+    public EmployeeRestrictions ToEmployeeRestrictions() => new(MaxBorrowedBooksPerDay);
+
+    public BookRestrictions ToBookRestrictions() => new(MaxDomains);
 
     public override string ToString() =>
         $"""
