@@ -46,7 +46,7 @@ public class RawRestrictions
         MaxBorrowedBooksPerDay: MaxBorrowedBooksPerDay
         );
 
-    public EmployeeRestrictions ToEmployeeRestrictions() => new(MaxBorrowedBooksPerDay);
+    public EmployeeRestrictions ToEmployeeRestrictions() => new(MaxBorrowedBooksGivenPerDay);
 
     public BookRestrictions ToBookRestrictions() => new(MaxDomains);
 
