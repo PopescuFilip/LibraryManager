@@ -11,7 +11,7 @@ public class RawRestrictions
     public int MaxBorrowedBooksPerPeriod { get; init; }
 
     [ConfigurationKeyName("PER")]
-    public string Period { get; init; } = null!;
+    public int PeriodInDays { get; init; }
 
     [ConfigurationKeyName("C")]
     public int MaxBorrowedBooksAtOnce { get; init; }
@@ -39,7 +39,7 @@ public class RawRestrictions
         RawRestrictions:
         MaxDomains = {MaxDomains}
         MaxBorrowedBooksPerPeriod = {MaxBorrowedBooksPerPeriod}
-        Period = {Period}
+        Period = {PeriodInDays}
         MaxBorrowedBooksAtOnce = {MaxBorrowedBooksAtOnce}
         MaxBorrowedBooksFromSameDomain = {MaxBorrowedBooksFromSameDomain}
         SameDomainLimitMonthCount = {SameDomainLimitMonthCount}
