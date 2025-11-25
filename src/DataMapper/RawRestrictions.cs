@@ -12,7 +12,7 @@ public class RawRestrictions
     public int MaxBorrowedBooksPerPeriod { get; init; }
 
     [ConfigurationKeyName("PER")]
-    public int PeriodInDays { get; init; }
+    public int PerPeriodLimitDayCount { get; init; }
 
     [ConfigurationKeyName("C")]
     public int MaxBorrowedBooksAtOnce { get; init; }
@@ -27,7 +27,7 @@ public class RawRestrictions
     public int MaxExtensionDays { get; init; }
 
     [ConfigurationKeyName("DELTA")]
-    public int MinDaysIntervalForSameBook { get; init; }
+    public int SameBookLimitDayCount { get; init; }
 
     [ConfigurationKeyName("NCZ")]
     public int MaxBorrowedBooksPerDay { get; init; }
@@ -37,12 +37,12 @@ public class RawRestrictions
 
     public ClientRestrictions ToClientRestrictions() => new(
         MaxBorrowedBooksPerPeriod: MaxBorrowedBooksPerPeriod,
-        PeriodInDays: PeriodInDays,
+        PeriodInDays: PerPeriodLimitDayCount,
         MaxBorrowedBooksAtOnce: MaxBorrowedBooksAtOnce,
         MaxBorrowedBooksFromSameDomain: MaxBorrowedBooksFromSameDomain,
         SameDomainLimitMonthCount: SameDomainLimitMonthCount,
         MaxExtensionDays: MaxExtensionDays,
-        MinDaysIntervalForSameBook: MinDaysIntervalForSameBook,
+        MinDaysIntervalForSameBook: SameBookLimitDayCount,
         MaxBorrowedBooksPerDay: MaxBorrowedBooksPerDay
         );
 
@@ -55,12 +55,12 @@ public class RawRestrictions
         RawRestrictions:
         MaxDomains = {MaxDomains}
         MaxBorrowedBooksPerPeriod = {MaxBorrowedBooksPerPeriod}
-        Period = {PeriodInDays}
+        Period = {PerPeriodLimitDayCount}
         MaxBorrowedBooksAtOnce = {MaxBorrowedBooksAtOnce}
         MaxBorrowedBooksFromSameDomain = {MaxBorrowedBooksFromSameDomain}
         SameDomainLimitMonthCount = {SameDomainLimitMonthCount}
         MaxExtensionDays = {MaxExtensionDays}
-        MinDaysIntervalForSameBook = {MinDaysIntervalForSameBook}
+        MinDaysIntervalForSameBook = {SameBookLimitDayCount}
         MaxBorrowedBooksPerDay = {MaxBorrowedBooksPerDay}
         MaxBorrowedBooksGivenPerDay = {MaxBorrowedBooksGivenPerDay}
         """;

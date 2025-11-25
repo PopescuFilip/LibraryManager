@@ -9,3 +9,11 @@ public record class ClientRestrictions(
     int MaxExtensionDays,
     int MinDaysIntervalForSameBook,
     int MaxBorrowedBooksPerDay);
+
+public record class BetterClientRestrictions(
+    PerDayLimit BorrowedBooksLimit,
+    int MaxBorrowedBooksAtOnce,
+    PerMonthLimit SameDomainBorrowedBooksLimit,
+    PerMonthLimit ExtensionDaysLimit,
+    PerDayLimit BorrowedSameBookLimit,
+    PerDayLimit BorrowedBooksDailyLimit);
