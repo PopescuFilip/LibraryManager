@@ -40,6 +40,7 @@ public class RestrictionsProvider(IConfiguration configuration) : IRestrictionsP
         var basicRestrictions = GetClientRestrictions();
         var privilegedClientRestrictions = basicRestrictions with
         {
+
         };
 
         return privilegedClientRestrictions;
