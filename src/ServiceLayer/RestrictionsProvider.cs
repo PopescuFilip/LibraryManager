@@ -5,15 +5,15 @@ namespace ServiceLayer;
 
 public interface IRestrictionsProvider
 {
-    BetterClientRestrictions GetClientRestrictions();
-    BetterClientRestrictions GetPrivilegedClientRestrictions();
+    ClientRestrictions GetClientRestrictions();
+    ClientRestrictions GetPrivilegedClientRestrictions();
 }
 
 public class RestrictionsProvider : IRestrictionsProvider
 {
     private const int ExtensionDaysLimitMonthCount = 3;
 
-    public BetterClientRestrictions GetClientRestrictions()
+    public ClientRestrictions GetClientRestrictions()
     {
         var rawRestrictions = AppSettings.Restrictions;
 
@@ -21,19 +21,18 @@ public class RestrictionsProvider : IRestrictionsProvider
         var sameDomainLimit = new PerMonthLimit(rawRestrictions.MaxBorrowedBooksFromSameDomain, rawRestrictions.SameDomainLimitMonthCount);
         var extensionLimit = new PerMonthLimit(rawRestrictions.MaxExtensionDays, ExtensionDaysLimitMonthCount);
         var sameBookLimit = new PerDayLimit(1, rawRestrictions.SameBookLimitDayCount);
-        var dailyLimit = new PerDayLimit(rawRestrictions.MaxBorrowedBooksPerDay, 1);
 
-        return new BetterClientRestrictions(
+        return new ClientRestrictions(
             BorrowedBooksLimit: periodLimit,
             MaxBorrowedBooksAtOnce: rawRestrictions.MaxBorrowedBooksAtOnce,
             SameDomainBorrowedBooksLimit: sameDomainLimit,
             ExtensionDaysLimit: extensionLimit,
             BorrowedSameBookLimit: sameBookLimit,
-            BorrowedBooksDailyLimit: dailyLimit
+            MaxBorrowedBooksPerDay: rawRestrictions.MaxBorrowedBooksPerDay
             );
     }
 
-    public BetterClientRestrictions GetPrivilegedClientRestrictions()
+    public ClientRestrictions GetPrivilegedClientRestrictions()
     {
         var basicRestrictions = GetClientRestrictions();
         var privilegedClientRestrictions = basicRestrictions with
