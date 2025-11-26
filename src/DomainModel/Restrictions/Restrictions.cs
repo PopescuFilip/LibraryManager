@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace DataMapper;
+namespace DomainModel.Restrictions;
 
 public class Restrictions
 {

@@ -6,10 +6,8 @@ public static class AppSettings
 {
     private const string AppSettingsFile = "appsettings.json";
     private const string ConnectionStringName = "LibraryDb";
-    private const string RestrictionsSection = "Restrictions";
 
     public static string LibraryDbConnectionString { get; private set; }
-    public static Restrictions Restrictions { get; private set; }
 
     static AppSettings()
     {
@@ -18,6 +16,5 @@ public static class AppSettings
             .Build();
 
         LibraryDbConnectionString = configuration.GetConnectionString(ConnectionStringName)!;
-        Restrictions = configuration.GetRequiredSection(RestrictionsSection).Get<Restrictions>()!;
     }
 }

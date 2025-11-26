@@ -1,9 +1,9 @@
 ﻿namespace DomainModel.Restrictions;
 
 public record class ClientRestrictions(
-    PerDayLimit BorrowedBooksLimit,
+    Limit BorrowedBooksLimit,
     int MaxBorrowedBooksAtOnce,
-    PerMonthLimit SameDomainBorrowedBooksLimit,
-    PerMonthLimit ExtensionDaysLimit,
-    PerDayLimit BorrowedSameBookLimit,
+    Limit SameDomainBorrowedBooksLimit,
+    Limit ExtensionDaysLimit,
+    Limit BorrowedSameBookLimit,
     int MaxBorrowedBooksPerDay);

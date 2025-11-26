@@ -1,5 +1,6 @@
 ﻿using DataMapper;
 using DomainModel.Restrictions;
+using Microsoft.Extensions.Configuration;
 
 namespace ServiceLayer;
 
@@ -9,26 +10,26 @@ public interface IRestrictionsProvider
     ClientRestrictions GetPrivilegedClientRestrictions();
 }
 
-public class RestrictionsProvider : IRestrictionsProvider
+public class RestrictionsProvider(IConfiguration configuration) : IRestrictionsProvider
 {
     private const int ExtensionDaysLimitMonthCount = 3;
 
+    private readonly Restrictions _restrictions = configuration.GetRestrictions()!;
+
     public ClientRestrictions GetClientRestrictions()
     {
-        var rawRestrictions = AppSettings.Restrictions;
-
-        var periodLimit = new PerDayLimit(rawRestrictions.MaxBorrowedBooksPerPeriod, rawRestrictions.PerPeriodLimitDayCount);
-        var sameDomainLimit = new PerMonthLimit(rawRestrictions.MaxBorrowedBooksFromSameDomain, rawRestrictions.SameDomainLimitMonthCount);
-        var extensionLimit = new PerMonthLimit(rawRestrictions.MaxExtensionDays, ExtensionDaysLimitMonthCount);
-        var sameBookLimit = new PerDayLimit(1, rawRestrictions.SameBookLimitDayCount);
+        var periodLimit = Limit.PerDay(_restrictions.MaxBorrowedBooksPerPeriod, _restrictions.PerPeriodLimitDayCount);
+        var sameDomainLimit = Limit.PerMonth(_restrictions.MaxBorrowedBooksFromSameDomain, _restrictions.SameDomainLimitMonthCount);
+        var extensionLimit = Limit.PerMonth(_restrictions.MaxExtensionDays, ExtensionDaysLimitMonthCount);
+        var sameBookLimit = Limit.PerDay(1, _restrictions.SameBookLimitDayCount);
 
         return new ClientRestrictions(
             BorrowedBooksLimit: periodLimit,
-            MaxBorrowedBooksAtOnce: rawRestrictions.MaxBorrowedBooksAtOnce,
+            MaxBorrowedBooksAtOnce: _restrictions.MaxBorrowedBooksAtOnce,
             SameDomainBorrowedBooksLimit: sameDomainLimit,
             ExtensionDaysLimit: extensionLimit,
             BorrowedSameBookLimit: sameBookLimit,
-            MaxBorrowedBooksPerDay: rawRestrictions.MaxBorrowedBooksPerDay
+            MaxBorrowedBooksPerDay: _restrictions.MaxBorrowedBooksPerDay
             );
     }
 
