@@ -12,9 +12,11 @@ public interface IRestrictionsProvider
 
 public class RestrictionsProvider(IConfiguration configuration) : IRestrictionsProvider
 {
+    private const string RestrictionsSection = "Restrictions";
     private const int ExtensionDaysLimitMonthCount = 3;
 
-    private readonly Restrictions _restrictions = configuration.GetRestrictions()!;
+    private readonly Restrictions _restrictions =
+        configuration.GetRequiredSection(RestrictionsSection).Get<Restrictions>()!;
 
     public ClientRestrictions GetClientRestrictions()
     {
