@@ -1,14 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace DataMapper;
 
-public class LibraryDbContextFactory : IDesignTimeDbContextFactory<LibraryDbContext>
+public class LibraryDbContextFactory(IConfiguration configuration) : IDbContextFactory<LibraryDbContext>
 {
     private readonly DbContextOptions<LibraryDbContext> _options =
-        new DbContextOptionsBuilder<LibraryDbContext>()
-        .UseSqlServer(AppSettings.LibraryDbConnectionString)
-        .Options;
+        DbContextOptionsCreator.Create(configuration);
 
-    public LibraryDbContext CreateDbContext(string[] args) => new(_options);
+    public LibraryDbContext CreateDbContext() => new(_options);
 }
