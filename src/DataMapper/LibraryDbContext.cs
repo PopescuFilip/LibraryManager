@@ -14,4 +14,27 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
     public DbSet<BookEdition> BookEditions { get; set; }
     public DbSet<BookRecord> BookRecords { get; set; }
     public DbSet<BorrowRecord> BorrowRecords { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<BorrowRecord>()
+            .HasOne(x => x.Lender)
+            .WithMany(x => x.BorrowRecords)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<BorrowRecord>()
+            .HasOne(x => x.Borrower)
+            .WithMany(x => x.BorrowRecords)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Book>()
+            .HasMany(x => x.Domains)
+            .WithMany(x => x.Books);
+
+        modelBuilder.Entity<Domain>()
+            .HasMany(x => x.SubDomains)
+            .WithOne(x => x.ParentDomain);
+
+        base.OnModelCreating(modelBuilder);
+    }
 }

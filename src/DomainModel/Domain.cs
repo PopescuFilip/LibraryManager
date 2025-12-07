@@ -10,6 +10,9 @@ public class Domain
     [StringLength(50)]
     public string Name { get; set; } = null!;
 
-    [MinLength(1)]
+    public Domain? ParentDomain { get; set; }
+
     public List<Domain> SubDomains { get; set; } = [];
+
+    public List<Book> Books { get; set; } = [];
 }

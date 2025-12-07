@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataMapper.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedAllTables : Migration
+    public partial class InitialFullDOmain : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,13 +21,7 @@ namespace DataMapper.Migrations
                 oldType: "nvarchar(max)");
 
             migrationBuilder.AddColumn<int>(
-                name: "BookId",
-                table: "Domains",
-                type: "int",
-                nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "DomainId",
+                name: "ParentDomainId",
                 table: "Domains",
                 type: "int",
                 nullable: true);
@@ -40,8 +34,8 @@ namespace DataMapper.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Adress = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -137,6 +131,30 @@ namespace DataMapper.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BookDomain",
+                columns: table => new
+                {
+                    BooksId = table.Column<int>(type: "int", nullable: false),
+                    DomainsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookDomain", x => new { x.BooksId, x.DomainsId });
+                    table.ForeignKey(
+                        name: "FK_BookDomain_Books_BooksId",
+                        column: x => x.BooksId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BookDomain_Domains_DomainsId",
+                        column: x => x.DomainsId,
+                        principalTable: "Domains",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BookEditions",
                 columns: table => new
                 {
@@ -176,13 +194,13 @@ namespace DataMapper.Migrations
                         column: x => x.BorrowerId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_BorrowRecords_Employees_LenderId",
                         column: x => x.LenderId,
                         principalTable: "Employees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -212,19 +230,19 @@ namespace DataMapper.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Domains_BookId",
+                name: "IX_Domains_ParentDomainId",
                 table: "Domains",
-                column: "BookId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Domains_DomainId",
-                table: "Domains",
-                column: "DomainId");
+                column: "ParentDomainId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuthorBook_BooksId",
                 table: "AuthorBook",
                 column: "BooksId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookDomain_DomainsId",
+                table: "BookDomain",
+                column: "DomainsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BookEditions_BookId",
@@ -262,16 +280,9 @@ namespace DataMapper.Migrations
                 column: "AccountId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Domains_Books_BookId",
+                name: "FK_Domains_Domains_ParentDomainId",
                 table: "Domains",
-                column: "BookId",
-                principalTable: "Books",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Domains_Domains_DomainId",
-                table: "Domains",
-                column: "DomainId",
+                column: "ParentDomainId",
                 principalTable: "Domains",
                 principalColumn: "Id");
         }
@@ -280,15 +291,14 @@ namespace DataMapper.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Domains_Books_BookId",
-                table: "Domains");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Domains_Domains_DomainId",
+                name: "FK_Domains_Domains_ParentDomainId",
                 table: "Domains");
 
             migrationBuilder.DropTable(
                 name: "AuthorBook");
+
+            migrationBuilder.DropTable(
+                name: "BookDomain");
 
             migrationBuilder.DropTable(
                 name: "BookRecords");
@@ -315,19 +325,11 @@ namespace DataMapper.Migrations
                 name: "Accounts");
 
             migrationBuilder.DropIndex(
-                name: "IX_Domains_BookId",
-                table: "Domains");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Domains_DomainId",
+                name: "IX_Domains_ParentDomainId",
                 table: "Domains");
 
             migrationBuilder.DropColumn(
-                name: "BookId",
-                table: "Domains");
-
-            migrationBuilder.DropColumn(
-                name: "DomainId",
+                name: "ParentDomainId",
                 table: "Domains");
 
             migrationBuilder.AlterColumn<string>(

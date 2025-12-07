@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataMapper.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    [Migration("20251207192232_Added-All-Tables")]
-    partial class AddedAllTables
+    [Migration("20251207195431_InitialFullDOmain")]
+    partial class InitialFullDOmain
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,21 @@ namespace DataMapper.Migrations
                     b.ToTable("AuthorBook");
                 });
 
+            modelBuilder.Entity("BookDomain", b =>
+                {
+                    b.Property<int>("BooksId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DomainsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BooksId", "DomainsId");
+
+                    b.HasIndex("DomainsId");
+
+                    b.ToTable("BookDomain");
+                });
+
             modelBuilder.Entity("DomainModel.Account", b =>
                 {
                     b.Property<int>("Id")
@@ -54,7 +69,8 @@ namespace DataMapper.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -62,7 +78,8 @@ namespace DataMapper.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
 
                     b.HasKey("Id");
 
@@ -212,22 +229,17 @@ namespace DataMapper.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DomainId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int?>("ParentDomainId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BookId");
-
-                    b.HasIndex("DomainId");
+                    b.HasIndex("ParentDomainId");
 
                     b.ToTable("Domains");
                 });
@@ -265,6 +277,21 @@ namespace DataMapper.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BookDomain", b =>
+                {
+                    b.HasOne("DomainModel.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BooksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DomainModel.Domain", null)
+                        .WithMany()
+                        .HasForeignKey("DomainsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DomainModel.BookEdition", b =>
                 {
                     b.HasOne("DomainModel.Book", "Book")
@@ -296,13 +323,13 @@ namespace DataMapper.Migrations
                     b.HasOne("DomainModel.Client", "Borrower")
                         .WithMany("BorrowRecords")
                         .HasForeignKey("BorrowerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DomainModel.Employee", "Lender")
                         .WithMany("BorrowRecords")
                         .HasForeignKey("LenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Borrower");
@@ -323,13 +350,11 @@ namespace DataMapper.Migrations
 
             modelBuilder.Entity("DomainModel.Domain", b =>
                 {
-                    b.HasOne("DomainModel.Book", null)
-                        .WithMany("Domains")
-                        .HasForeignKey("BookId");
-
-                    b.HasOne("DomainModel.Domain", null)
+                    b.HasOne("DomainModel.Domain", "ParentDomain")
                         .WithMany("SubDomains")
-                        .HasForeignKey("DomainId");
+                        .HasForeignKey("ParentDomainId");
+
+                    b.Navigation("ParentDomain");
                 });
 
             modelBuilder.Entity("DomainModel.Employee", b =>
@@ -345,8 +370,6 @@ namespace DataMapper.Migrations
 
             modelBuilder.Entity("DomainModel.Book", b =>
                 {
-                    b.Navigation("Domains");
-
                     b.Navigation("Editions");
                 });
 

@@ -14,7 +14,9 @@ public class Account
     [StringLength(200)]
     public string Adress { get; set; } = null!;
 
+    [StringLength(50)]
     public string? Email { get; set; }
 
+    [StringLength(12)]
     public string? PhoneNumber { get; set; }
 }
