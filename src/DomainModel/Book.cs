@@ -12,7 +12,7 @@ public class Book
 
     public List<Author> Authors { get; set; } = [];
 
-    public List<Edition> Editions { get; set; } = [];
+    public List<BookEdition> Editions { get; set; } = [];
 
     public List<Domain> Domains { get; set; } = [];
 }

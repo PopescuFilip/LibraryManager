@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DomainModel;
 
-public class Edition
+public class BookEdition
 {
     public int Id { get; set; }
 
@@ -20,4 +19,6 @@ public class Edition
 
     [Required]
     public Book Book { get; set; } = null!;
+
+    public List<BookRecord> BookRecords { get; set; } = [];
 }
