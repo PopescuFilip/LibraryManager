@@ -2,7 +2,7 @@
 
 namespace DomainModel;
 
-public class Domain
+public class Book
 {
     public int Id { get; set; }
 
@@ -10,9 +10,9 @@ public class Domain
     [StringLength(50)]
     public string Name { get; set; } = null!;
 
-    public Domain? ParentDomain { get; set; }
+    public List<Author> Authors { get; set; } = [];
 
-    public List<Domain> SubDomains { get; set; } = [];
+    public List<BookEdition> Editions { get; set; } = [];
 
-    public List<Book> Books { get; set; } = [];
+    public List<Domain> Domains { get; set; } = [];
 }
