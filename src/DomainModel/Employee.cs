@@ -8,4 +8,6 @@ public class Employee
 
     [Required]
     public Account Account { get; set; } = null!;
+
+    public List<BorrowRecord> BorrowRecords { get; set; } = [];
 }

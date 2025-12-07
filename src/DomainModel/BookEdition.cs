@@ -2,6 +2,16 @@
 
 namespace DomainModel;
 
+public enum BookType
+{
+    Hardcover,
+    Paperback,
+    SpiralBound,
+    LargePrint,
+    Braille,
+    BoardBook
+}
+
 public class BookEdition
 {
     public int Id { get; set; }
