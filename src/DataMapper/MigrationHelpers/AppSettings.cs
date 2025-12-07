@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace DataMapper;
+namespace DataMapper.MigrationHelpers;
 
 public static class AppSettings
 {

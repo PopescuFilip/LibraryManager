@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace DataMapper;
+namespace DataMapper.MigrationHelpers;
 
 public class LibraryDesignTimeDbContextFactory : IDesignTimeDbContextFactory<LibraryDbContext>
 {
