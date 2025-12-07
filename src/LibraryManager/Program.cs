@@ -3,5 +3,5 @@ using DataMapper;
 
 Console.WriteLine("Hello, World!");
 
-Console.WriteLine($"{AppSettings.LibraryDbConnectionString}");
+//Console.WriteLine($"{AppSettings.LibraryDbConnectionString}");
 //Console.WriteLine($"{AppSettings.Restrictions}");

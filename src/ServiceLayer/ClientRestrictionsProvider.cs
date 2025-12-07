@@ -1,22 +1,19 @@
 ﻿using DataMapper;
 using DomainModel.Restrictions;
-using Microsoft.Extensions.Configuration;
 
 namespace ServiceLayer;
 
-public interface IRestrictionsProvider
+public interface IClientRestrictionsProvider
 {
     ClientRestrictions GetClientRestrictions();
     ClientRestrictions GetPrivilegedClientRestrictions();
 }
 
-public class RestrictionsProvider(IConfiguration configuration) : IRestrictionsProvider
+public class ClientRestrictionsProvider(IRestrictionsProvider restrictionsProvider) : IClientRestrictionsProvider
 {
-    private const string RestrictionsSection = "Restrictions";
     private const int ExtensionDaysLimitMonthCount = 3;
 
-    private readonly Restrictions _restrictions =
-        configuration.GetRequiredSection(RestrictionsSection).Get<Restrictions>()!;
+    private readonly Restrictions _restrictions = restrictionsProvider.GetRestrictions()!;
 
     public ClientRestrictions GetClientRestrictions()
     {
@@ -40,7 +37,12 @@ public class RestrictionsProvider(IConfiguration configuration) : IRestrictionsP
         var basicRestrictions = GetClientRestrictions();
         var privilegedClientRestrictions = basicRestrictions with
         {
-
+            BorrowedBooksLimit = basicRestrictions.BorrowedBooksLimit.DoubleItem().HalfTime(),
+            MaxBorrowedBooksAtOnce = basicRestrictions.MaxBorrowedBooksAtOnce * 2,
+            SameDomainBorrowedBooksLimit = basicRestrictions.SameDomainBorrowedBooksLimit.DoubleItem(),
+            ExtensionDaysLimit = basicRestrictions.ExtensionDaysLimit.DoubleItem(),
+            BorrowedSameBookLimit = basicRestrictions.BorrowedSameBookLimit.HalfTime(),
+            MaxBorrowedBooksPerDay = int.MaxValue
         };
 
         return privilegedClientRestrictions;
