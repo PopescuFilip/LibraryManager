@@ -41,6 +41,10 @@ public class Repository<T>(IDbContextFactory<LibraryDbContext> _dbContextFactory
         {
             query = orderBy(query);
         }
+        else
+        {
+            query = query.OrderBy(x => x.Id);
+        }
 
         return query.ToList();
     }
