@@ -17,8 +17,8 @@ public class Repository<T>(IDbContextFactory<LibraryDbContext> _dbContextFactory
 
     public List<T> Get(
         Expression<Func<T, bool>>? filter = null,
-        Expression<Func<T, object>>? orderBy = null,
-        List<Expression<Func<T, object>>>? includeProperties = null)
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        params Expression<Func<T, object>>[] includeProperties)
     {
         using var context = _dbContextFactory.CreateDbContext();
 
@@ -26,7 +26,10 @@ public class Repository<T>(IDbContextFactory<LibraryDbContext> _dbContextFactory
 
         if (includeProperties is not null)
         {
-            query = includeProperties.Aggregate(query, (query, current) => query.Include(current));
+            foreach (var property in includeProperties)
+            {
+                query = query.Include(property);
+            }
         }
 
         if (filter is not null)
@@ -36,7 +39,7 @@ public class Repository<T>(IDbContextFactory<LibraryDbContext> _dbContextFactory
 
         if (orderBy is not null)
         {
-            query = query.OrderBy(orderBy);
+            query = orderBy(query);
         }
 
         return query.ToList();
