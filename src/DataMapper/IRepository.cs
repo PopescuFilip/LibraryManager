@@ -16,5 +16,5 @@ public interface IRepository<TId, TItem> where TItem : IEntity<TId>
     List<TItem> Get(
         Expression<Func<TItem, bool>>? filter = null,
         Expression<Func<TItem, object>>? orderBy = null,
-        List<Func<TItem, object>>? includeProperties = null);
+        List<Expression<Func<TItem, object>>>? includeProperties = null);
 }
