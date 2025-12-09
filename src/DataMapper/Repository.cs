@@ -21,32 +21,23 @@ public class Repository<T>(IDbContextFactory<LibraryDbContext> _dbContextFactory
         params Expression<Func<T, object>>[] includeProperties)
     {
         using var context = _dbContextFactory.CreateDbContext();
-
         var query = context.Set<T>().AsQueryable();
 
-        if (includeProperties is not null)
-        {
-            foreach (var property in includeProperties)
-            {
-                query = query.Include(property);
-            }
-        }
+        return GetQuery(query, filter, orderBy, includeProperties).ToList();
+    }
 
-        if (filter is not null)
-        {
-            query = query.Where(filter);
-        }
+    public List<TOut> Get<TOut>(
+        Expression<Func<T, TOut>> select,
+        Expression<Func<T, bool>>? filter = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        params Expression<Func<T, object>>[] includeProperties)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        var query = context.Set<T>().AsQueryable();
 
-        if (orderBy is not null)
-        {
-            query = orderBy(query);
-        }
-        else
-        {
-            query = query.OrderBy(x => x.Id);
-        }
-
-        return query.ToList();
+        return GetQuery(query, filter, orderBy, includeProperties)
+            .Select(select)
+            .ToList();
     }
 
     public T? GetById(int id)
@@ -69,5 +60,32 @@ public class Repository<T>(IDbContextFactory<LibraryDbContext> _dbContextFactory
         context.Set<T>().Update(entity);
 
         context.SaveChanges();
+    }
+
+    private static IQueryable<T> GetQuery(
+        IQueryable<T> query,
+        Expression<Func<T, bool>>? filter = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        params Expression<Func<T, object>>[] includeProperties)
+    {
+        if (includeProperties is not null)
+        {
+            foreach (var property in includeProperties)
+            {
+                query = query.Include(property);
+            }
+        }
+
+        if (filter is not null)
+        {
+            query = query.Where(filter);
+        }
+
+        if (orderBy is not null)
+        {
+            query = orderBy(query);
+        }
+
+        return query;
     }
 }
