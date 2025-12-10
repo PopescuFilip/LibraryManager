@@ -4,69 +4,69 @@ using System.Linq.Expressions;
 
 namespace DataMapper;
 
-public class Repository<T>(IDbContextFactory<LibraryDbContext> _dbContextFactory)
-    : IRepository<int, T> where T : class, IEntity<int>
+public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbContextFactory)
+    : IRepository<TId, TItem> where TItem : class, IEntity<TId>
 {
-    public void Delete(T entity)
+    public void Delete(TItem entity)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        context.Set<T>().Remove(entity);
+        context.Set<TItem>().Remove(entity);
 
         context.SaveChanges();
     }
 
-    public List<T> Get(
-        Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        params Expression<Func<T, object>>[] includeProperties)
+    public List<TItem> Get(
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        params Expression<Func<TItem, object>>[] includeProperties)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        var query = context.Set<T>().AsQueryable();
+        var query = context.Set<TItem>().AsQueryable();
 
         return GetQuery(query, filter, orderBy, includeProperties).ToList();
     }
 
     public List<TOut> Get<TOut>(
-        Expression<Func<T, TOut>> select,
-        Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        params Expression<Func<T, object>>[] includeProperties)
+        Expression<Func<TItem, TOut>> select,
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        params Expression<Func<TItem, object>>[] includeProperties)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        var query = context.Set<T>().AsQueryable();
+        var query = context.Set<TItem>().AsQueryable();
 
         return GetQuery(query, filter, orderBy, includeProperties)
             .Select(select)
             .ToList();
     }
 
-    public T? GetById(int id)
+    public TItem? GetById(TId id)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        return context.Set<T>().Find(id);
+        return context.Set<TItem>().Find(id);
     }
 
-    public void Insert(T entity)
+    public void Insert(TItem entity)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        context.Set<T>().Add(entity);
+        context.Set<TItem>().Add(entity);
 
         context.SaveChanges();
     }
 
-    public void Update(T entity)
+    public void Update(TItem entity)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        context.Set<T>().Update(entity);
+        context.Set<TItem>().Update(entity);
 
         context.SaveChanges();
     }
 
-    private static IQueryable<T> GetQuery(
-        IQueryable<T> query,
-        Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        params Expression<Func<T, object>>[] includeProperties)
+    private static IQueryable<TItem> GetQuery(
+        IQueryable<TItem> query,
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        params Expression<Func<TItem, object>>[] includeProperties)
     {
         if (includeProperties is not null)
         {

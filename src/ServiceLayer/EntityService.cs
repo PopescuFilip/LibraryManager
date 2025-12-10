@@ -4,37 +4,37 @@ using System.Linq.Expressions;
 
 namespace ServiceLayer;
 
-public class EntityService<T>(IRepository<int, T> _repository)
-    : IEntityService<int, T> where T : IEntity<int>
+public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
+    : IEntityService<TId, TItem> where TItem : IEntity<TId>
 {
-    public bool Delete(T entity)
+    public bool Delete(TItem entity)
     {
         _repository.Delete(entity);
         return true;
     }
 
     public List<TOut> Get<TOut>(
-        Expression<Func<T, TOut>> select,
-        Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        params Expression<Func<T, object>>[] includeProperties) =>
+        Expression<Func<TItem, TOut>> select,
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        params Expression<Func<TItem, object>>[] includeProperties) =>
         _repository.Get(select, filter, orderBy, includeProperties);
 
-    public List<T> Get(
-        Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        params Expression<Func<T, object>>[] includeProperties) =>
+    public List<TItem> Get(
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        params Expression<Func<TItem, object>>[] includeProperties) =>
         _repository.Get(filter, orderBy, includeProperties);
 
-    public T? GetById(int id) => _repository.GetById(id);
+    public TItem? GetById(TId id) => _repository.GetById(id);
 
-    public bool Insert(T entity)
+    public bool Insert(TItem entity)
     {
         _repository.Insert(entity);
         return true;
     }
 
-    public bool Update(T entity)
+    public bool Update(TItem entity)
     {
         _repository.Update(entity);
         return true;

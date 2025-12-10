@@ -1,22 +1,28 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DataMapper;
 using DataMapper.MigrationHelpers;
+using DomainModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ServiceLayer;
-using System.Diagnostics.CodeAnalysis;
+using SimpleInjector;
 
-[ExcludeFromCodeCoverage]
 internal class Program
 {
     private static void Main(string[] args)
     {
         Console.WriteLine("Hello, World!");
 
-        var entryPoint = GetEntryPoint();
+        var container = new Container();
+        _ = GetEntryPoint(container);
+        RegisterAndVerifyAll(container);
 
-        var provider = entryPoint.Services.GetRequiredService<IClientRestrictionsProvider>();
+        var provider = container.GetRequiredService<IClientRestrictionsProvider>();
+
+        var domain = container.GetRequiredService<IEntityService<int, Domain>>();
+
+        Console.WriteLine(domain.Get().Count);
 
         var first = provider.GetClientRestrictions();
         var second = provider.GetPrivilegedClientRestrictions();
@@ -25,26 +31,39 @@ internal class Program
         Console.WriteLine(second);
     }
 
-    private static IHost GetEntryPoint() =>
+    private static void RegisterAndVerifyAll(Container container)
+    {
+        AddDataMapperDependencies(container);
+        AddServiceLayerDependencies(container);
+        container.Verify();
+    }
+
+    private static IHost GetEntryPoint(Container container) =>
         Host
         .CreateDefaultBuilder()
         .ConfigureServices((context, services) =>
         {
-            AddDataMapperDependencies(services);
-            AddServiceLayerDependencies(services);
+            services
+            .AddSimpleInjector(container)
+            .AddDbContextFactory<LibraryDbContext, LibraryDbContextFactory>();
         })
         .ConfigureAppConfiguration(builder =>
         {
             builder.AddConfiguration(AppSettings.Configuration);
         })
-        .Build();
+        .Build()
+        .UseSimpleInjector(container);
 
-    private static IServiceCollection AddDataMapperDependencies(IServiceCollection services) =>
-        services
-        .AddDbContextFactory<LibraryDbContext, LibraryDbContextFactory>()
-        .AddScoped<IRestrictionsProvider, RestrictionsProvider>();
+    private static void AddDataMapperDependencies(Container container)
+    {
+        container.Register(typeof(IRepository<,>), typeof(Repository<,>));
+        container.Register<IRestrictionsProvider, RestrictionsProvider>();
+    }
 
-    private static IServiceCollection AddServiceLayerDependencies(IServiceCollection services) =>
-        services
-        .AddScoped<IClientRestrictionsProvider, ClientRestrictionsProvider>();
+    private static void AddServiceLayerDependencies(Container container)
+    {
+        container.Register(typeof(IEntityService<,>), typeof(EntityService<,>));
+        container.RegisterDecorator(typeof(IEntityService<,>), typeof(EntityServiceOrderByDecorator<,>));
+        container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
+    }
 }
