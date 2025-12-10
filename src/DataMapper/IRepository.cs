@@ -13,7 +13,7 @@ public interface IRepository<TId, TItem> where TItem : IEntity<TId>
 
     TItem? GetById(TId id);
 
-    public List<TOut> Get<TOut>(
+    List<TOut> Get<TOut>(
         Expression<Func<TItem, TOut>> select,
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
@@ -22,5 +22,18 @@ public interface IRepository<TId, TItem> where TItem : IEntity<TId>
     List<TItem> Get(
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        params Expression<Func<TItem, object>>[] includeProperties);
+
+    TOutCollected GetCollected<TOut, TOutCollected>(
+        Expression<Func<TItem, TOut>> select,
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        Func<IQueryable<TOut>, TOutCollected> collector,
+        params Expression<Func<TItem, object>>[] includeProperties);
+
+    TOutCollected Get<TOutCollected>(
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        Func<IQueryable<TItem>, TOutCollected> collector,
         params Expression<Func<TItem, object>>[] includeProperties);
 }

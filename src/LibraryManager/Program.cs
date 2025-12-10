@@ -20,7 +20,7 @@ internal class Program
 
         var provider = container.GetRequiredService<IClientRestrictionsProvider>();
 
-        var domain = container.GetRequiredService<IEntityService<int, Domain>>();
+        var domain = container.GetRequiredService<IQueryService<int, Domain>>();
 
         Console.WriteLine(domain.Get().Count);
 
@@ -62,8 +62,8 @@ internal class Program
 
     private static void AddServiceLayerDependencies(Container container)
     {
-        container.Register(typeof(IEntityService<,>), typeof(EntityService<,>));
-        container.RegisterDecorator(typeof(IEntityService<,>), typeof(EntityServiceOrderByDecorator<,>));
+        container.Register(typeof(IQueryService<,>), typeof(QueryService<,>));
+        container.RegisterDecorator(typeof(IQueryService<,>), typeof(QueryServiceOrderByDecorator<,>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
     }
 }

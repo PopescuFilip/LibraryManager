@@ -3,12 +3,10 @@ using System.Linq.Expressions;
 
 namespace ServiceLayer;
 
-public class EntityServiceOrderByDecorator<TId, TItem>(
-    IEntityService<TId, TItem> _entityService)
-    : IEntityService<TId, TItem> where TItem : IEntity<TId>
+public class QueryServiceOrderByDecorator<TId, TItem>(
+    IQueryService<TId, TItem> _entityService)
+    : IQueryService<TId, TItem> where TItem : IEntity<TId>
 {
-    public bool Delete(TItem entity) => _entityService.Delete(entity);
-
     public List<TOut> Get<TOut>(
         Expression<Func<TItem, TOut>> select,
         Expression<Func<TItem, bool>>? filter = null,
@@ -29,8 +27,4 @@ public class EntityServiceOrderByDecorator<TId, TItem>(
     }
 
     public TItem? GetById(TId id) => _entityService.GetById(id);
-
-    public bool Insert(TItem entity) => _entityService.Insert(entity);
-
-    public bool Update(TItem entity) => _entityService.Update(entity);
 }
