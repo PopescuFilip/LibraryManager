@@ -22,8 +22,6 @@ internal class Program
 
         var domain = container.GetRequiredService<IQueryService<int, Domain>>();
 
-        Console.WriteLine(domain.Get().Count);
-
         var first = provider.GetClientRestrictions();
         var second = provider.GetPrivilegedClientRestrictions();
         Console.WriteLine(first);
@@ -63,7 +61,6 @@ internal class Program
     private static void AddServiceLayerDependencies(Container container)
     {
         container.Register(typeof(IQueryService<,>), typeof(QueryService<,>));
-        container.RegisterDecorator(typeof(IQueryService<,>), typeof(QueryServiceOrderByDecorator<,>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
     }
 }

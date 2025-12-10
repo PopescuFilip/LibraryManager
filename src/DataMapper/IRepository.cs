@@ -26,14 +26,14 @@ public interface IRepository<TId, TItem> where TItem : IEntity<TId>
 
     TOutCollected GetCollected<TOut, TOutCollected>(
         Expression<Func<TItem, TOut>> select,
+        Func<IQueryable<TOut>, TOutCollected> collector,
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        Func<IQueryable<TOut>, TOutCollected> collector,
         params Expression<Func<TItem, object>>[] includeProperties);
 
     TOutCollected Get<TOutCollected>(
+        Func<IQueryable<TItem>, TOutCollected> collector,
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        Func<IQueryable<TItem>, TOutCollected> collector,
         params Expression<Func<TItem, object>>[] includeProperties);
 }

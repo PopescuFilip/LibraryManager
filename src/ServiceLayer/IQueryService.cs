@@ -5,16 +5,13 @@ namespace ServiceLayer;
 
 public interface IQueryService<TId, TItem> where TItem : IEntity<TId>
 {
-    TItem? GetById(TId id);
+    IQueryService<TId, TItem> Where(Expression<Func<TItem, bool>> filter);
 
-    List<TOut> Get<TOut>(
-        Expression<Func<TItem, TOut>> select,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        params Expression<Func<TItem, object>>[] includeProperties);
+    IQueryService<TId, TItem> OrderBy(Func<IQueryable<TItem>, IOrderedQueryable<TItem>> orderBy);
 
-    List<TItem> Get(
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        params Expression<Func<TItem, object>>[] includeProperties);
+    IQueryService<TId, TItem> Include(params Expression<Func<TItem, object>>[] includeProperties);
+
+    ICollectService<TItem> Collect();
+
+    ICollectService<TOut> Select<TOut>(Expression<Func<TItem, TOut>> filter);
 }

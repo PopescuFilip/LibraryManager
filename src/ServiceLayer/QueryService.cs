@@ -7,36 +7,28 @@ namespace ServiceLayer;
 public class QueryService<TId, TItem>(IRepository<TId, TItem> _repository)
     : IQueryService<TId, TItem> where TItem : IEntity<TId>
 {
-    public bool Delete(TItem entity)
+    public ICollectService<TItem> Collect()
     {
-        _repository.Delete(entity);
-        return true;
+        throw new NotImplementedException();
     }
 
-    public List<TOut> Get<TOut>(
-        Expression<Func<TItem, TOut>> select,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        params Expression<Func<TItem, object>>[] includeProperties) =>
-        _repository.Get(select, filter, orderBy, includeProperties);
-
-    public List<TItem> Get(
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        params Expression<Func<TItem, object>>[] includeProperties) =>
-        _repository.Get(filter, orderBy, includeProperties);
-
-    public TItem? GetById(TId id) => _repository.GetById(id);
-
-    public bool Insert(TItem entity)
+    public IQueryService<TId, TItem> Include(params Expression<Func<TItem, object>>[] includeProperties)
     {
-        _repository.Insert(entity);
-        return true;
+        throw new NotImplementedException();
     }
 
-    public bool Update(TItem entity)
+    public IQueryService<TId, TItem> OrderBy(Func<IQueryable<TItem>, IOrderedQueryable<TItem>> orderBy)
     {
-        _repository.Update(entity);
-        return true;
+        throw new NotImplementedException();
+    }
+
+    public ICollectService<TOut> Select<TOut>(Expression<Func<TItem, TOut>> filter)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IQueryService<TId, TItem> Where(Expression<Func<TItem, bool>> filter)
+    {
+        throw new NotImplementedException();
     }
 }

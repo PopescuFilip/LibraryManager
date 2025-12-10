@@ -8,6 +8,11 @@ public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
 {
     public void Delete(TItem entity) => _repository.Delete(entity);
 
+    public IQueryService<TId, TItem> Get()
+    {
+        throw new NotImplementedException();
+    }
+
     public TItem? GetById(TId id) => _repository.GetById(id);
 
     public void Insert(TItem entity) => _repository.Insert(entity);

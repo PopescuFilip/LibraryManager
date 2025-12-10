@@ -40,7 +40,12 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbConte
             .ToList();
     }
 
-    public TOutCollected GetCollected<TOut, TOutCollected>(Expression<Func<TItem, TOut>> select, Expression<Func<TItem, bool>>? filter = null, Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null, Func<IQueryable<TOut>, TOutCollected> collector = null, params Expression<Func<TItem, object>>[] includeProperties)
+    public TOutCollected GetCollected<TOut, TOutCollected>(
+        Expression<Func<TItem, TOut>> select,
+        Func<IQueryable<TOut>, TOutCollected> collector,
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        params Expression<Func<TItem, object>>[] includeProperties)
     {
         using var context = _dbContextFactory.CreateDbContext();
         var query = context.Set<TItem>().AsQueryable();
@@ -49,7 +54,11 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbConte
         return collector(nonExecutedQuery);
     }
 
-    public TOutCollected Get<TOutCollected>(Expression<Func<TItem, bool>>? filter = null, Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null, Func<IQueryable<TItem>, TOutCollected> collector = null, params Expression<Func<TItem, object>>[] includeProperties)
+    public TOutCollected Get<TOutCollected>(
+        Func<IQueryable<TItem>, TOutCollected> collector,
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        params Expression<Func<TItem, object>>[] includeProperties)
     {
         using var context = _dbContextFactory.CreateDbContext();
         var query = context.Set<TItem>().AsQueryable();

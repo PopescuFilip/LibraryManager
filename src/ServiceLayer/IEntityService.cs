@@ -11,4 +11,6 @@ public interface IEntityService<TId, TItem> where TItem : IEntity<TId>
     void Delete(TItem entity);
 
     TItem? GetById(TId id);
+
+    IQueryService<TId, TItem> Get();
 }
