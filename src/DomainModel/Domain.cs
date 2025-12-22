@@ -18,7 +18,7 @@ public class Domain : IEntity<int>
 
     private Domain() {}
 
-    public static Domain CreateNew(string name, Domain? parentDomain) =>
+    public static Domain CreateNew(string name, Domain? parentDomain = null) =>
         new()
         {
             Name = name,
