@@ -1,0 +1,27 @@
+﻿using DataMapper;
+using DomainModel;
+using FluentValidation;
+using System.Linq.Expressions;
+
+namespace ServiceLayer.CRUD;
+
+public interface IEntityService<R, TId, TItem>
+    where R : IRepository<TId, TItem>
+    where TItem : IEntity<TId>
+{
+    bool Insert(TItem entity, IValidator<TItem> validator);
+
+    bool Update(TItem entity, IValidator<TItem> validator);
+
+    void Delete(TItem entity);
+
+    TItem? GetById(TId id);
+
+    TOutCollected Get<TOut, TOutCollected>(
+        Expression<Func<TItem, TOut>> select,
+        Func<IQueryable<TOut>, TOutCollected> collector,
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        bool asNoTracking = false,
+        params Expression<Func<TItem, object?>>[] includeProperties);
+}

@@ -2,7 +2,7 @@
 
 namespace DomainModel;
 
-public class Book
+public class Book : IEntity<int>
 {
     public int Id { get; set; }
 

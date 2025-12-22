@@ -2,7 +2,7 @@
 
 namespace DomainModel;
 
-public class Client
+public class Client : IEntity<int>
 {
     public int Id { get; set; }
 
