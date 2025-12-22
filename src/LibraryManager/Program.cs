@@ -5,8 +5,8 @@ using DomainModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ServiceLayer;
-using ServiceLayer.AdvancedQuery;
+using ServiceLayer.CRUD;
+using ServiceLayer.CRUD.AdvancedQuery;
 using SimpleInjector;
 
 internal class Program

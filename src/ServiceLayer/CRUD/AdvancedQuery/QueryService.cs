@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq.Expressions;
 
-namespace ServiceLayer.AdvancedQuery;
+namespace ServiceLayer.CRUD.AdvancedQuery;
 
 public record Query<TId, TItem>(
     Expression<Func<TItem, bool>>? Filter,

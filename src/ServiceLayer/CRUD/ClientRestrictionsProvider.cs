@@ -1,7 +1,7 @@
 ﻿using DataMapper;
 using DomainModel.Restrictions;
 
-namespace ServiceLayer;
+namespace ServiceLayer.CRUD;
 
 public interface IClientRestrictionsProvider
 {

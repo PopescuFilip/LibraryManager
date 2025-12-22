@@ -2,7 +2,7 @@
 using DomainModel;
 using System.Linq.Expressions;
 
-namespace ServiceLayer;
+namespace ServiceLayer.CRUD;
 
 public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
     : IEntityService<TId, TItem> where TItem : IEntity<TId>

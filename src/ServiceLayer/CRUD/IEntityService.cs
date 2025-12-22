@@ -1,7 +1,7 @@
 ﻿using DomainModel;
 using System.Linq.Expressions;
 
-namespace ServiceLayer;
+namespace ServiceLayer.CRUD;
 
 public interface IEntityService<TId, TItem> where TItem : IEntity<TId>
 {
