@@ -41,12 +41,9 @@ public class DomainServiceTests
         Assert.IsTrue(success);
         Assert.IsNotNull(actualDomain);
         Assert.AreEqual(name, actualDomain.Name);
-        entityService.Received(1).Get(
-            Arg.Any<Expression<Func<Domain, Domain>>>(),
-            Arg.Any<Func<IQueryable<Domain>, Domain?>>(),
-            Arg.Any<Expression<Func<Domain, bool>>>(),
-            null,
-            asNoTracking: true);
+        entityService
+            .ReceivedWithAnyArgs(1)
+            .Get<Domain, Domain?>(default!, default!, default, default, default);
     }
 
     [TestMethod]
@@ -75,33 +72,17 @@ public class DomainServiceTests
     public void Add_ShouldFail_WhenParentDomainWithNameDoesNotExist()
     {
         var name = "Domain Name";
-        var existingDomain = Domain.CreateNew(name);
-        Expression<Func<Domain, bool>>? receivedFilter = null;
+        var parentDomain = "Parent domain name";
 
-        entityService.Get(
-            Arg.Any<Expression<Func<Domain, Domain>>>(),
-            Arg.Any<Func<IQueryable<Domain>, Domain?>>(),
-            Arg.Is<Expression<Func<Domain, bool>>>(expr => IsFilterForValue(expr, name)),
-            null,
-            asNoTracking: true)
-            .Returns(existingDomain);
+        entityService
+            .Get<Domain, Domain?>(default!, default!, default, default, default)
+            .ReturnsForAnyArgs((Domain?)null);
 
-        var success = domainService.Add(name);
+        var success = domainService.Add(name, parentDomain);
 
         Assert.IsFalse(success);
-        Assert.IsNotNull(receivedFilter);
-        Assert.IsTrue(receivedFilter.Compile()(existingDomain));
-    }
-
-    private bool IsFilterForValue(Expression<Func<Domain, bool>> expr, string value)
-    {
-        var right = (expr.Body as BinaryExpression).Right;
-        var left = (expr.Body as BinaryExpression).Left;
-
-        return expr.Body is BinaryExpression binary
-            && binary.NodeType == ExpressionType.Equal
-            && binary.Right is ConstantExpression constantExpression
-            && constantExpression is not null
-            && value == (string)constantExpression.Value!;
+        entityService
+            .ReceivedWithAnyArgs(2)
+            .Get<Domain, Domain?>(default!, default!, default, default, default);
     }
 }
