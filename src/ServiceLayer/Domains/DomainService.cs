@@ -26,11 +26,7 @@ public class DomainService(IEntityService<IDomainRepository, int, Domain> _entit
                 return false;
         }
 
-        var newDomain = new Domain()
-        {
-            Name = domainName,
-            ParentDomain = parentDomain
-        };
+        var newDomain = Domain.CreateNew(domainName, parentDomain);
         _entityService.Insert(newDomain);
         return true;
     }

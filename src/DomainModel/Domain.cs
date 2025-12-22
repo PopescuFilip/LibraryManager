@@ -15,4 +15,13 @@ public class Domain : IEntity<int>
     public List<Domain> SubDomains { get; set; } = [];
 
     public List<Book> Books { get; set; } = [];
+
+    private Domain() {}
+
+    public static Domain CreateNew(string name, Domain? parentDomain) =>
+        new()
+        {
+            Name = name,
+            ParentDomain = parentDomain
+        };
 }

@@ -14,8 +14,6 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
-
         var container = new Container();
         _ = GetEntryPoint(container);
         RegisterAndVerifyAll(container);

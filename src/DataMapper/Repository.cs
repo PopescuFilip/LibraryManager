@@ -24,7 +24,7 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> dbContex
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
         bool asNoTracking = false,
-        params Expression<Func<TItem, object>>[] includeProperties)
+        params Expression<Func<TItem, object?>>[] includeProperties)
     {
         using var context = _dbContextFactory.CreateDbContext();
         var query = asNoTracking
