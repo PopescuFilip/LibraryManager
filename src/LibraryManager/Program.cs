@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ServiceLayer;
+using ServiceLayer.AdvancedQuery;
 using SimpleInjector;
 
 internal class Program

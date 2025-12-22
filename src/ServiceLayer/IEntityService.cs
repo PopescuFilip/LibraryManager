@@ -1,4 +1,5 @@
 ﻿using DomainModel;
+using System.Linq.Expressions;
 
 namespace ServiceLayer;
 
@@ -12,5 +13,11 @@ public interface IEntityService<TId, TItem> where TItem : IEntity<TId>
 
     TItem? GetById(TId id);
 
-    IQueryService<TId, TItem> Get();
+    TOutCollected Get<TOut, TOutCollected>(
+        Expression<Func<TItem, TOut>> select,
+        Func<IQueryable<TOut>, TOutCollected> collector,
+        Expression<Func<TItem, bool>>? filter = null,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        bool asNoTracking = false,
+        params Expression<Func<TItem, object>>[] includeProperties);
 }

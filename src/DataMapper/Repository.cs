@@ -15,54 +15,19 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbConte
         context.SaveChanges();
     }
 
-    public List<TItem> Get(
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        params Expression<Func<TItem, object>>[] includeProperties)
-    {
-        using var context = _dbContextFactory.CreateDbContext();
-        var query = context.Set<TItem>().AsQueryable();
-
-        return GetQuery(query, filter, orderBy, includeProperties).ToList();
-    }
-
-    public List<TOut> Get<TOut>(
-        Expression<Func<TItem, TOut>> select,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        params Expression<Func<TItem, object>>[] includeProperties)
-    {
-        using var context = _dbContextFactory.CreateDbContext();
-        var query = context.Set<TItem>().AsQueryable();
-
-        return GetQuery(query, filter, orderBy, includeProperties)
-            .Select(select)
-            .ToList();
-    }
-
-    public TOutCollected GetCollected<TOut, TOutCollected>(
+    public TOutCollected Get<TOut, TOutCollected>(
         Expression<Func<TItem, TOut>> select,
         Func<IQueryable<TOut>, TOutCollected> collector,
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
+        bool asNoTracking = false,
         params Expression<Func<TItem, object>>[] includeProperties)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        var query = context.Set<TItem>().AsQueryable();
+        var query = asNoTracking
+            ? context.Set<TItem>().AsNoTracking()
+            : context.Set<TItem>().AsQueryable();
         var nonExecutedQuery = GetQuery(query, filter, orderBy, includeProperties).Select(select);
-
-        return collector(nonExecutedQuery);
-    }
-
-    public TOutCollected Get<TOutCollected>(
-        Func<IQueryable<TItem>, TOutCollected> collector,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        params Expression<Func<TItem, object>>[] includeProperties)
-    {
-        using var context = _dbContextFactory.CreateDbContext();
-        var query = context.Set<TItem>().AsQueryable();
-        var nonExecutedQuery = GetQuery(query, filter, orderBy, includeProperties);
 
         return collector(nonExecutedQuery);
     }

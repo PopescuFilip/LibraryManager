@@ -1,7 +1,7 @@
 ﻿using DomainModel;
 using System.Linq.Expressions;
 
-namespace ServiceLayer;
+namespace ServiceLayer.AdvancedQuery;
 
 public interface IQueryService<TId, TItem> where TItem : IEntity<TId>
 {
