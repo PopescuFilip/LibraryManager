@@ -1,12 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DataMapper;
 using DataMapper.MigrationHelpers;
-using DomainModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ServiceLayer.CRUD;
-using ServiceLayer.CRUD.AdvancedQuery;
+using ServiceLayer.Domains;
 using SimpleInjector;
 
 internal class Program
@@ -19,15 +18,11 @@ internal class Program
         _ = GetEntryPoint(container);
         RegisterAndVerifyAll(container);
 
-        var provider = container.GetRequiredService<IClientRestrictionsProvider>();
+        var domainService = container.GetRequiredService<IDomainService>();
 
-        var domain = container.GetRequiredService<IQueryService<int, Domain>>();
+        var success = domainService.Add("Chimie", "Stiinta");
 
-        var first = provider.GetClientRestrictions();
-        var second = provider.GetPrivilegedClientRestrictions();
-        Console.WriteLine(first);
-        Console.WriteLine();
-        Console.WriteLine(second);
+        Console.WriteLine(success ? "Success" : "Not success");
     }
 
     private static void RegisterAndVerifyAll(Container container)
@@ -57,11 +52,13 @@ internal class Program
     {
         container.Register(typeof(IRepository<,>), typeof(Repository<,>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
+        container.Register<IDomainRepository, DomainRepository>();
     }
 
     private static void AddServiceLayerDependencies(Container container)
     {
-        container.Register(typeof(IQueryService<,>), typeof(QueryService<,>));
+        container.Register(typeof(IEntityService<,,>), typeof(EntityService<,,>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
+        container.Register<IDomainService, DomainService>();
     }
 }

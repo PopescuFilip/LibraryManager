@@ -1,9 +1,12 @@
-﻿using DomainModel;
+﻿using DataMapper;
+using DomainModel;
 using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
 
-public interface IEntityService<TId, TItem> where TItem : IEntity<TId>
+public interface IEntityService<R, TId, TItem>
+    where R : IRepository<TId, TItem>
+    where TItem : IEntity<TId>
 {
     void Insert(TItem entity);
 

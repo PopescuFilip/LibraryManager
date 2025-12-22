@@ -4,9 +4,12 @@ using System.Linq.Expressions;
 
 namespace DataMapper;
 
-public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbContextFactory)
-    : IRepository<TId, TItem> where TItem : class, IEntity<TId>
+public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> dbContextFactory)
+    : IRepository<TId, TItem>
+    where TItem : class, IEntity<TId>
 {
+    protected readonly IDbContextFactory<LibraryDbContext> _dbContextFactory = dbContextFactory;
+
     public void Delete(TItem entity)
     {
         using var context = _dbContextFactory.CreateDbContext();
@@ -38,7 +41,7 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbConte
         return context.Set<TItem>().Find(id);
     }
 
-    public void Insert(TItem entity)
+    public virtual void Insert(TItem entity)
     {
         using var context = _dbContextFactory.CreateDbContext();
         context.Set<TItem>().Add(entity);
