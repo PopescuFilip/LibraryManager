@@ -35,10 +35,11 @@ public class DomainService(IEntityService<IDomainRepository, int, Domain> _entit
         return true;
     }
 
-    public List<Domain> GetAll()
-    {
-        throw new NotImplementedException();
-    }
+    public List<Domain> GetAll() =>
+        _entityService.Get(
+            select: x => x,
+            collector: q => q.ToList(),
+            asNoTracking: true);
 
     private Domain? GetByName(string name) =>
         _entityService.Get(

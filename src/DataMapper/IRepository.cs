@@ -19,5 +19,5 @@ public interface IRepository<TId, TItem> where TItem : IEntity<TId>
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
         bool asNoTracking = false,
-        params Expression<Func<TItem, object>>[] includeProperties);
+        params Expression<Func<TItem, object?>>[] includeProperties);
 }

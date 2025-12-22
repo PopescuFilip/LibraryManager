@@ -1,6 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DataMapper;
 using DataMapper.MigrationHelpers;
+using DomainModel;
+using LibraryManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,12 +19,30 @@ internal class Program
         var container = new Container();
         _ = GetEntryPoint(container);
         RegisterAndVerifyAll(container);
+        container.Initialize();
 
         var domainService = container.GetRequiredService<IDomainService>();
 
-        var success = domainService.Add("Chimie", "Stiinta");
+        var entityService = container.GetRequiredService<IRepository<int, Domain>>();
 
-        Console.WriteLine(success ? "Success" : "Not success");
+        var allDomains = entityService.Get(
+            select: x => x,
+            collector: q => q.ToList(),
+            includeProperties:
+            [
+                x => x.ParentDomain,
+                x => x.SubDomains
+            ],
+            asNoTracking: true);
+
+        var namesWIthParent = allDomains
+            .Select(x => new {
+                x.Name,
+                ParentName = x.ParentDomain?.Name,
+                SubDomains = x.SubDomains.Select(x => x.Name).ToList() })
+            .ToList();
+
+        Console.WriteLine(allDomains.Count);
     }
 
     private static void RegisterAndVerifyAll(Container container)

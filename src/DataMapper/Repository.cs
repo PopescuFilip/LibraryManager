@@ -61,7 +61,7 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> dbContex
         IQueryable<TItem> query,
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        params Expression<Func<TItem, object>>[] includeProperties)
+        params Expression<Func<TItem, object?>>[] includeProperties)
     {
         if (includeProperties is not null)
         {

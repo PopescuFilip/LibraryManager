@@ -22,5 +22,5 @@ public interface IEntityService<R, TId, TItem>
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
         bool asNoTracking = false,
-        params Expression<Func<TItem, object>>[] includeProperties);
+        params Expression<Func<TItem, object?>>[] includeProperties);
 }

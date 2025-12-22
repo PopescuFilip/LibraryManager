@@ -23,7 +23,7 @@ public class EntityService<R, TId, TItem>(R _repository)
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
         bool asNoTracking = false,
-        params Expression<Func<TItem, object>>[] includeProperties)
+        params Expression<Func<TItem, object?>>[] includeProperties)
     {
         orderBy ??= query => query.OrderBy(x => x.Id);
         return _repository.Get(select, collector, filter, orderBy, asNoTracking, includeProperties);
