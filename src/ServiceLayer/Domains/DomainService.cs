@@ -1,5 +1,6 @@
 ﻿using DataMapper;
 using DomainModel;
+using FluentValidation;
 using ServiceLayer.CRUD;
 
 namespace ServiceLayer.Domains;
@@ -11,7 +12,10 @@ public interface IDomainService
     bool Add(string domainName, string? parentDomainName = null);
 }
 
-public class DomainService(IEntityService<IDomainRepository, int, Domain> _entityService) : IDomainService
+public class DomainService(
+    IEntityService<IDomainRepository, int, Domain> _entityService,
+    IValidator<Domain> validator)
+    : IDomainService
 {
     public bool Add(string domainName, string? parentDomainName = null)
     {
@@ -27,8 +31,7 @@ public class DomainService(IEntityService<IDomainRepository, int, Domain> _entit
         }
 
         var newDomain = Domain.CreateNew(domainName, parentDomain);
-        _entityService.Insert(newDomain);
-        return true;
+        return _entityService.Insert(newDomain, validator);
     }
 
     public List<Domain> GetAll() =>

@@ -2,6 +2,7 @@
 using DataMapper;
 using DataMapper.MigrationHelpers;
 using DomainModel;
+using FluentValidation;
 using LibraryManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,6 +72,8 @@ internal class Program
         container.Register(typeof(IRepository<,>), typeof(Repository<,>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
         container.Register<IDomainRepository, DomainRepository>();
+
+        container.Register<IValidator<Domain>, DomainValidator>();
     }
 
     private static void AddServiceLayerDependencies(Container container)

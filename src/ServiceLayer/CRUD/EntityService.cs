@@ -1,5 +1,6 @@
 ﻿using DataMapper;
 using DomainModel;
+using FluentValidation;
 using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
@@ -13,9 +14,23 @@ public class EntityService<R, TId, TItem>(R _repository)
 
     public TItem? GetById(TId id) => _repository.GetById(id);
 
-    public void Insert(TItem entity) => _repository.Insert(entity);
+    public bool Insert(TItem entity, IValidator<TItem> validator)
+    {
+        if (!validator.Validate(entity).IsValid)
+            return false;
 
-    public void Update(TItem entity) => _repository.Update(entity);
+        _repository.Insert(entity);
+        return true;
+    }
+
+    public bool Update(TItem entity, IValidator<TItem> validator)
+    {
+        if (!validator.Validate(entity).IsValid)
+            return false;
+
+        _repository.Update(entity);
+        return true;
+    }
 
     public TOutCollected Get<TOut, TOutCollected>(
         Expression<Func<TItem, TOut>> select,

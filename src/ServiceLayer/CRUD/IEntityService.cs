@@ -1,5 +1,6 @@
 ﻿using DataMapper;
 using DomainModel;
+using FluentValidation;
 using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
@@ -8,9 +9,9 @@ public interface IEntityService<R, TId, TItem>
     where R : IRepository<TId, TItem>
     where TItem : IEntity<TId>
 {
-    void Insert(TItem entity);
+    bool Insert(TItem entity, IValidator<TItem> validator);
 
-    void Update(TItem entity);
+    bool Update(TItem entity, IValidator<TItem> validator);
 
     void Delete(TItem entity);
 
