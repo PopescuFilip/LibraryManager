@@ -85,4 +85,31 @@ public class DomainServiceTests
             .ReceivedWithAnyArgs(2)
             .Get<Domain, Domain?>(default!, default!, default, default, default);
     }
+
+    [TestMethod]
+    public void Add_ShouldWork_WhenParentDomainExists()
+    {
+        var name = "Domain Name";
+        var parentDomainName = "Parent domain name";
+        var parentDomain = Domain.CreateNew(parentDomainName, null);
+        Domain? insertedDomain = null;
+
+        entityService
+            .Get<Domain, Domain?>(default!, default!, default, default, default)
+            .ReturnsForAnyArgs(null, parentDomain);
+        entityService
+            .Insert(Arg.Do<Domain>(d => insertedDomain = d), validator)
+            .Returns(true);
+
+        var success = domainService.Add(name, parentDomainName);
+
+        Assert.IsTrue(success);
+        entityService
+            .ReceivedWithAnyArgs(2)
+            .Get<Domain, Domain?>(default!, default!, default, default, default);
+        entityService.ReceivedWithAnyArgs(1).Insert(default!, default!);
+        Assert.IsNotNull(insertedDomain);
+        Assert.AreEqual(name, insertedDomain.Name);
+        Assert.AreEqual(parentDomain, insertedDomain.ParentDomain);
+    }
 }
