@@ -92,6 +92,7 @@ public class DomainServiceTests
         var name = "Domain Name";
         var parentDomainName = "Parent domain name";
         var parentDomain = Domain.CreateNew(parentDomainName, null);
+        parentDomain.Id = 123;
         Domain? insertedDomain = null;
 
         entityService
@@ -110,6 +111,6 @@ public class DomainServiceTests
         entityService.ReceivedWithAnyArgs(1).Insert(default!, default!);
         Assert.IsNotNull(insertedDomain);
         Assert.AreEqual(name, insertedDomain.Name);
-        Assert.AreEqual(parentDomain, insertedDomain.ParentDomain);
+        Assert.AreEqual(parentDomain.Id, insertedDomain.ParentDomainId);
     }
 }
