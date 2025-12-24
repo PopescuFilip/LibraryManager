@@ -24,12 +24,7 @@ public static class Init
         =>
         container
         .GetRequiredService<IEntityService<IRepository<int, T>, int, T>>()
-        .GetAll();
-
-    private static List<T> GetAll<T>(this IEntityService<IRepository<int, T>, int, T> entityService)
-        where T : IEntity<int>
-        =>
-        entityService.Get(
+        .Get(
             select: x => x,
             collector: q => q.ToList()
             );
