@@ -28,7 +28,7 @@ public class DomainService(
                 return false;
         }
 
-        var newDomain = Domain.CreateNew(domainName, parentDomain?.Id);
+        var newDomain = new Domain(domainName, parentDomain?.Id);
         return _entityService.Insert(newDomain, validator);
     }
 

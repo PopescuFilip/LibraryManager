@@ -4,7 +4,7 @@ namespace DomainModel;
 
 public class Domain : IEntity<int>
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     [Required]
     [StringLength(50)]
@@ -12,18 +12,12 @@ public class Domain : IEntity<int>
 
     public int? ParentDomainId { get; init; }
 
-    public Domain? ParentDomain { get; init; }
+    public Domain? ParentDomain { get; private set; }
 
     public List<Domain> SubDomains { get; } = [];
 
     public List<Book> Books { get; } = [];
 
-    private Domain() {}
-
-    public static Domain CreateNew(string name, int? parentDomainId = null) =>
-        new()
-        {
-            Name = name,
-            ParentDomainId = parentDomainId
-        };
+    public Domain(string name, int? parentDomainId = null) =>
+        (Name, ParentDomainId) = (name, parentDomainId);
 }

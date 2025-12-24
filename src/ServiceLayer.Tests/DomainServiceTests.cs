@@ -50,7 +50,7 @@ public class DomainServiceTests
     public void Add_ShouldFail_WhenDomainWithNameAlreadyExists()
     {
         var name = "Domain Name";
-        var existingDomain = Domain.CreateNew(name);
+        var existingDomain = new Domain(name);
         Expression<Func<Domain, bool>>? receivedFilter = null;
 
         entityService.Get(
@@ -91,8 +91,7 @@ public class DomainServiceTests
     {
         var name = "Domain Name";
         var parentDomainName = "Parent domain name";
-        var parentDomain = Domain.CreateNew(parentDomainName, null);
-        parentDomain.Id = 123;
+        var parentDomain = new Domain(parentDomainName, null) { Id = 123 };
         Domain? insertedDomain = null;
 
         entityService
