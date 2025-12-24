@@ -22,6 +22,6 @@ public interface IEntityService<R, TId, TItem>
         Func<IQueryable<TOut>, TOutCollected> collector,
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        bool asNoTracking = false,
+        bool asNoTracking = true,
         params Expression<Func<TItem, object?>>[] includeProperties);
 }

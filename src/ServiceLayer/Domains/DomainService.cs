@@ -7,8 +7,6 @@ namespace ServiceLayer.Domains;
 
 public interface IDomainService
 {
-    List<Domain> GetAll();
-
     bool Add(string domainName, string? parentDomainName = null);
 }
 
@@ -33,12 +31,6 @@ public class DomainService(
         var newDomain = Domain.CreateNew(domainName, parentDomain);
         return _entityService.Insert(newDomain, validator);
     }
-
-    public List<Domain> GetAll() =>
-        _entityService.Get(
-            select: x => x,
-            collector: q => q.ToList(),
-            asNoTracking: true);
 
     private Domain? GetByName(string name) =>
         _entityService.Get(

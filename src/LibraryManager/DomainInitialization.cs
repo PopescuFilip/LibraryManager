@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DomainModel;
+using Microsoft.Extensions.DependencyInjection;
 using ServiceLayer.Domains;
 using SimpleInjector;
 
@@ -25,7 +26,7 @@ public static class DomainInitialization
     {
         var domainService = container.GetRequiredService<IDomainService>();
 
-        if (domainService.GetAll().Count != 0)
+        if (container.GetAllEntities<Domain>().Count != 0)
             return;
 
         domainService.Add(Stiinta);
