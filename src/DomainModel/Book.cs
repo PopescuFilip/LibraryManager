@@ -15,4 +15,6 @@ public class Book : IEntity<int>
     public List<BookEdition> Editions { get; set; } = [];
 
     public List<Domain> Domains { get; set; } = [];
+
+    public IEnumerable<Domain> ImplicitDomains => Domains;
 }

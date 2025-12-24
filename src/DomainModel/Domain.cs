@@ -10,6 +10,8 @@ public class Domain : IEntity<int>
     [StringLength(50)]
     public string Name { get; set; } = null!;
 
+    public int? ParentDomainId { get; init; }
+
     public Domain? ParentDomain { get; init; }
 
     public List<Domain> SubDomains { get; init; } = [];

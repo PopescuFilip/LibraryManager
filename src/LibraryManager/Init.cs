@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceLayer.CRUD;
 using SimpleInjector;
+using System.Linq.Expressions;
 
 namespace LibraryManager;
 
@@ -19,13 +20,14 @@ public static class Init
         container.InitDomains();
     }
 
-    public static List<T> GetAllEntities<T>(this Container container)
+    public static List<T> GetAllEntities<T>(this Container container,
+        params Expression<Func<T, object?>>[] includeProperties)
         where T : IEntity<int>
         =>
         container
         .GetRequiredService<IEntityService<IRepository<int, T>, int, T>>()
         .Get(
             select: x => x,
-            collector: q => q.ToList()
-            );
+            collector: q => q.ToList(),
+            includeProperties: includeProperties);
 }
