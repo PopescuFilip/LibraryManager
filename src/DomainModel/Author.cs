@@ -4,11 +4,11 @@ namespace DomainModel;
 
 public class Author : IEntity<int>
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     [Required]
     [StringLength(50)]
-    public string Name { get; set; } = null!;
+    public string Name { get; init; } = null!;
 
-    public List<Book> Books { get; set; } = [];
+    public List<BookDefinition> WrittenBooks { get; } = [];
 }

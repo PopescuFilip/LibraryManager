@@ -20,6 +20,8 @@ internal class Program
         RegisterAndVerifyAll(container);
         container.Initialize();
 
+        var bookRecord = new Book();
+
         var entities = container.GetAllEntities<Domain>(
             includeProperties:
             [

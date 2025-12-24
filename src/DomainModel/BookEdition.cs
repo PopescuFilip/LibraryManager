@@ -14,21 +14,23 @@ public enum BookType
 
 public class BookEdition : IEntity<int>
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     [Required]
     [StringLength(50)]
-    public string Name { get; set; } = null!;
+    public string Name { get; init; } = null!;
 
     [Required]
     [Range(1, 10_000)]
-    public int PagesCount { get; set; }
+    public int PagesCount { get; init; }
 
     [Required]
-    public BookType BookType { get; set; }
+    public BookType BookType { get; init; }
 
     [Required]
-    public Book Book { get; set; } = null!;
+    public int BookDefinitionId { get; init; }
 
-    public List<BookRecord> BookRecords { get; set; } = [];
+    public BookDefinition BookDefinition { get; private set; } = null!;
+
+    public List<Book> BookRecords { get; } = [];
 }

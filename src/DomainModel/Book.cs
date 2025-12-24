@@ -2,19 +2,22 @@
 
 namespace DomainModel;
 
+public enum BookStatus
+{
+    ForReadingRoom,
+    Borrowed,
+    Available
+}
+
 public class Book : IEntity<int>
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     [Required]
-    [StringLength(50)]
-    public string Name { get; init; } = null!;
+    public BookStatus Status { get; set; }
 
-    public List<Author> Authors { get; } = [];
+    [Required]
+    public int BookEditionId { get; init; }
 
-    public List<BookEdition> Editions { get; } = [];
-
-    public List<Domain> Domains { get; } = [];
-
-    public IEnumerable<Domain> ImplicitDomains => Domains;
+    public BookEdition BookEdition { get; private set; } = null!;
 }

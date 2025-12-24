@@ -4,15 +4,20 @@ namespace DomainModel;
 
 public class BorrowRecord : IEntity<int>
 {
-    public int Id { get; set; }
-
-    public DateTime BorrowDateTime { get; set; }
+    public int Id { get; init; }
 
     [Required]
-    public Client Borrower { get; set; } = null!;
+    public DateTime BorrowDateTime { get; init; }
 
     [Required]
-    public Employee Lender { get; set; } = null!;
+    public int BorrowerId { get; init; }
 
-    public List<BookRecord> BorrowedBookRecords { get; set; } = [];
+    public Client Borrower { get; private set; } = null!;
+
+    [Required]
+    public int LenderId { get; init; }
+
+    public Employee Lender { get; private set; } = null!;
+
+    public List<Book> BorrowedBooks { get; } = [];
 }

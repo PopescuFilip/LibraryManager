@@ -16,8 +16,6 @@ public class Domain : IEntity<int>
 
     public List<Domain> SubDomains { get; } = [];
 
-    public List<Book> Books { get; } = [];
-
     public Domain(string name, int? parentDomainId = null) =>
         (Name, ParentDomainId) = (name, parentDomainId);
 }
