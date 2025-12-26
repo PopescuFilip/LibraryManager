@@ -5,9 +5,8 @@ using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
 
-public class EntityService<R, TId, TItem>(R _repository)
-    : IEntityService<R, TId, TItem>
-    where R : IRepository<TId, TItem>
+public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
+    : IEntityService<TId, TItem>
     where TItem : IEntity<TId>
 {
     public void Delete(TItem entity) => _repository.Delete(entity);

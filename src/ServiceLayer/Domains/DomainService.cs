@@ -11,7 +11,7 @@ public interface IDomainService
 }
 
 public class DomainService(
-    IEntityService<IDomainRepository, int, Domain> _entityService,
+    IEntityService<int, Domain> _entityService,
     IValidator<Domain> validator)
     : IDomainService
 {

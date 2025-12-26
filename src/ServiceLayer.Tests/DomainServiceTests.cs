@@ -16,12 +16,12 @@ public class DomainServiceTests
 {
     private DomainService domainService = default!;
     private IValidator<Domain> validator = default!;
-    private IEntityService<IDomainRepository, int, Domain> entityService = default!;
+    private IEntityService<int, Domain> entityService = default!;
 
     [TestInitialize]
     public void Init()
     {
-        entityService = Substitute.For<IEntityService<IDomainRepository, int, Domain>>();
+        entityService = Substitute.For<IEntityService<int, Domain>>();
         validator = Substitute.For<IValidator<Domain>>();
         domainService = new DomainService(entityService, validator);
     }

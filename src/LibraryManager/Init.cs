@@ -25,9 +25,10 @@ public static class Init
         where T : IEntity<int>
         =>
         container
-        .GetRequiredService<IEntityService<IRepository<int, T>, int, T>>()
+        .GetRequiredService<IEntityService<int, T>>()
         .Get(
             select: x => x,
             collector: q => q.ToList(),
+            asNoTracking: false,
             includeProperties: includeProperties);
 }

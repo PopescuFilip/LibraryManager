@@ -5,8 +5,7 @@ using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
 
-public interface IEntityService<R, TId, TItem>
-    where R : IRepository<TId, TItem>
+public interface IEntityService<TId, TItem>
     where TItem : IEntity<TId>
 {
     bool Insert(TItem entity, IValidator<TItem> validator);

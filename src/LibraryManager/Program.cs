@@ -59,14 +59,13 @@ internal class Program
     {
         container.Register(typeof(IRepository<,>), typeof(Repository<,>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
-        container.Register<IDomainRepository, DomainRepository>();
 
         container.Register<IValidator<Domain>, DomainValidator>();
     }
 
     private static void AddServiceLayerDependencies(Container container)
     {
-        container.Register(typeof(IEntityService<,,>), typeof(EntityService<,,>));
+        container.Register(typeof(IEntityService<,>), typeof(EntityService<,>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
         container.Register<IDomainService, DomainService>();
     }
