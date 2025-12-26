@@ -59,6 +59,7 @@ internal class Program
     {
         container.Register(typeof(IRepository<,>), typeof(Repository<,>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
+        container.Register<IDomainQueryService, DomainQueryService>();
 
         container.Register<IValidator<Domain>, DomainValidator>();
     }
