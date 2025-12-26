@@ -11,24 +11,25 @@ public interface IDomainService
 }
 
 public class DomainService(
-    IEntityService<IDomainRepository, int, Domain> _entityService,
+    IEntityService<int, Domain> _entityService,
+    IDomainQueryService domainQueryService,
     IValidator<Domain> validator)
     : IDomainService
 {
     public bool Add(string domainName, string? parentDomainName = null)
     {
-        if (GetByName(domainName) is not null)
+        if (domainQueryService.GetIdByName(domainName) is not null)
             return false;
 
-        Domain? parentDomain = null;
+        int? parentDomainId = null;
         if (parentDomainName is not null)
         {
-            parentDomain = GetByName(parentDomainName);
-            if (parentDomain is null)
+            parentDomainId = domainQueryService.GetIdByName(parentDomainName);
+            if (parentDomainId is null)
                 return false;
         }
 
-        var newDomain = Domain.CreateNew(domainName, parentDomain);
+        var newDomain = new Domain(domainName, parentDomainId);
         return _entityService.Insert(newDomain, validator);
     }
 

@@ -20,28 +20,16 @@ internal class Program
         RegisterAndVerifyAll(container);
         container.Initialize();
 
-        var domainService = container.GetRequiredService<IDomainService>();
+        var bookRecord = new Book();
 
-        var entityService = container.GetRequiredService<IRepository<int, Domain>>();
-
-        var allDomains = entityService.Get(
-            select: x => x,
-            collector: q => q.ToList(),
+        var entities = container.GetAllEntities<Domain>(
             includeProperties:
             [
                 x => x.ParentDomain,
                 x => x.SubDomains
-            ],
-            asNoTracking: true);
+            ]);
 
-        var namesWIthParent = allDomains
-            .Select(x => new {
-                x.Name,
-                ParentName = x.ParentDomain?.Name,
-                SubDomains = x.SubDomains.Select(x => x.Name).ToList() })
-            .ToList();
-
-        Console.WriteLine(allDomains.Count);
+        Console.WriteLine(entities.Count);
     }
 
     private static void RegisterAndVerifyAll(Container container)
@@ -71,14 +59,14 @@ internal class Program
     {
         container.Register(typeof(IRepository<,>), typeof(Repository<,>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
-        container.Register<IDomainRepository, DomainRepository>();
+        container.Register<IDomainQueryService, DomainQueryService>();
 
         container.Register<IValidator<Domain>, DomainValidator>();
     }
 
     private static void AddServiceLayerDependencies(Container container)
     {
-        container.Register(typeof(IEntityService<,,>), typeof(EntityService<,,>));
+        container.Register(typeof(IEntityService<,>), typeof(EntityService<,>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
         container.Register<IDomainService, DomainService>();
     }

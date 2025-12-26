@@ -10,9 +10,9 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Author> Authors { get; set; }
     public DbSet<Domain> Domains { get; set; }
-    public DbSet<Book> Books { get; set; }
+    public DbSet<BookDefinition> BookDefinitions { get; set; }
     public DbSet<BookEdition> BookEditions { get; set; }
-    public DbSet<BookRecord> BookRecords { get; set; }
+    public DbSet<Book> Books { get; set; }
     public DbSet<BorrowRecord> BorrowRecords { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,9 +27,16 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
             .WithMany(x => x.BorrowRecords)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<Book>()
+        modelBuilder.Entity<BorrowRecord>()
+            .HasMany(x => x.BorrowedBooks)
+            .WithMany();
+
+        modelBuilder.Entity<BookDefinition>()
             .HasMany(x => x.Domains)
-            .WithMany(x => x.Books);
+            .WithMany();
+
+        modelBuilder.Entity<BookDefinition>()
+            .Ignore(x => x.ImplicitDomains);
 
         modelBuilder.Entity<Domain>()
             .HasMany(x => x.SubDomains)

@@ -4,6 +4,7 @@ using DataMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataMapper.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    partial class LibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251224200426_Cleanup")]
+    partial class Cleanup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,21 +38,6 @@ namespace DataMapper.Migrations
                     b.HasIndex("WrittenBooksId");
 
                     b.ToTable("AuthorBookDefinition");
-                });
-
-            modelBuilder.Entity("BookBorrowRecord", b =>
-                {
-                    b.Property<int>("BorrowRecordId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BorrowedBooksId")
-                        .HasColumnType("int");
-
-                    b.HasKey("BorrowRecordId", "BorrowedBooksId");
-
-                    b.HasIndex("BorrowedBooksId");
-
-                    b.ToTable("BookBorrowRecord");
                 });
 
             modelBuilder.Entity("BookDefinitionDomain", b =>
@@ -127,12 +115,17 @@ namespace DataMapper.Migrations
                     b.Property<int>("BookEditionId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("BorrowRecordId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BookEditionId");
+
+                    b.HasIndex("BorrowRecordId");
 
                     b.ToTable("Books");
                 });
@@ -284,21 +277,6 @@ namespace DataMapper.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookBorrowRecord", b =>
-                {
-                    b.HasOne("DomainModel.BorrowRecord", null)
-                        .WithMany()
-                        .HasForeignKey("BorrowRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DomainModel.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BorrowedBooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BookDefinitionDomain", b =>
                 {
                     b.HasOne("DomainModel.BookDefinition", null)
@@ -321,6 +299,10 @@ namespace DataMapper.Migrations
                         .HasForeignKey("BookEditionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("DomainModel.BorrowRecord", null)
+                        .WithMany("BorrowedBooks")
+                        .HasForeignKey("BorrowRecordId");
 
                     b.Navigation("BookEdition");
                 });
@@ -394,6 +376,11 @@ namespace DataMapper.Migrations
             modelBuilder.Entity("DomainModel.BookEdition", b =>
                 {
                     b.Navigation("BookRecords");
+                });
+
+            modelBuilder.Entity("DomainModel.BorrowRecord", b =>
+                {
+                    b.Navigation("BorrowedBooks");
                 });
 
             modelBuilder.Entity("DomainModel.Client", b =>

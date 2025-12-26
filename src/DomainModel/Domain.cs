@@ -8,20 +8,14 @@ public class Domain : IEntity<int>
 
     [Required]
     [StringLength(50)]
-    public string Name { get; set; } = null!;
+    public string Name { get; init; } = null!;
 
-    public Domain? ParentDomain { get; init; }
+    public int? ParentDomainId { get; init; }
 
-    public List<Domain> SubDomains { get; init; } = [];
+    public Domain? ParentDomain { get; private set; }
 
-    public List<Book> Books { get; set; } = [];
+    public List<Domain> SubDomains { get; } = [];
 
-    private Domain() {}
-
-    public static Domain CreateNew(string name, Domain? parentDomain = null) =>
-        new()
-        {
-            Name = name,
-            ParentDomain = parentDomain
-        };
+    public Domain(string name, int? parentDomainId = null) =>
+        (Name, ParentDomainId) = (name, parentDomainId);
 }

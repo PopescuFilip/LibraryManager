@@ -4,7 +4,7 @@ namespace DomainModel;
 
 public class Account : IEntity<int>
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     [Required]
     [StringLength(50)]
