@@ -7,6 +7,7 @@ using LibraryManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ServiceLayer.Authors;
 using ServiceLayer.CRUD;
 using ServiceLayer.Domains;
 using SimpleInjector;
@@ -21,6 +22,10 @@ internal class Program
         container.Initialize();
 
         var bookRecord = new Book();
+
+        var authorCreator = container.GetRequiredService<IAuthorService>();
+
+        var author = authorCreator.Create("Name").Get();
 
         var entities = container.GetAllEntities<Domain>(
             includeProperties:
@@ -59,15 +64,19 @@ internal class Program
     {
         container.Register(typeof(IRepository<,>), typeof(Repository<,>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
-        container.Register<IDomainQueryService, DomainQueryService>();
 
-        container.Register<IValidator<Domain>, DomainValidator>();
+        container.Register<IDomainQueryService, DomainQueryService>();
     }
 
     private static void AddServiceLayerDependencies(Container container)
     {
         container.Register(typeof(IEntityService<,>), typeof(EntityService<,>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
+
         container.Register<IDomainService, DomainService>();
+        container.Register<IValidator<Domain>, DomainValidator>();
+
+        container.Register<IAuthorService, AuthorService>();
+        container.Register<IValidator<Author>, AuthorValidator>();
     }
 }

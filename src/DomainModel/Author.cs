@@ -11,4 +11,6 @@ public class Author : IEntity<int>
     public string Name { get; init; } = null!;
 
     public List<BookDefinition> WrittenBooks { get; } = [];
+
+    public Author(string name) => Name = name;
 }
