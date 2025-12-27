@@ -37,12 +37,11 @@ public class DomainQueryService(IDbContextFactory<LibraryDbContext> _dbContextFa
             .Include(d => d.ParentDomain)
             .ToList();
 
-        var currentDomain = allDomains.First(d => d.Id == id);
-        yield return currentDomain.Name;
+        var currentDomain = allDomains.FirstOrDefault(d => d.Id == id);
 
-        while (currentDomain.ParentDomain is not null)
+        while (currentDomain is not null)
         {
-            yield return currentDomain.ParentDomain.Name;
+            yield return currentDomain.Name;
             currentDomain = currentDomain.ParentDomain;
         }
     }
