@@ -8,9 +8,13 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbConte
     : IRepository<TId, TItem>
     where TItem : class, IEntity<TId>
 {
-    public virtual TItem Insert(TItem entity)
+    public virtual TItem Insert(TItem entity, params object[] objectsToBeAttached)
     {
         using var context = _dbContextFactory.CreateDbContext();
+
+        if (objectsToBeAttached.Length != 0)
+            context.AttachRange(objectsToBeAttached);
+
         var entityEntry = context.Set<TItem>().Add(entity);
 
         context.SaveChanges();

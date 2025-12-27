@@ -9,12 +9,12 @@ public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
     : IEntityService<TId, TItem>
     where TItem : IEntity<TId>
 {
-    public Result<TItem> Insert(TItem entity, IValidator<TItem> validator)
+    public Result<TItem> Insert(TItem entity, IValidator<TItem> validator, params object[] objectsToBeAttached)
     {
         if (!validator.Validate(entity).IsValid)
             return Result.Invalid();
 
-        var insertedEntity = _repository.Insert(entity);
+        var insertedEntity = _repository.Insert(entity, objectsToBeAttached);
         return Result.Valid(insertedEntity);
     }
 
