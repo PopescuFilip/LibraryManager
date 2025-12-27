@@ -21,11 +21,12 @@ internal class Program
         RegisterAndVerifyAll(container);
         container.Initialize();
 
-        var bookRecord = new Book();
+        //var authorCreator = container.GetRequiredService<IAuthorService>();
+        //var author = authorCreator.Create("Name").Get();
 
-        var authorCreator = container.GetRequiredService<IAuthorService>();
-
-        var author = authorCreator.Create("Name").Get();
+        var queryService = container.GetRequiredService<IDomainQueryService>();
+        var domain = queryService.GetIdByName(DomainInitialization.AlgoritmicaGrafurilor);
+        var implicitDomains = queryService.GetImplicitDomainNames(domain!.Value).ToList();
 
         var entities = container.GetAllEntities<Domain>(
             includeProperties:
