@@ -7,6 +7,8 @@ using LibraryManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ServiceLayer.Authors;
+using ServiceLayer.BookDefinitions;
 using ServiceLayer.CRUD;
 using ServiceLayer.Domains;
 using SimpleInjector;
@@ -20,16 +22,32 @@ internal class Program
         RegisterAndVerifyAll(container);
         container.Initialize();
 
-        var bookRecord = new Book();
+        //var authorCreator = container.GetRequiredService<IAuthorService>();
+        //var author = authorCreator.Create("Other name").Get();
 
-        var entities = container.GetAllEntities<Domain>(
-            includeProperties:
-            [
-                x => x.ParentDomain,
-                x => x.SubDomains
-            ]);
+        var authorIds = container.GetAllEntities<Author>()
+            .Take(2)
+            .Select(a => a.Id)
+            .ToList();
 
-        Console.WriteLine(entities.Count);
+        var domains = new List<string>()
+        {
+            DomainInitialization.AlgoritmiCuantici,
+            DomainInitialization.AlgoritmicaGrafurilor
+        };
+
+        var queryService = container.GetRequiredService<IDomainQueryService>();
+
+        var domainIds = domains
+            .Select(queryService.GetIdByName)
+            .Select(x => x ?? 0)
+            .ToList() ?? [];
+
+        var bookService = container.GetRequiredService<IBookDefinitionService>();
+
+        var createdBook = bookService.Create("bookName", authorIds, domainIds);
+
+        Console.WriteLine("Hello world!");
     }
 
     private static void RegisterAndVerifyAll(Container container)
@@ -59,15 +77,21 @@ internal class Program
     {
         container.Register(typeof(IRepository<,>), typeof(Repository<,>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
-        container.Register<IDomainQueryService, DomainQueryService>();
 
-        container.Register<IValidator<Domain>, DomainValidator>();
+        container.Register<IDomainQueryService, DomainQueryService>();
     }
 
     private static void AddServiceLayerDependencies(Container container)
     {
         container.Register(typeof(IEntityService<,>), typeof(EntityService<,>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
+
         container.Register<IDomainService, DomainService>();
+        container.Register<IValidator<Domain>, DomainValidator>();
+
+        container.Register<IAuthorService, AuthorService>();
+        container.Register<IValidator<Author>, AuthorValidator>();
+
+        container.Register<IBookDefinitionService, BookDefinitionService>();
     }
 }

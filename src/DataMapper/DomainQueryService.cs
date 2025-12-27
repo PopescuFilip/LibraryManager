@@ -5,6 +5,8 @@ namespace DataMapper;
 public interface IDomainQueryService
 {
     int? GetIdByName(string name);
+
+    IEnumerable<string> GetImplicitDomainNames(int id);
 }
 
 public class DomainQueryService(IDbContextFactory<LibraryDbContext> _dbContextFactory)
@@ -16,7 +18,7 @@ public class DomainQueryService(IDbContextFactory<LibraryDbContext> _dbContextFa
 
         var foundIds = context.Domains
             .AsNoTracking()
-            .Where(d =>  d.Name == name)
+            .Where(d => d.Name == name)
             .Select(d => d.Id)
             .Take(2)
             .ToList();
@@ -25,5 +27,22 @@ public class DomainQueryService(IDbContextFactory<LibraryDbContext> _dbContextFa
             throw new InvalidOperationException($"Found more than one Domain with name: {name}");
 
         return foundIds.Count == 0 ? null : foundIds.First();
+    }
+
+    public IEnumerable<string> GetImplicitDomainNames(int id)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+
+        var allDomains = context.Domains
+            .Include(d => d.ParentDomain)
+            .ToList();
+
+        var currentDomain = allDomains.FirstOrDefault(d => d.Id == id);
+
+        while (currentDomain is not null)
+        {
+            yield return currentDomain.Name;
+            currentDomain = currentDomain.ParentDomain;
+        }
     }
 }

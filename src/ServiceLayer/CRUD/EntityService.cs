@@ -9,17 +9,13 @@ public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
     : IEntityService<TId, TItem>
     where TItem : IEntity<TId>
 {
-    public void Delete(TItem entity) => _repository.Delete(entity);
-
-    public TItem? GetById(TId id) => _repository.GetById(id);
-
-    public bool Insert(TItem entity, IValidator<TItem> validator)
+    public Result<TItem> Insert(TItem entity, IValidator<TItem> validator, params object[] objectsToBeAttached)
     {
         if (!validator.Validate(entity).IsValid)
-            return false;
+            return Result.Invalid();
 
-        _repository.Insert(entity);
-        return true;
+        var insertedEntity = _repository.Insert(entity, objectsToBeAttached);
+        return Result.Valid(insertedEntity);
     }
 
     public bool Update(TItem entity, IValidator<TItem> validator)
@@ -30,6 +26,14 @@ public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
         _repository.Update(entity);
         return true;
     }
+
+    public void Delete(TItem entity) => _repository.Delete(entity);
+
+    public TItem? GetById(TId id) => _repository.GetById(id);
+
+    public IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids) =>
+        _repository.GetAllById(ids);
+
 
     public TOutCollected Get<TOut, TOutCollected>(
         Expression<Func<TItem, TOut>> select,

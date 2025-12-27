@@ -30,7 +30,7 @@ public class DomainService(
         }
 
         var newDomain = new Domain(domainName, parentDomainId);
-        return _entityService.Insert(newDomain, validator);
+        return _entityService.Insert(newDomain, validator).IsValid;
     }
 
     private Domain? GetByName(string name) =>

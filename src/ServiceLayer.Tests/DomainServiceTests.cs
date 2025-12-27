@@ -35,7 +35,7 @@ public class DomainServiceTests
         Domain? actualDomain = null;
 
         _entityService.Insert(Arg.Any<Domain>(), _validator)
-            .Returns(true)
+            .Returns(new Result<Domain>(null, true))
             .AndDoes(x => actualDomain = x.Arg<Domain>());
 
         var success = _domainService.Add(name);
@@ -88,7 +88,7 @@ public class DomainServiceTests
         _domainQueryService.GetIdByName(parentDomainName).Returns(parentDomainId);
         _entityService
             .Insert(Arg.Do<Domain>(d => insertedDomain = d), _validator)
-            .Returns(true);
+            .Returns(new Result<Domain>(null, true));
 
         var success = _domainService.Add(name, parentDomainName);
 

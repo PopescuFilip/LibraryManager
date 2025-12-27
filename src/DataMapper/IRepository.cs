@@ -5,13 +5,15 @@ namespace DataMapper;
 
 public interface IRepository<TId, TItem> where TItem : IEntity<TId>
 {
-    void Insert(TItem entity);
+    TItem Insert(TItem entity, params object[] objectsToBeAttached);
 
     void Update(TItem entity);
 
     void Delete(TItem entity);
 
     TItem? GetById(TId id);
+
+    IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids);
 
     TOutCollected Get<TOut, TOutCollected>(
         Expression<Func<TItem, TOut>> select,
