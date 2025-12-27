@@ -12,10 +12,10 @@ public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
     public Result<TItem> Insert(TItem entity, IValidator<TItem> validator)
     {
         if (!validator.Validate(entity).IsValid)
-            return Result<TItem>.Invalid();
+            return Result.Invalid();
 
         var insertedEntity = _repository.Insert(entity);
-        return Result<TItem>.Valid(insertedEntity);
+        return Result.Valid(insertedEntity);
     }
 
     public bool Update(TItem entity, IValidator<TItem> validator)

@@ -19,8 +19,8 @@ public class BookDefinition : IEntity<int>
     public IEnumerable<Domain> ImplicitDomains => Domains;
 
     // used by EF
-    private BookDefinition() {}
+    private BookDefinition() { }
 
-    public BookDefinition(string name, List<Author> authors, List<Domain> domains) =>
-        (Name, Authors, Domains) = (name, authors, domains);
+    public BookDefinition(string name, IEnumerable<Author> authors, IEnumerable<Domain> domains) =>
+        (Name, Authors, Domains) = (name, authors.ToList(), domains.ToList());
 }

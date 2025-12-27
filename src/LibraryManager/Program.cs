@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ServiceLayer.Authors;
+using ServiceLayer.BookDefinitions;
 using ServiceLayer.CRUD;
 using ServiceLayer.Domains;
 using SimpleInjector;
@@ -22,20 +23,31 @@ internal class Program
         container.Initialize();
 
         //var authorCreator = container.GetRequiredService<IAuthorService>();
-        //var author = authorCreator.Create("Name").Get();
+        //var author = authorCreator.Create("Other name").Get();
+
+        var authorIds = container.GetAllEntities<Author>()
+            .Take(2)
+            .Select(a => a.Id)
+            .ToList();
+
+        var domains = new List<string>()
+        {
+            DomainInitialization.AlgoritmiCuantici,
+            DomainInitialization.AlgoritmicaGrafurilor
+        };
 
         var queryService = container.GetRequiredService<IDomainQueryService>();
-        var domain = queryService.GetIdByName(DomainInitialization.AlgoritmicaGrafurilor);
-        var implicitDomains = queryService.GetImplicitDomainNames(domain!.Value).ToList();
 
-        var entities = container.GetAllEntities<Domain>(
-            includeProperties:
-            [
-                x => x.ParentDomain,
-                x => x.SubDomains
-            ]);
+        var domainIds = domains
+            .Select(queryService.GetIdByName)
+            .Select(x => x ?? 0)
+            .ToList() ?? [];
 
-        Console.WriteLine(entities.Count);
+        var bookService = container.GetRequiredService<IBookDefinitionService>();
+
+        var createdBook = bookService.Create("bookName", authorIds, domainIds);
+
+        Console.WriteLine("Hello world!");
     }
 
     private static void RegisterAndVerifyAll(Container container)
@@ -79,5 +91,7 @@ internal class Program
 
         container.Register<IAuthorService, AuthorService>();
         container.Register<IValidator<Author>, AuthorValidator>();
+
+        container.Register<IBookDefinitionService, BookDefinitionService>();
     }
 }
