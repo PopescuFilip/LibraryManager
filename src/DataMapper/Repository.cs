@@ -4,11 +4,27 @@ using System.Linq.Expressions;
 
 namespace DataMapper;
 
-public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> dbContextFactory)
+public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbContextFactory)
     : IRepository<TId, TItem>
     where TItem : class, IEntity<TId>
 {
-    protected readonly IDbContextFactory<LibraryDbContext> _dbContextFactory = dbContextFactory;
+    public virtual TItem Insert(TItem entity)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        var entityEntry = context.Set<TItem>().Add(entity);
+
+        context.SaveChanges();
+
+        return entityEntry.Entity;
+    }
+
+    public void Update(TItem entity)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        context.Set<TItem>().Update(entity);
+
+        context.SaveChanges();
+    }
 
     public void Delete(TItem entity)
     {
@@ -16,6 +32,21 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> dbContex
         context.Set<TItem>().Remove(entity);
 
         context.SaveChanges();
+    }
+
+    public TItem? GetById(TId id)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        return context.Set<TItem>().Find(id);
+    }
+
+    public IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        return [.. context.Set<TItem>()
+            .AsNoTracking()
+            .Where(x => ids.Contains(x.Id))
+            .OrderBy(x => x.Id)];
     }
 
     public TOutCollected Get<TOut, TOutCollected>(
@@ -33,30 +64,6 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> dbContex
         var nonExecutedQuery = GetQuery(query, filter, orderBy, includeProperties).Select(select);
 
         return collector(nonExecutedQuery);
-    }
-
-    public TItem? GetById(TId id)
-    {
-        using var context = _dbContextFactory.CreateDbContext();
-        return context.Set<TItem>().Find(id);
-    }
-
-    public virtual TItem Insert(TItem entity)
-    {
-        using var context = _dbContextFactory.CreateDbContext();
-        var entityEntry = context.Set<TItem>().Add(entity);
-
-        context.SaveChanges();
-
-        return entityEntry.Entity;
-    }
-
-    public void Update(TItem entity)
-    {
-        using var context = _dbContextFactory.CreateDbContext();
-        context.Set<TItem>().Update(entity);
-
-        context.SaveChanges();
     }
 
     private static IQueryable<TItem> GetQuery(

@@ -15,6 +15,8 @@ public interface IEntityService<TId, TItem>
 
     TItem? GetById(TId id);
 
+    IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids);
+
     TOutCollected Get<TOut, TOutCollected>(
         Expression<Func<TItem, TOut>> select,
         Func<IQueryable<TOut>, TOutCollected> collector,
