@@ -17,4 +17,7 @@ public class BookDefinition : IEntity<int>
     public List<Domain> Domains { get; } = [];
 
     public IEnumerable<Domain> ImplicitDomains => Domains;
+
+    public BookDefinition(string name, List<Author> authors, List<Domain> domains) =>
+        (Name, Authors, Domains) = (name, authors, domains);
 }

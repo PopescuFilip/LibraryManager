@@ -41,12 +41,14 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> dbContex
         return context.Set<TItem>().Find(id);
     }
 
-    public virtual void Insert(TItem entity)
+    public virtual TItem Insert(TItem entity)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        context.Set<TItem>().Add(entity);
+        var entityEntry = context.Set<TItem>().Add(entity);
 
         context.SaveChanges();
+
+        return entityEntry.Entity;
     }
 
     public void Update(TItem entity)

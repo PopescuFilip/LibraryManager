@@ -5,7 +5,7 @@ namespace DataMapper;
 
 public interface IRepository<TId, TItem> where TItem : IEntity<TId>
 {
-    void Insert(TItem entity);
+    TItem Insert(TItem entity);
 
     void Update(TItem entity);
 
