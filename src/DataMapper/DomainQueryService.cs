@@ -9,14 +9,12 @@ public interface IDomainQueryService
     IEnumerable<string> GetImplicitDomainNames(int id);
 }
 
-public class DomainQueryService(IDbContextFactory<LibraryDbContext> _dbContextFactory)
+public class DomainQueryService(LibraryDbContext _context)
     : IDomainQueryService
 {
     public int? GetIdByName(string name)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-
-        var foundIds = context.Domains
+        var foundIds = _context.Domains
             .AsNoTracking()
             .Where(d => d.Name == name)
             .Select(d => d.Id)
@@ -31,9 +29,7 @@ public class DomainQueryService(IDbContextFactory<LibraryDbContext> _dbContextFa
 
     public IEnumerable<string> GetImplicitDomainNames(int id)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-
-        var allDomains = context.Domains
+        var allDomains = _context.Domains
             .Include(d => d.ParentDomain)
             .ToList();
 

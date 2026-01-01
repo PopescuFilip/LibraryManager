@@ -4,14 +4,17 @@ using DataMapper.MigrationHelpers;
 using DomainModel;
 using FluentValidation;
 using LibraryManager;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using ServiceLayer.Authors;
 using ServiceLayer.BookDefinitions;
 using ServiceLayer.CRUD;
 using ServiceLayer.Domains;
 using SimpleInjector;
+using SimpleInjector.Lifestyles;
 
 internal class Program
 {
@@ -22,10 +25,11 @@ internal class Program
         RegisterAndVerifyAll(container);
         container.Initialize();
 
+        using var scope = AsyncScopedLifestyle.BeginScope(container);
         //var authorCreator = container.GetRequiredService<IAuthorService>();
         //var author = authorCreator.Create("Other name").Get();
 
-        var authorIds = container.GetAllEntities<Author>()
+        var authorIds = scope.GetAllEntities<Author>()
             .Take(2)
             .Select(a => a.Id)
             .ToList();
@@ -33,19 +37,19 @@ internal class Program
         var domains = new List<string>()
         {
             DomainInitialization.AlgoritmiCuantici,
-            DomainInitialization.AlgoritmicaGrafurilor
+            DomainInitialization.Informatica
         };
 
-        var queryService = container.GetRequiredService<IDomainQueryService>();
+        var queryService = scope.GetRequiredService<IDomainQueryService>();
 
         var domainIds = domains
             .Select(queryService.GetIdByName)
             .Select(x => x ?? 0)
             .ToList() ?? [];
 
-        var bookService = container.GetRequiredService<IBookDefinitionService>();
+        var bookService = scope.GetRequiredService<IBookDefinitionService>();
 
-        var createdBook = bookService.Create("bookName", authorIds, domainIds);
+        var createdBook = bookService.Create("bookName3", authorIds, domainIds);
 
         Console.WriteLine("Hello world!");
     }
@@ -64,7 +68,7 @@ internal class Program
         {
             services
             .AddSimpleInjector(container)
-            .AddDbContextFactory<LibraryDbContext, LibraryDbContextFactory>();
+            .AddDbContext<LibraryDbContext>(options => DbContextOptionsCreator.Configure(options, context.Configuration));
         })
         .ConfigureAppConfiguration(builder =>
         {

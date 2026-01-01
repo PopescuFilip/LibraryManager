@@ -4,51 +4,41 @@ using System.Linq.Expressions;
 
 namespace DataMapper;
 
-public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbContextFactory)
+public class Repository<TId, TItem>(LibraryDbContext _context)
     : IRepository<TId, TItem>
     where TItem : class, IEntity<TId>
 {
-    public virtual TItem Insert(TItem entity, params object[] objectsToBeAttached)
+    public virtual TItem Insert(TItem entity)
     {
-        using var context = _dbContextFactory.CreateDbContext();
+        var entityEntry = _context.Set<TItem>().Add(entity);
 
-        if (objectsToBeAttached.Length != 0)
-            context.AttachRange(objectsToBeAttached);
-
-        var entityEntry = context.Set<TItem>().Add(entity);
-
-        context.SaveChanges();
+        _context.SaveChanges();
 
         return entityEntry.Entity;
     }
 
     public void Update(TItem entity)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-        context.Set<TItem>().Update(entity);
+        _context.Set<TItem>().Update(entity);
 
-        context.SaveChanges();
+        _context.SaveChanges();
     }
 
     public void Delete(TItem entity)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-        context.Set<TItem>().Remove(entity);
+        _context.Set<TItem>().Remove(entity);
 
-        context.SaveChanges();
+        _context.SaveChanges();
     }
 
     public TItem? GetById(TId id)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-        return context.Set<TItem>().Find(id);
+        return _context.Set<TItem>().Find(id);
     }
 
     public IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-        return [.. context.Set<TItem>()
-            .AsNoTracking()
+        return [.. _context.Set<TItem>()
             .Where(x => ids.Contains(x.Id))
             .OrderBy(x => x.Id)];
     }
@@ -61,10 +51,9 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbConte
         bool asNoTracking = false,
         params Expression<Func<TItem, object?>>[] includeProperties)
     {
-        using var context = _dbContextFactory.CreateDbContext();
         var query = asNoTracking
-            ? context.Set<TItem>().AsNoTracking()
-            : context.Set<TItem>().AsQueryable();
+            ? _context.Set<TItem>().AsNoTracking()
+            : _context.Set<TItem>().AsQueryable();
         var nonExecutedQuery = GetQuery(query, filter, orderBy, includeProperties).Select(select);
 
         return collector(nonExecutedQuery);

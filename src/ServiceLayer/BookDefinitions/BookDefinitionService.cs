@@ -24,11 +24,7 @@ public class BookDefinitionService(
         if (domains.Count != domainIds.Count)
             return Result.Invalid();
 
-        var entitiesToAttach = authors.Cast<object>().Concat(domains).ToArray();
-
         var bookDefinition = new BookDefinition(name, authors, domains);
-        return _entityService.Insert(bookDefinition,
-            EmptyValidator.Create<BookDefinition>(),
-            entitiesToAttach);
+        return _entityService.Insert(bookDefinition, EmptyValidator.Create<BookDefinition>());
     }
 }

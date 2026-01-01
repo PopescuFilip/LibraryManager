@@ -7,7 +7,7 @@ namespace ServiceLayer.CRUD;
 public interface IEntityService<TId, TItem>
     where TItem : IEntity<TId>
 {
-    Result<TItem> Insert(TItem entity, IValidator<TItem> validator, params object[] objectsToBeAttached);
+    Result<TItem> Insert(TItem entity, IValidator<TItem> validator);
 
     bool Update(TItem entity, IValidator<TItem> validator);
 

@@ -10,8 +10,15 @@ public static class DbContextOptionsCreator
 
     public static DbContextOptions<LibraryDbContext> Create(IConfiguration configuration) =>
         new DbContextOptionsBuilder<LibraryDbContext>()
-        .UseSqlServer(configuration.GetConnectionString(ConnectionStringName))
-        .EnableSensitiveDataLogging()
-        .LogTo(Console.WriteLine, minimumLevel: LogLevel.Information)
+        .Configure(configuration)
         .Options;
+
+    public static T Configure<T>(
+        this T options,
+        IConfiguration configuration)
+        where T : DbContextOptionsBuilder =>
+        (options
+            .UseSqlServer(configuration.GetConnectionString(ConnectionStringName))
+            .EnableSensitiveDataLogging()
+            .LogTo(Console.WriteLine, minimumLevel: LogLevel.Information) as T)!;
 }
