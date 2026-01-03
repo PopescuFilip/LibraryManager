@@ -9,7 +9,7 @@ public interface IDomainQueryService
 {
     int? GetIdByName(string name);
 
-    IEnumerable<string> GetImplicitDomainNames(int id);
+    IEnumerable<string> GetImplicitDomainNames(IEnumerable<int> ids);
 }
 
 public class DomainQueryService(IRepository<Domain> _repository)
@@ -31,7 +31,7 @@ public class DomainQueryService(IRepository<Domain> _repository)
         return foundIds.Count == 0 ? null : foundIds.First();
     }
 
-    public IEnumerable<string> GetImplicitDomainNames(int id)
+    public IEnumerable<string> GetImplicitDomainNames(IEnumerable<int> ids)
     {
         var allDomains = _repository.Get(
             select: Select<Domain>.Default,
@@ -41,7 +41,12 @@ public class DomainQueryService(IRepository<Domain> _repository)
             includeProperties: d => d.ParentDomain
             );
 
-        var currentDomain = allDomains.FirstOrDefault(d => d.Id == id);
+        return ids.SelectMany(id => GetImplicitDomainNames(allDomains, id));
+    }
+
+    private static IEnumerable<string> GetImplicitDomainNames(IReadOnlyCollection<Domain> domains, int id)
+    {
+        var currentDomain = domains.FirstOrDefault(d => d.Id == id);
         if (currentDomain is null)
             yield break;
 

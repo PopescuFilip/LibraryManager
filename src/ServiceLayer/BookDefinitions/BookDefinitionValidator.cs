@@ -15,9 +15,8 @@ public class BookDefinitionValidator : AbstractValidator<BookDefinition>
         RuleFor(x => x.Domains.Count).LessThanOrEqualTo(_bookRestrictionsProvider.Get().MaxDomains);
         RuleFor(x => x.Domains).Must(domains =>
         {
-            var implicitDomainNames = domains
-            .Select(d => d.Id)
-            .SelectMany(_domainQueryService.GetImplicitDomainNames)
+            var ids = domains.Select(domain => domain.Id);
+            var implicitDomainNames = _domainQueryService.GetImplicitDomainNames(ids)
             .Distinct()
             .ToList();
 
