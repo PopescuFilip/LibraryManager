@@ -3,7 +3,6 @@ using DomainModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceLayer.Authors;
-using ServiceLayer.CRUD;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using System.Linq.Expressions;

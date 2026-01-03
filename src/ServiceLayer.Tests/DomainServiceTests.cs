@@ -1,5 +1,4 @@
-﻿using DataMapper;
-using DomainModel;
+﻿using DomainModel;
 using FluentValidation;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;

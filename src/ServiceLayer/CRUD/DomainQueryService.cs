@@ -1,7 +1,7 @@
-﻿using DomainModel;
-using Microsoft.EntityFrameworkCore;
+﻿using DataMapper;
+using DomainModel;
 
-namespace DataMapper;
+namespace ServiceLayer.CRUD;
 
 public interface IDomainQueryService
 {

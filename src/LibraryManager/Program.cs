@@ -4,7 +4,6 @@ using DataMapper.MigrationHelpers;
 using DomainModel;
 using FluentValidation;
 using LibraryManager;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
