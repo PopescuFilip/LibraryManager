@@ -13,7 +13,8 @@ public class BookDefinitionService(
     IEntityService<BookDefinition> _entityService,
     IEntityService<Author> _authorEntityService,
     IEntityService<Domain> _domainEntityService,
-    IValidator<BookDefinitionCreateOptions> _optionsValidator)
+    IValidator<BookDefinitionCreateOptions> _optionsValidator,
+    IValidator<BookDefinition> _validator)
     : IBookDefinitionService
 {
     public Result<BookDefinition> Create(BookDefinitionCreateOptions options)
@@ -31,6 +32,6 @@ public class BookDefinitionService(
             return Result.Invalid();
 
         var bookDefinition = new BookDefinition(name, authors, domains);
-        return _entityService.Insert(bookDefinition, EmptyValidator.Create<BookDefinition>());
+        return _entityService.Insert(bookDefinition, _validator);
     }
 }

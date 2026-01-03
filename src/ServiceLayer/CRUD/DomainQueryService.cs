@@ -42,10 +42,12 @@ public class DomainQueryService(IRepository<Domain> _repository)
             );
 
         var currentDomain = allDomains.FirstOrDefault(d => d.Id == id);
+        if (currentDomain is null)
+            yield break;
 
-        while (currentDomain is not null)
+        while (currentDomain.ParentDomain is not null)
         {
-            yield return currentDomain.Name;
+            yield return currentDomain.ParentDomain.Name;
             currentDomain = currentDomain.ParentDomain;
         }
     }
