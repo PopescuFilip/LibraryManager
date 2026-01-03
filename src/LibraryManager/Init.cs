@@ -2,6 +2,7 @@
 using DomainModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceLayer.Authors;
 using ServiceLayer.CRUD;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
@@ -17,6 +18,13 @@ public static class Init
         scope.GetRequiredService<LibraryDbContext>().Database.Migrate();
 
         container.InitDomains();
+
+        if (scope.GetAllEntities<Author>().Count == 0)
+        {
+            var authorCreator = scope.GetRequiredService<IAuthorService>();
+            authorCreator.Create("Name");
+            authorCreator.Create("Other name");
+        }
     }
 
     public static List<T> GetAllEntities<T>(this IServiceProvider serviceProvider,
@@ -24,7 +32,7 @@ public static class Init
         where T : IEntity<int>
         =>
         serviceProvider
-        .GetRequiredService<IEntityService<int, T>>()
+        .GetRequiredService<IRepository<int, T>>()
         .Get(
             select: x => x,
             collector: q => q.ToList(),

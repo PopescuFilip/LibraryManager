@@ -1,7 +1,6 @@
 ﻿using DataMapper;
 using DomainModel;
 using FluentValidation;
-using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
 
@@ -33,17 +32,4 @@ public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
 
     public IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids) =>
         _repository.GetAllById(ids);
-
-
-    public TOutCollected Get<TOut, TOutCollected>(
-        Expression<Func<TItem, TOut>> select,
-        Func<IQueryable<TOut>, TOutCollected> collector,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        bool asNoTracking = true,
-        params Expression<Func<TItem, object?>>[] includeProperties)
-    {
-        orderBy ??= query => query.OrderBy(x => x.Id);
-        return _repository.Get(select, collector, filter, orderBy, asNoTracking, includeProperties);
-    }
 }

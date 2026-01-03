@@ -1,6 +1,5 @@
 ﻿using DomainModel;
 using FluentValidation;
-using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
 
@@ -16,12 +15,4 @@ public interface IEntityService<TId, TItem>
     TItem? GetById(TId id);
 
     IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids);
-
-    TOutCollected Get<TOut, TOutCollected>(
-        Expression<Func<TItem, TOut>> select,
-        Func<IQueryable<TOut>, TOutCollected> collector,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        bool asNoTracking = true,
-        params Expression<Func<TItem, object?>>[] includeProperties);
 }

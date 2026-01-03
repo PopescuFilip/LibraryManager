@@ -26,8 +26,6 @@ internal class Program
         container.Initialize();
 
         using var scope = AsyncScopedLifestyle.BeginScope(container);
-        //var authorCreator = container.GetRequiredService<IAuthorService>();
-        //var author = authorCreator.Create("Other name").Get();
 
         var authorIds = scope.GetAllEntities<Author>()
             .Take(2)
