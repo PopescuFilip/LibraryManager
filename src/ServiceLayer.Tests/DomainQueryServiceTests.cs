@@ -2,10 +2,12 @@
 using ServiceLayer.CRUD;
 using ServiceLayer.Exceptions;
 using ServiceLayer.UnitTests.TestHelpers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceLayer.UnitTests;
 
 [TestClass]
+[ExcludeFromCodeCoverage]
 public class DomainQueryServiceTests
 {
     private DomainQueryService _domainQueryService = default!;

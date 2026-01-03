@@ -1,10 +1,12 @@
 ﻿using DomainModel;
 using FluentValidation.TestHelper;
 using ServiceLayer.Domains;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceLayer.UnitTests;
 
 [TestClass]
+[ExcludeFromCodeCoverage]
 public class DomainValidatorTests
 {
     public DomainValidator domainValidator = default!;

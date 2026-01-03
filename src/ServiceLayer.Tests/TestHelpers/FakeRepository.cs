@@ -1,10 +1,12 @@
 ﻿using DataMapper;
 using DomainModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace ServiceLayer.UnitTests.TestHelpers;
 
-internal class FakeRepository<T> : IRepository<T> where T : IEntity
+[ExcludeFromCodeCoverage]
+public class FakeRepository<T> : IRepository<T> where T : IEntity
 {
     private List<T> _values = [];
 
