@@ -1,4 +1,5 @@
 ﻿using DataMapper;
+using DataMapper.QueryHelpers;
 using DomainModel;
 
 namespace ServiceLayer.CRUD;
@@ -19,7 +20,7 @@ public class DomainQueryService(IRepository<int, Domain> _repository)
             select: d => d.Id,
             collector: q => q.Take(2).ToList(),
             filter: d => d.Name == name,
-            orderBy: q => q.OrderBy(d => d.Id),
+            orderBy: Order.ById<Domain>(),
             asNoTracking: true
             );
 
@@ -35,7 +36,7 @@ public class DomainQueryService(IRepository<int, Domain> _repository)
             select: d => d,
             collector: q => q.ToList(),
             asNoTracking: false,
-            orderBy: q => q.OrderBy(d => d.Id),
+            orderBy: Order.ById<Domain>(),
             includeProperties: d => d.ParentDomain
             );
 

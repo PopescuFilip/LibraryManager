@@ -1,4 +1,5 @@
 ﻿using DataMapper;
+using DataMapper.QueryHelpers;
 using DomainModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +37,6 @@ public static class Init
             select: x => x,
             collector: q => q.ToList(),
             asNoTracking: false,
-            orderBy: q => q.OrderBy(x => x.Id),
+            orderBy: Order.ById<T>(),
             includeProperties: includeProperties);
 }
