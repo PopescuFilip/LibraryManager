@@ -9,7 +9,7 @@ public enum BookStatus
     Available
 }
 
-public class Book : IEntity<int>
+public class Book : IEntity
 {
     public int Id { get; init; }
 

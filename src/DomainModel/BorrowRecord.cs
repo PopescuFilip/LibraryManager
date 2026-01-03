@@ -2,7 +2,7 @@
 
 namespace DomainModel;
 
-public class BorrowRecord : IEntity<int>
+public class BorrowRecord : IEntity
 {
     public int Id { get; init; }
 

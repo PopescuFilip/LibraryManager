@@ -4,11 +4,11 @@ using FluentValidation;
 
 namespace ServiceLayer.CRUD;
 
-public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
-    : IEntityService<TId, TItem>
-    where TItem : IEntity<TId>
+public class EntityService<T>(IRepository<T> _repository)
+    : IEntityService<T>
+    where T : IEntity
 {
-    public Result<TItem> Insert(TItem entity, IValidator<TItem> validator)
+    public Result<T> Insert(T entity, IValidator<T> validator)
     {
         if (!validator.Validate(entity).IsValid)
             return Result.Invalid();
@@ -17,7 +17,7 @@ public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
         return Result.Valid(insertedEntity);
     }
 
-    public bool Update(TItem entity, IValidator<TItem> validator)
+    public bool Update(T entity, IValidator<T> validator)
     {
         if (!validator.Validate(entity).IsValid)
             return false;
@@ -26,10 +26,10 @@ public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
         return true;
     }
 
-    public void Delete(TItem entity) => _repository.Delete(entity);
+    public void Delete(T entity) => _repository.Delete(entity);
 
-    public TItem? GetById(TId id) => _repository.GetById(id);
+    public T? GetById(int id) => _repository.GetById(id);
 
-    public IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids) =>
+    public IReadOnlyCollection<T> GetAllById(IReadOnlyCollection<int> ids) =>
         _repository.GetAllById(ids);
 }

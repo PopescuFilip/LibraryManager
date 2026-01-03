@@ -3,16 +3,15 @@ using FluentValidation;
 
 namespace ServiceLayer.CRUD;
 
-public interface IEntityService<TId, TItem>
-    where TItem : IEntity<TId>
+public interface IEntityService<T> where T : IEntity
 {
-    Result<TItem> Insert(TItem entity, IValidator<TItem> validator);
+    Result<T> Insert(T entity, IValidator<T> validator);
 
-    bool Update(TItem entity, IValidator<TItem> validator);
+    bool Update(T entity, IValidator<T> validator);
 
-    void Delete(TItem entity);
+    void Delete(T entity);
 
-    TItem? GetById(TId id);
+    T? GetById(int id);
 
-    IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids);
+    IReadOnlyCollection<T> GetAllById(IReadOnlyCollection<int> ids);
 }

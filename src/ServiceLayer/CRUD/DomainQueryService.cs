@@ -11,7 +11,7 @@ public interface IDomainQueryService
     IEnumerable<string> GetImplicitDomainNames(int id);
 }
 
-public class DomainQueryService(IRepository<int, Domain> _repository)
+public class DomainQueryService(IRepository<Domain> _repository)
     : IDomainQueryService
 {
     public int? GetIdByName(string name)

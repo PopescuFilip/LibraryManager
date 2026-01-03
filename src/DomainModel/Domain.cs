@@ -2,7 +2,7 @@
 
 namespace DomainModel;
 
-public class Domain : IEntity<int>
+public class Domain : IEntity
 {
     public int Id { get; init; }
 

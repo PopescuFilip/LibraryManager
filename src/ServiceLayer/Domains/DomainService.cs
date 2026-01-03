@@ -10,7 +10,7 @@ public interface IDomainService
 }
 
 public class DomainService(
-    IEntityService<int, Domain> _entityService,
+    IEntityService<Domain> _entityService,
     IDomainQueryService domainQueryService,
     IValidator<Domain> validator)
     : IDomainService

@@ -9,9 +9,9 @@ public interface IBookDefinitionService
 }
 
 public class BookDefinitionService(
-    IEntityService<int, BookDefinition> _entityService,
-    IEntityService<int, Author> _authorEntityService,
-    IEntityService<int, Domain> _domainEntityService)
+    IEntityService<BookDefinition> _entityService,
+    IEntityService<Author> _authorEntityService,
+    IEntityService<Domain> _domainEntityService)
     : IBookDefinitionService
 {
     public Result<BookDefinition> Create(string name, List<int> authorIds, List<int> domainIds)

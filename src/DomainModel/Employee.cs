@@ -2,7 +2,7 @@
 
 namespace DomainModel;
 
-public class Employee : IEntity<int>
+public class Employee : IEntity
 {
     public int Id { get; init; }
 

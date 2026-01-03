@@ -12,7 +12,7 @@ public enum BookType
     BoardBook
 }
 
-public class BookEdition : IEntity<int>
+public class BookEdition : IEntity
 {
     public int Id { get; init; }
 

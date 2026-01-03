@@ -29,10 +29,10 @@ public static class Init
 
     public static List<T> GetAllEntities<T>(this IServiceProvider serviceProvider,
         params Expression<Func<T, object?>>[] includeProperties)
-        where T : IEntity<int>
+        where T : IEntity
         =>
         serviceProvider
-        .GetRequiredService<IRepository<int, T>>()
+        .GetRequiredService<IRepository<T>>()
         .Get(
             select: Select<T>.Default,
             collector: Collector<T>.ToList,

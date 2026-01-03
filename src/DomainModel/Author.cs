@@ -2,7 +2,7 @@
 
 namespace DomainModel;
 
-public class Author : IEntity<int>
+public class Author : IEntity
 {
     public int Id { get; init; }
 

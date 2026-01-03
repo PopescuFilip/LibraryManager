@@ -10,7 +10,7 @@ public interface IAuthorService
 }
 
 public class AuthorService(
-    IEntityService<int, Author> _entityService,
+    IEntityService<Author> _entityService,
     IValidator<Author> _validator)
     : IAuthorService
 {

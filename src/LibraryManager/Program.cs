@@ -76,7 +76,7 @@ internal class Program
 
     private static void AddDataMapperDependencies(Container container)
     {
-        container.Register(typeof(IRepository<,>), typeof(Repository<,>));
+        container.Register(typeof(IRepository<>), typeof(Repository<>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
 
         container.Register<IDomainQueryService, DomainQueryService>();
@@ -84,7 +84,7 @@ internal class Program
 
     private static void AddServiceLayerDependencies(Container container)
     {
-        container.Register(typeof(IEntityService<,>), typeof(EntityService<,>));
+        container.Register(typeof(IEntityService<>), typeof(EntityService<>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
 
         container.Register<IDomainService, DomainService>();
