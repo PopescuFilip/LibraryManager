@@ -65,7 +65,7 @@ internal class Program
         {
             services
             .AddSimpleInjector(container)
-            .AddDbContext<LibraryDbContext>(options => DbContextOptionsCreator.Configure(options, context.Configuration));
+            .AddDbContext<LibraryDbContext>(options => options.Configure(context.Configuration));
         })
         .ConfigureAppConfiguration(builder =>
         {

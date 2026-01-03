@@ -8,17 +8,22 @@ public static class DbContextOptionsCreator
 {
     private const string ConnectionStringName = "LibraryDb";
 
-    public static DbContextOptions<LibraryDbContext> Create(IConfiguration configuration) =>
-        new DbContextOptionsBuilder<LibraryDbContext>()
-        .Configure(configuration)
-        .Options;
+    public static DbContextOptions<LibraryDbContext> Create(IConfiguration configuration)
+    {
+        var builder = new DbContextOptionsBuilder<LibraryDbContext>();
+        builder.Configure(configuration);
 
-    public static T Configure<T>(
+        return builder.Options;
+    }
+
+    public static void Configure<T>(
         this T options,
         IConfiguration configuration)
-        where T : DbContextOptionsBuilder =>
-        (options
+        where T : DbContextOptionsBuilder
+    {
+        options
             .UseSqlServer(configuration.GetConnectionString(ConnectionStringName))
             .EnableSensitiveDataLogging()
-            .LogTo(Console.WriteLine, minimumLevel: LogLevel.Information) as T)!;
+            .LogTo(Console.WriteLine, minimumLevel: LogLevel.Information);
+    }
 }
