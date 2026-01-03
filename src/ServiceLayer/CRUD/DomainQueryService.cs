@@ -1,6 +1,7 @@
 ﻿using DataMapper;
 using DataMapper.QueryHelpers;
 using DomainModel;
+using ServiceLayer.Exceptions;
 
 namespace ServiceLayer.CRUD;
 
@@ -25,7 +26,7 @@ public class DomainQueryService(IRepository<Domain> _repository)
             );
 
         if (foundIds.Count == 2)
-            throw new InvalidOperationException($"Found more than one Domain with name: {name}");
+            throw new DuplicateDomainNameException(name);
 
         return foundIds.Count == 0 ? null : foundIds.First();
     }
