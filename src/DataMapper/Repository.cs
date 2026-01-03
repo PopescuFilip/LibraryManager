@@ -46,9 +46,9 @@ public class Repository<TId, TItem>(LibraryDbContext _context)
     public TOutCollected Get<TOut, TOutCollected>(
         Expression<Func<TItem, TOut>> select,
         Func<IQueryable<TOut>, TOutCollected> collector,
+        bool asNoTracking,
         Expression<Func<TItem, bool>>? filter = null,
         Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        bool asNoTracking = false,
         params Expression<Func<TItem, object?>>[] includeProperties)
     {
         var query = asNoTracking
