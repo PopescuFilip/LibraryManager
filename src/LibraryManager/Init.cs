@@ -36,5 +36,6 @@ public static class Init
             select: x => x,
             collector: q => q.ToList(),
             asNoTracking: false,
+            orderBy: q => q.OrderBy(x => x.Id),
             includeProperties: includeProperties);
 }

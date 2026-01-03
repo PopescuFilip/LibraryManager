@@ -35,6 +35,7 @@ public class DomainQueryService(IRepository<int, Domain> _repository)
             select: d => d,
             collector: q => q.ToList(),
             asNoTracking: false,
+            orderBy: q => q.OrderBy(d => d.Id),
             includeProperties: d => d.ParentDomain
             );
 

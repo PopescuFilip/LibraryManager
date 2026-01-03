@@ -47,22 +47,22 @@ public class Repository<TId, TItem>(LibraryDbContext _context)
         Expression<Func<TItem, TOut>> select,
         Func<IQueryable<TOut>, TOutCollected> collector,
         bool asNoTracking,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>> orderBy,
         Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
         params Expression<Func<TItem, object?>>[] includeProperties)
     {
         var query = asNoTracking
             ? _context.Set<TItem>().AsNoTracking()
             : _context.Set<TItem>().AsQueryable();
-        var nonExecutedQuery = GetQuery(query, filter, orderBy, includeProperties).Select(select);
+        var nonExecutedQuery = GetQuery(query, orderBy, filter, includeProperties).Select(select);
 
         return collector(nonExecutedQuery);
     }
 
     private static IQueryable<TItem> GetQuery(
         IQueryable<TItem> query,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>> orderBy,
         Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
         params Expression<Func<TItem, object?>>[] includeProperties)
     {
         if (includeProperties is not null)
@@ -78,11 +78,6 @@ public class Repository<TId, TItem>(LibraryDbContext _context)
             query = query.Where(filter);
         }
 
-        if (orderBy is not null)
-        {
-            query = orderBy(query);
-        }
-
-        return query;
+        return orderBy(query);
     }
 }

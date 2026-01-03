@@ -19,7 +19,7 @@ public interface IRepository<TId, TItem> where TItem : IEntity<TId>
         Expression<Func<TItem, TOut>> select,
         Func<IQueryable<TOut>, TOutCollected> collector,
         bool asNoTracking,
+        Func<IQueryable<TItem>, IOrderedQueryable<TItem>> orderBy,
         Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
         params Expression<Func<TItem, object?>>[] includeProperties);
 }
