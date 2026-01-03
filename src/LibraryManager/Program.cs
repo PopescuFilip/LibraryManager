@@ -14,6 +14,7 @@ using ServiceLayer.CRUD;
 using ServiceLayer.Domains;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
+using System.Collections.Immutable;
 
 internal class Program
 {
@@ -46,7 +47,17 @@ internal class Program
 
         var bookService = scope.GetRequiredService<IBookDefinitionService>();
 
-        var createdBook = bookService.Create("bookName1", authorIds, domainIds).Get();
+        var options = new BookDefinitionCreateOptions(
+            "bookName1",
+            [.. authorIds],
+            [.. domainIds]);
+
+        var testOpt = new BookDefinitionCreateOptions(
+            "sdada",
+            [],
+            []);
+
+        var createdBook = bookService.Create(testOpt).Get();
 
         Console.WriteLine("Hello world!");
     }
@@ -94,5 +105,6 @@ internal class Program
         container.Register<IValidator<Author>, AuthorValidator>();
 
         container.Register<IBookDefinitionService, BookDefinitionService>();
+        container.Register<IValidator<BookDefinitionCreateOptions>, BookDefinitionCreationValidator>();
     }
 }
