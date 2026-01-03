@@ -13,7 +13,8 @@ public class BookDefinitionValidator : AbstractValidator<BookDefinition>
         RuleFor(x => x.Name).NotEmpty();
         RuleFor(x => x.Authors.Count).GreaterThan(0);
         RuleFor(x => x.Domains.Count).GreaterThan(0);
-        RuleFor(x => x.Domains.Count).Must(count => count <= _bookRestrictionsProvider.Get().MaxDomains);
+        RuleFor(x => x.Domains.Count)
+            .Must(count => count <= _bookRestrictionsProvider.Get().MaxDomains);
         RuleFor(x => x.Domains)
             .Must(domains =>
             {
