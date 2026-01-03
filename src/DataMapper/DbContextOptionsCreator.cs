@@ -16,9 +16,7 @@ public static class DbContextOptionsCreator
         return builder.Options;
     }
 
-    public static void Configure<T>(
-        this T options,
-        IConfiguration configuration)
+    public static void Configure<T>(this T options, IConfiguration configuration)
         where T : DbContextOptionsBuilder
     {
         options
