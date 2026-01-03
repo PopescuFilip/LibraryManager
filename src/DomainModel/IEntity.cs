@@ -1,6 +1,6 @@
 ﻿namespace DomainModel;
 
-public interface IEntity<TId>
+public interface IEntity
 {
-    TId Id { get; }
+    int Id { get; }
 }

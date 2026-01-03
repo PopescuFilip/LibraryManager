@@ -1,5 +1,4 @@
-﻿using DataMapper;
-using DomainModel;
+﻿using DomainModel;
 using FluentValidation;
 using ServiceLayer.CRUD;
 
@@ -11,7 +10,7 @@ public interface IDomainService
 }
 
 public class DomainService(
-    IEntityService<int, Domain> _entityService,
+    IEntityService<Domain> _entityService,
     IDomainQueryService domainQueryService,
     IValidator<Domain> validator)
     : IDomainService
@@ -32,11 +31,4 @@ public class DomainService(
         var newDomain = new Domain(domainName, parentDomainId);
         return _entityService.Insert(newDomain, validator).IsValid;
     }
-
-    private Domain? GetByName(string name) =>
-        _entityService.Get(
-            select: x => x,
-            collector: query => query.SingleOrDefault(),
-            filter: x => x.Name == name,
-            asNoTracking: true);
 }

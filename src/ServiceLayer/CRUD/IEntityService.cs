@@ -1,27 +1,17 @@
 ﻿using DomainModel;
 using FluentValidation;
-using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
 
-public interface IEntityService<TId, TItem>
-    where TItem : IEntity<TId>
+public interface IEntityService<T> where T : IEntity
 {
-    Result<TItem> Insert(TItem entity, IValidator<TItem> validator, params object[] objectsToBeAttached);
+    Result<T> Insert(T entity, IValidator<T> validator);
 
-    bool Update(TItem entity, IValidator<TItem> validator);
+    bool Update(T entity, IValidator<T> validator);
 
-    void Delete(TItem entity);
+    void Delete(T entity);
 
-    TItem? GetById(TId id);
+    T? GetById(int id);
 
-    IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids);
-
-    TOutCollected Get<TOut, TOutCollected>(
-        Expression<Func<TItem, TOut>> select,
-        Func<IQueryable<TOut>, TOutCollected> collector,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        bool asNoTracking = true,
-        params Expression<Func<TItem, object?>>[] includeProperties);
+    IReadOnlyCollection<T> GetAllById(IReadOnlyCollection<int> ids);
 }

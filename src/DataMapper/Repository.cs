@@ -4,77 +4,66 @@ using System.Linq.Expressions;
 
 namespace DataMapper;
 
-public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbContextFactory)
-    : IRepository<TId, TItem>
-    where TItem : class, IEntity<TId>
+public class Repository<T>(LibraryDbContext _context)
+    : IRepository<T>
+    where T : class, IEntity
 {
-    public virtual TItem Insert(TItem entity, params object[] objectsToBeAttached)
+    public virtual T Insert(T entity)
     {
-        using var context = _dbContextFactory.CreateDbContext();
+        var entityEntry = _context.Set<T>().Add(entity);
 
-        if (objectsToBeAttached.Length != 0)
-            context.AttachRange(objectsToBeAttached);
-
-        var entityEntry = context.Set<TItem>().Add(entity);
-
-        context.SaveChanges();
+        _context.SaveChanges();
 
         return entityEntry.Entity;
     }
 
-    public void Update(TItem entity)
+    public void Update(T entity)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-        context.Set<TItem>().Update(entity);
+        _context.Set<T>().Update(entity);
 
-        context.SaveChanges();
+        _context.SaveChanges();
     }
 
-    public void Delete(TItem entity)
+    public void Delete(T entity)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-        context.Set<TItem>().Remove(entity);
+        _context.Set<T>().Remove(entity);
 
-        context.SaveChanges();
+        _context.SaveChanges();
     }
 
-    public TItem? GetById(TId id)
+    public T? GetById(int id)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-        return context.Set<TItem>().Find(id);
+        return _context.Set<T>().Find(id);
     }
 
-    public IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids)
+    public IReadOnlyCollection<T> GetAllById(IReadOnlyCollection<int> ids)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-        return [.. context.Set<TItem>()
-            .AsNoTracking()
+        return [.. _context.Set<T>()
             .Where(x => ids.Contains(x.Id))
             .OrderBy(x => x.Id)];
     }
 
     public TOutCollected Get<TOut, TOutCollected>(
-        Expression<Func<TItem, TOut>> select,
+        Expression<Func<T, TOut>> select,
         Func<IQueryable<TOut>, TOutCollected> collector,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        bool asNoTracking = false,
-        params Expression<Func<TItem, object?>>[] includeProperties)
+        bool asNoTracking,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy,
+        Expression<Func<T, bool>>? filter = null,
+        params Expression<Func<T, object?>>[] includeProperties)
     {
-        using var context = _dbContextFactory.CreateDbContext();
         var query = asNoTracking
-            ? context.Set<TItem>().AsNoTracking()
-            : context.Set<TItem>().AsQueryable();
-        var nonExecutedQuery = GetQuery(query, filter, orderBy, includeProperties).Select(select);
+            ? _context.Set<T>().AsNoTracking()
+            : _context.Set<T>().AsQueryable();
+        var nonExecutedQuery = GetQuery(query, orderBy, filter, includeProperties).Select(select);
 
         return collector(nonExecutedQuery);
     }
 
-    private static IQueryable<TItem> GetQuery(
-        IQueryable<TItem> query,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        params Expression<Func<TItem, object?>>[] includeProperties)
+    private static IQueryable<T> GetQuery(
+        IQueryable<T> query,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy,
+        Expression<Func<T, bool>>? filter = null,
+        params Expression<Func<T, object?>>[] includeProperties)
     {
         if (includeProperties is not null)
         {
@@ -89,11 +78,6 @@ public class Repository<TId, TItem>(IDbContextFactory<LibraryDbContext> _dbConte
             query = query.Where(filter);
         }
 
-        if (orderBy is not null)
-        {
-            query = orderBy(query);
-        }
-
-        return query;
+        return orderBy(query);
     }
 }

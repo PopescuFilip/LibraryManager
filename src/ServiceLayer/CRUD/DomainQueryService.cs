@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DataMapper;
+using DataMapper.QueryHelpers;
+using DomainModel;
 
-namespace DataMapper;
+namespace ServiceLayer.CRUD;
 
 public interface IDomainQueryService
 {
@@ -9,19 +11,18 @@ public interface IDomainQueryService
     IEnumerable<string> GetImplicitDomainNames(int id);
 }
 
-public class DomainQueryService(IDbContextFactory<LibraryDbContext> _dbContextFactory)
+public class DomainQueryService(IRepository<Domain> _repository)
     : IDomainQueryService
 {
     public int? GetIdByName(string name)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-
-        var foundIds = context.Domains
-            .AsNoTracking()
-            .Where(d => d.Name == name)
-            .Select(d => d.Id)
-            .Take(2)
-            .ToList();
+        var foundIds = _repository.Get(
+            select: Select<Domain>.Id,
+            collector: q => q.Take(2).ToList(),
+            filter: d => d.Name == name,
+            orderBy: Order<Domain>.ById,
+            asNoTracking: true
+            );
 
         if (foundIds.Count == 2)
             throw new InvalidOperationException($"Found more than one Domain with name: {name}");
@@ -31,11 +32,13 @@ public class DomainQueryService(IDbContextFactory<LibraryDbContext> _dbContextFa
 
     public IEnumerable<string> GetImplicitDomainNames(int id)
     {
-        using var context = _dbContextFactory.CreateDbContext();
-
-        var allDomains = context.Domains
-            .Include(d => d.ParentDomain)
-            .ToList();
+        var allDomains = _repository.Get(
+            select: Select<Domain>.Default,
+            collector: Collector<Domain>.ToList,
+            asNoTracking: false,
+            orderBy: Order<Domain>.ById,
+            includeProperties: d => d.ParentDomain
+            );
 
         var currentDomain = allDomains.FirstOrDefault(d => d.Id == id);
 

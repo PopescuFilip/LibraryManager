@@ -1,24 +1,23 @@
 ﻿using DataMapper;
 using DomainModel;
 using FluentValidation;
-using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
 
-public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
-    : IEntityService<TId, TItem>
-    where TItem : IEntity<TId>
+public class EntityService<T>(IRepository<T> _repository)
+    : IEntityService<T>
+    where T : IEntity
 {
-    public Result<TItem> Insert(TItem entity, IValidator<TItem> validator, params object[] objectsToBeAttached)
+    public Result<T> Insert(T entity, IValidator<T> validator)
     {
         if (!validator.Validate(entity).IsValid)
             return Result.Invalid();
 
-        var insertedEntity = _repository.Insert(entity, objectsToBeAttached);
+        var insertedEntity = _repository.Insert(entity);
         return Result.Valid(insertedEntity);
     }
 
-    public bool Update(TItem entity, IValidator<TItem> validator)
+    public bool Update(T entity, IValidator<T> validator)
     {
         if (!validator.Validate(entity).IsValid)
             return false;
@@ -27,23 +26,10 @@ public class EntityService<TId, TItem>(IRepository<TId, TItem> _repository)
         return true;
     }
 
-    public void Delete(TItem entity) => _repository.Delete(entity);
+    public void Delete(T entity) => _repository.Delete(entity);
 
-    public TItem? GetById(TId id) => _repository.GetById(id);
+    public T? GetById(int id) => _repository.GetById(id);
 
-    public IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids) =>
+    public IReadOnlyCollection<T> GetAllById(IReadOnlyCollection<int> ids) =>
         _repository.GetAllById(ids);
-
-
-    public TOutCollected Get<TOut, TOutCollected>(
-        Expression<Func<TItem, TOut>> select,
-        Func<IQueryable<TOut>, TOutCollected> collector,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        bool asNoTracking = true,
-        params Expression<Func<TItem, object?>>[] includeProperties)
-    {
-        orderBy ??= query => query.OrderBy(x => x.Id);
-        return _repository.Get(select, collector, filter, orderBy, asNoTracking, includeProperties);
-    }
 }

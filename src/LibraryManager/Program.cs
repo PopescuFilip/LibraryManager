@@ -7,11 +7,13 @@ using LibraryManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using ServiceLayer.Authors;
 using ServiceLayer.BookDefinitions;
 using ServiceLayer.CRUD;
 using ServiceLayer.Domains;
 using SimpleInjector;
+using SimpleInjector.Lifestyles;
 
 internal class Program
 {
@@ -22,10 +24,9 @@ internal class Program
         RegisterAndVerifyAll(container);
         container.Initialize();
 
-        //var authorCreator = container.GetRequiredService<IAuthorService>();
-        //var author = authorCreator.Create("Other name").Get();
+        using var scope = AsyncScopedLifestyle.BeginScope(container);
 
-        var authorIds = container.GetAllEntities<Author>()
+        var authorIds = scope.GetAllEntities<Author>()
             .Take(2)
             .Select(a => a.Id)
             .ToList();
@@ -33,19 +34,19 @@ internal class Program
         var domains = new List<string>()
         {
             DomainInitialization.AlgoritmiCuantici,
-            DomainInitialization.AlgoritmicaGrafurilor
+            DomainInitialization.Informatica
         };
 
-        var queryService = container.GetRequiredService<IDomainQueryService>();
+        var queryService = scope.GetRequiredService<IDomainQueryService>();
 
         var domainIds = domains
             .Select(queryService.GetIdByName)
             .Select(x => x ?? 0)
             .ToList() ?? [];
 
-        var bookService = container.GetRequiredService<IBookDefinitionService>();
+        var bookService = scope.GetRequiredService<IBookDefinitionService>();
 
-        var createdBook = bookService.Create("bookName", authorIds, domainIds);
+        var createdBook = bookService.Create("bookName1", authorIds, domainIds).Get();
 
         Console.WriteLine("Hello world!");
     }
@@ -64,7 +65,7 @@ internal class Program
         {
             services
             .AddSimpleInjector(container)
-            .AddDbContextFactory<LibraryDbContext, LibraryDbContextFactory>();
+            .AddDbContext<LibraryDbContext>(options => options.Configure(context.Configuration));
         })
         .ConfigureAppConfiguration(builder =>
         {
@@ -75,7 +76,7 @@ internal class Program
 
     private static void AddDataMapperDependencies(Container container)
     {
-        container.Register(typeof(IRepository<,>), typeof(Repository<,>));
+        container.Register(typeof(IRepository<>), typeof(Repository<>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
 
         container.Register<IDomainQueryService, DomainQueryService>();
@@ -83,7 +84,7 @@ internal class Program
 
     private static void AddServiceLayerDependencies(Container container)
     {
-        container.Register(typeof(IEntityService<,>), typeof(EntityService<,>));
+        container.Register(typeof(IEntityService<>), typeof(EntityService<>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
 
         container.Register<IDomainService, DomainService>();

@@ -1,5 +1,4 @@
-﻿using DataMapper;
-using DomainModel;
+﻿using DomainModel;
 using FluentValidation;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
@@ -16,13 +15,13 @@ public class DomainServiceTests
 {
     private DomainService _domainService = default!;
     private IValidator<Domain> _validator = default!;
-    private IEntityService<int, Domain> _entityService = default!;
+    private IEntityService<Domain> _entityService = default!;
     private IDomainQueryService _domainQueryService = default!;
 
     [TestInitialize]
     public void Init()
     {
-        _entityService = Substitute.For<IEntityService<int, Domain>>();
+        _entityService = Substitute.For<IEntityService<Domain>>();
         _validator = Substitute.For<IValidator<Domain>>();
         _domainQueryService = Substitute.For<IDomainQueryService>();
         _domainService = new DomainService(_entityService, _domainQueryService, _validator);

@@ -1,9 +1,11 @@
 ﻿using DataMapper;
+using DataMapper.QueryHelpers;
 using DomainModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ServiceLayer.CRUD;
+using ServiceLayer.Authors;
 using SimpleInjector;
+using SimpleInjector.Lifestyles;
 using System.Linq.Expressions;
 
 namespace LibraryManager;
@@ -12,23 +14,29 @@ public static class Init
 {
     public static void Initialize(this Container container)
     {
-        using var dbContext = container.GetRequiredService<IDbContextFactory<LibraryDbContext>>()
-            .CreateDbContext();
-
-        dbContext.Database.Migrate();
+        using var scope = AsyncScopedLifestyle.BeginScope(container);
+        scope.GetRequiredService<LibraryDbContext>().Database.Migrate();
 
         container.InitDomains();
+
+        if (scope.GetAllEntities<Author>().Count == 0)
+        {
+            var authorCreator = scope.GetRequiredService<IAuthorService>();
+            authorCreator.Create("Name");
+            authorCreator.Create("Other name");
+        }
     }
 
-    public static List<T> GetAllEntities<T>(this Container container,
+    public static List<T> GetAllEntities<T>(this IServiceProvider serviceProvider,
         params Expression<Func<T, object?>>[] includeProperties)
-        where T : IEntity<int>
+        where T : IEntity
         =>
-        container
-        .GetRequiredService<IEntityService<int, T>>()
+        serviceProvider
+        .GetRequiredService<IRepository<T>>()
         .Get(
-            select: x => x,
-            collector: q => q.ToList(),
+            select: Select<T>.Default,
+            collector: Collector<T>.ToList,
             asNoTracking: false,
+            orderBy: Order<T>.ById,
             includeProperties: includeProperties);
 }

@@ -3,23 +3,23 @@ using System.Linq.Expressions;
 
 namespace DataMapper;
 
-public interface IRepository<TId, TItem> where TItem : IEntity<TId>
+public interface IRepository<T> where T : IEntity
 {
-    TItem Insert(TItem entity, params object[] objectsToBeAttached);
+    T Insert(T entity);
 
-    void Update(TItem entity);
+    void Update(T entity);
 
-    void Delete(TItem entity);
+    void Delete(T entity);
 
-    TItem? GetById(TId id);
+    T? GetById(int id);
 
-    IReadOnlyCollection<TItem> GetAllById(IReadOnlyCollection<TId> ids);
+    IReadOnlyCollection<T> GetAllById(IReadOnlyCollection<int> ids);
 
     TOutCollected Get<TOut, TOutCollected>(
-        Expression<Func<TItem, TOut>> select,
+        Expression<Func<T, TOut>> select,
         Func<IQueryable<TOut>, TOutCollected> collector,
-        Expression<Func<TItem, bool>>? filter = null,
-        Func<IQueryable<TItem>, IOrderedQueryable<TItem>>? orderBy = null,
-        bool asNoTracking = false,
-        params Expression<Func<TItem, object?>>[] includeProperties);
+        bool asNoTracking,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy,
+        Expression<Func<T, bool>>? filter = null,
+        params Expression<Func<T, object?>>[] includeProperties);
 }

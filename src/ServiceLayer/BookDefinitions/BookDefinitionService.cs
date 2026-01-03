@@ -9,9 +9,9 @@ public interface IBookDefinitionService
 }
 
 public class BookDefinitionService(
-    IEntityService<int, BookDefinition> _entityService,
-    IEntityService<int, Author> _authorEntityService,
-    IEntityService<int, Domain> _domainEntityService)
+    IEntityService<BookDefinition> _entityService,
+    IEntityService<Author> _authorEntityService,
+    IEntityService<Domain> _domainEntityService)
     : IBookDefinitionService
 {
     public Result<BookDefinition> Create(string name, List<int> authorIds, List<int> domainIds)
@@ -24,11 +24,7 @@ public class BookDefinitionService(
         if (domains.Count != domainIds.Count)
             return Result.Invalid();
 
-        var entitiesToAttach = authors.Cast<object>().Concat(domains).ToArray();
-
         var bookDefinition = new BookDefinition(name, authors, domains);
-        return _entityService.Insert(bookDefinition,
-            EmptyValidator.Create<BookDefinition>(),
-            entitiesToAttach);
+        return _entityService.Insert(bookDefinition, EmptyValidator.Create<BookDefinition>());
     }
 }

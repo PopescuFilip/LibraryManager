@@ -2,7 +2,7 @@
 
 namespace DomainModel;
 
-public class BookDefinition : IEntity<int>
+public class BookDefinition : IEntity
 {
     public int Id { get; init; }
 

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ServiceLayer.Domains;
 using SimpleInjector;
+using SimpleInjector.Lifestyles;
 
 namespace LibraryManager;
 
@@ -24,9 +25,10 @@ public static class DomainInitialization
 
     public static void InitDomains(this Container container)
     {
-        var domainService = container.GetRequiredService<IDomainService>();
+        using var scope = AsyncScopedLifestyle.BeginScope(container);
+        var domainService = scope.GetRequiredService<IDomainService>();
 
-        if (container.GetAllEntities<Domain>().Count != 0)
+        if (scope.GetAllEntities<Domain>().Count != 0)
             return;
 
         domainService.Add(Stiinta);
