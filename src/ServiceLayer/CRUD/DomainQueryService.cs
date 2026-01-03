@@ -17,10 +17,10 @@ public class DomainQueryService(IRepository<int, Domain> _repository)
     public int? GetIdByName(string name)
     {
         var foundIds = _repository.Get(
-            select: d => d.Id,
+            select: Select<Domain>.Id,
             collector: q => q.Take(2).ToList(),
             filter: d => d.Name == name,
-            orderBy: Order.ById<Domain>(),
+            orderBy: Order<Domain>.ById,
             asNoTracking: true
             );
 
@@ -33,10 +33,10 @@ public class DomainQueryService(IRepository<int, Domain> _repository)
     public IEnumerable<string> GetImplicitDomainNames(int id)
     {
         var allDomains = _repository.Get(
-            select: d => d,
-            collector: q => q.ToList(),
+            select: Select<Domain>.Default,
+            collector: Collector<Domain>.ToList,
             asNoTracking: false,
-            orderBy: Order.ById<Domain>(),
+            orderBy: Order<Domain>.ById,
             includeProperties: d => d.ParentDomain
             );
 

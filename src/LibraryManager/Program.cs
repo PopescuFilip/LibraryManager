@@ -46,7 +46,7 @@ internal class Program
 
         var bookService = scope.GetRequiredService<IBookDefinitionService>();
 
-        var createdBook = bookService.Create("bookName3", authorIds, domainIds);
+        var createdBook = bookService.Create("bookName1", authorIds, domainIds).Get();
 
         Console.WriteLine("Hello world!");
     }

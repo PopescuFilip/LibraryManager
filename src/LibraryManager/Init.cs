@@ -34,9 +34,9 @@ public static class Init
         serviceProvider
         .GetRequiredService<IRepository<int, T>>()
         .Get(
-            select: x => x,
-            collector: q => q.ToList(),
+            select: Select<T>.Default,
+            collector: Collector<T>.ToList,
             asNoTracking: false,
-            orderBy: Order.ById<T>(),
+            orderBy: Order<T>.ById,
             includeProperties: includeProperties);
 }
