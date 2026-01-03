@@ -9,26 +9,26 @@ public interface IClientRestrictionsProvider
     ClientRestrictions GetPrivilegedClientRestrictions();
 }
 
-public class ClientRestrictionsProvider(IRestrictionsProvider restrictionsProvider) : IClientRestrictionsProvider
+public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvider) : IClientRestrictionsProvider
 {
     private const int ExtensionDaysLimitMonthCount = 3;
 
-    private readonly Restrictions _restrictions = restrictionsProvider.GetRestrictions()!;
-
     public ClientRestrictions GetClientRestrictions()
     {
-        var periodLimit = Limit.PerDay(_restrictions.MaxBorrowedBooksPerPeriod, _restrictions.PerPeriodLimitDayCount);
-        var sameDomainLimit = Limit.PerMonth(_restrictions.MaxBorrowedBooksFromSameDomain, _restrictions.SameDomainLimitMonthCount);
-        var extensionLimit = Limit.PerMonth(_restrictions.MaxExtensionDays, ExtensionDaysLimitMonthCount);
-        var sameBookLimit = Limit.PerDay(1, _restrictions.SameBookLimitDayCount);
+        var restrictions = _restrictionsProvider.GetRestrictions()!;
+
+        var periodLimit = Limit.PerDay(restrictions.MaxBorrowedBooksPerPeriod, restrictions.PerPeriodLimitDayCount);
+        var sameDomainLimit = Limit.PerMonth(restrictions.MaxBorrowedBooksFromSameDomain, restrictions.SameDomainLimitMonthCount);
+        var extensionLimit = Limit.PerMonth(restrictions.MaxExtensionDays, ExtensionDaysLimitMonthCount);
+        var sameBookLimit = Limit.PerDay(1, restrictions.SameBookLimitDayCount);
 
         return new ClientRestrictions(
             BorrowedBooksLimit: periodLimit,
-            MaxBorrowedBooksAtOnce: _restrictions.MaxBorrowedBooksAtOnce,
+            MaxBorrowedBooksAtOnce: restrictions.MaxBorrowedBooksAtOnce,
             SameDomainBorrowedBooksLimit: sameDomainLimit,
             ExtensionDaysLimit: extensionLimit,
             BorrowedSameBookLimit: sameBookLimit,
-            MaxBorrowedBooksPerDay: _restrictions.MaxBorrowedBooksPerDay
+            MaxBorrowedBooksPerDay: restrictions.MaxBorrowedBooksPerDay
             );
     }
 
