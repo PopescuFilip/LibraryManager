@@ -80,4 +80,131 @@ public class DomainQueryServiceTests
 
         Assert.ThrowsException<DuplicateDomainNameException>(CallGetByName);
     }
+
+    [TestMethod]
+    public void GetImplicitDomainNames_ShouldReturnCorrectValues_WhenReceivingOneId()
+    {
+        var parent2 = new Domain("nam3") { Id = 26 };
+        var parent1 = new Domain("nam1", parent2.Id)
+        {
+            Id = 24,
+            ParentDomain = parent2
+        };
+        var interestingDomain = new Domain("name1", parent1.Id)
+        {
+            Id = 1,
+            ParentDomain = parent1,
+        };
+        var otherDomain = new Domain("otherDomain", parent1.Id)
+        {
+            Id = 54,
+            ParentDomain = parent1
+        };
+        var ids = new List<int>() { interestingDomain.Id };
+        var domains = new List<Domain>() { interestingDomain, parent1, parent2, otherDomain };
+        var expectedNames = new List<Domain>() { parent1, parent2 }
+            .Select(x => x.Name);
+        _repository.SetSourceValues(domains);
+
+        var actualNames = _domainQueryService.GetImplicitDomainNames(ids);
+
+        Assert.IsTrue(actualNames.SequenceEqual(expectedNames));
+    }
+
+    [TestMethod]
+    public void GetImplicitDomainNames_ShouldReturnCorrectValues_WhenReceivingMultipleIds()
+    {
+        var parent2 = new Domain("nam3") { Id = 26 };
+        var parent1 = new Domain("nam1", parent2.Id)
+        {
+            Id = 24,
+            ParentDomain = parent2
+        };
+        var domain = new Domain("name1", parent1.Id)
+        {
+            Id = 1,
+            ParentDomain = parent1,
+        };
+        var otherDomain = new Domain("otherDomain", parent1.Id)
+        {
+            Id = 54,
+            ParentDomain = parent1
+        };
+        var separateParent = new Domain("separateParent", parent2.Id)
+        {
+            Id = 21,
+            ParentDomain = parent2,
+        };
+        var separateDomain = new Domain("separateDomain", separateParent.Id)
+        {
+            Id = 22,
+            ParentDomain = separateParent,
+        };
+        var ids = new List<int>() { domain.Id, separateDomain.Id };
+        var domains = new List<Domain>() { domain, parent1, parent2, otherDomain, separateParent, separateDomain };
+        var expectedNames = new List<Domain>() { parent1, parent2, separateParent, parent2 }
+            .Select(x => x.Name);
+        _repository.SetSourceValues(domains);
+
+        var actualNames = _domainQueryService.GetImplicitDomainNames(ids);
+
+        Assert.IsTrue(actualNames.SequenceEqual(expectedNames));
+    }
+
+    [TestMethod]
+    public void GetImplicitDomainNames_ShouldReturnNothing_WhenIdBelongsToDomainWithNoParent()
+    {
+        var parent2 = new Domain("nam3") { Id = 26 };
+        var parent1 = new Domain("nam1", parent2.Id)
+        {
+            Id = 24,
+            ParentDomain = parent2
+        };
+        var domain = new Domain("name1", parent1.Id)
+        {
+            Id = 1,
+            ParentDomain = parent1,
+        };
+        var otherDomain = new Domain("otherDomain", parent1.Id)
+        {
+            Id = 54,
+            ParentDomain = parent1
+        };
+        var ids = new List<int>() { parent2.Id };
+        var domains = new List<Domain>() { domain, parent1, parent2, otherDomain };
+        _repository.SetSourceValues(domains);
+
+        var actualNames = _domainQueryService.GetImplicitDomainNames(ids);
+
+        Assert.IsFalse(actualNames.Any());
+    }
+
+    [TestMethod]
+    public void GetImplicitDomainNames_ShouldReturnNothing_WhenIdDoesNotExist()
+    {
+        var nonexistentId = 431;
+        var parent2 = new Domain("nam3") { Id = 26 };
+        var parent1 = new Domain("nam1", parent2.Id)
+        {
+            Id = 24,
+            ParentDomain = parent2
+        };
+        var domain = new Domain("name1", parent1.Id)
+        {
+            Id = 1,
+            ParentDomain = parent1,
+        };
+        var otherDomain = new Domain("otherDomain", parent1.Id)
+        {
+            Id = 54,
+            ParentDomain = parent1
+        };
+        var ids = new List<int>() { nonexistentId };
+        var domains = new List<Domain>() { domain, parent1, parent2, otherDomain };
+        _repository.SetSourceValues(domains);
+
+        var actualNames = _domainQueryService.GetImplicitDomainNames(ids);
+
+        Assert.IsFalse(actualNames.Any());
+    }
 }
