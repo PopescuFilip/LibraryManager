@@ -16,8 +16,6 @@ public class BookDefinition : IEntity
 
     public List<Domain> Domains { get; } = [];
 
-    public IEnumerable<Domain> ImplicitDomains => Domains;
-
     // used by EF
     private BookDefinition() { }
 

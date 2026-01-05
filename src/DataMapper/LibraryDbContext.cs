@@ -35,9 +35,6 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
             .HasMany(x => x.Domains)
             .WithMany();
 
-        modelBuilder.Entity<BookDefinition>()
-            .Ignore(x => x.ImplicitDomains);
-
         modelBuilder.Entity<Domain>()
             .HasMany(x => x.SubDomains)
             .WithOne(x => x.ParentDomain);
