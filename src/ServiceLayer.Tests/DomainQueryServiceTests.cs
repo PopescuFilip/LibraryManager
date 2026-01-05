@@ -34,7 +34,7 @@ public class DomainQueryServiceTests
             (43456, "naeNAE")
         };
 
-        _repository.SetSourceValues(DomainGenerator.From(idName));
+        _repository.SetSourceValues(Generator.GenerateDomainsFrom(idName));
 
         var actualId = _domainQueryService.GetIdByName(interestingName);
 
@@ -53,7 +53,7 @@ public class DomainQueryServiceTests
             (43456, "naeNAE")
         };
 
-        _repository.SetSourceValues(DomainGenerator.From(idName));
+        _repository.SetSourceValues(Generator.GenerateDomainsFrom(idName));
 
         var actualId = _domainQueryService.GetIdByName(interestingName);
 
@@ -74,7 +74,7 @@ public class DomainQueryServiceTests
             (436, "naeNAE")
         };
 
-        _repository.SetSourceValues(DomainGenerator.From(idName));
+        _repository.SetSourceValues(Generator.GenerateDomainsFrom(idName));
 
         void CallGetByName() => _domainQueryService.GetIdByName(interestingName);
 
