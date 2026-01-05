@@ -12,7 +12,7 @@ public class Domain : IEntity
 
     public int? ParentDomainId { get; init; }
 
-    public Domain? ParentDomain { get; private set; }
+    public Domain? ParentDomain { get; init; }
 
     public List<Domain> SubDomains { get; } = [];
 

@@ -1,0 +1,36 @@
+﻿using DataMapper;
+using DomainModel.Restrictions;
+using NSubstitute;
+using ServiceLayer.CRUD;
+using System.Diagnostics.CodeAnalysis;
+
+namespace ServiceLayer.UnitTests;
+
+[TestClass]
+[ExcludeFromCodeCoverage]
+public class BookRestrictionsProviderTests
+{
+    private BookRestrictionsProvider _bookRestrictionsProvider = default!;
+    private IRestrictionsProvider _restrictionProvider = default!;
+
+    [TestInitialize]
+    public void Init()
+    {
+        _restrictionProvider = Substitute.For<IRestrictionsProvider>();
+        _bookRestrictionsProvider = new BookRestrictionsProvider(_restrictionProvider);
+    }
+
+    [TestMethod]
+    public void Get_ShouldReturnCorrectBookRestrictions()
+    {
+        var restrictions = new Restrictions()
+        {
+            MaxDomains = 10,
+        };
+        _restrictionProvider.GetRestrictions().Returns(restrictions);
+
+        var bookRestrictions = _bookRestrictionsProvider.Get();
+
+        Assert.AreEqual(restrictions.MaxDomains, bookRestrictions.MaxDomains);
+    }
+}

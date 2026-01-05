@@ -1,10 +1,12 @@
 ﻿using DomainModel;
 using FluentValidation.TestHelper;
 using ServiceLayer.Domains;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceLayer.UnitTests;
 
 [TestClass]
+[ExcludeFromCodeCoverage]
 public class DomainValidatorTests
 {
     public DomainValidator domainValidator = default!;
@@ -47,6 +49,19 @@ public class DomainValidatorTests
         var result = domainValidator.TestValidate(domain);
 
         result.ShouldHaveValidationErrorFor(d => d.SubDomains);
+    }
+
+    [TestMethod]
+    public void DomainValidator_ShouldReturnInvalid_WhenParentDomainHasTheSameName()
+    {
+        var id = 1234;
+        var name = "Name here";
+        var parentDomain = new Domain(name) { Id = 321 };
+        var domain = new Domain(name, parentDomain.Id) { Id = id, ParentDomain = parentDomain };
+
+        var result = domainValidator.TestValidate(domain);
+
+        result.ShouldHaveValidationErrorFor(d => d.ParentDomain);
     }
 
     [TestMethod]

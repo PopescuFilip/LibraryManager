@@ -34,7 +34,7 @@ internal class Program
         var domains = new List<string>()
         {
             DomainInitialization.AlgoritmiCuantici,
-            DomainInitialization.Informatica
+            DomainInitialization.AlgoritmicaGrafurilor
         };
 
         var queryService = scope.GetRequiredService<IDomainQueryService>();
@@ -46,7 +46,12 @@ internal class Program
 
         var bookService = scope.GetRequiredService<IBookDefinitionService>();
 
-        var createdBook = bookService.Create("bookName1", authorIds, domainIds).Get();
+        var options = new BookDefinitionCreateOptions(
+            "bookName23",
+            [.. authorIds],
+            [.. domainIds]);
+
+        var createdBook = bookService.Create(options).Get();
 
         Console.WriteLine("Hello world!");
     }
@@ -86,6 +91,7 @@ internal class Program
     {
         container.Register(typeof(IEntityService<>), typeof(EntityService<>));
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
+        container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
 
         container.Register<IDomainService, DomainService>();
         container.Register<IValidator<Domain>, DomainValidator>();
@@ -94,5 +100,7 @@ internal class Program
         container.Register<IValidator<Author>, AuthorValidator>();
 
         container.Register<IBookDefinitionService, BookDefinitionService>();
+        container.Register<IValidator<BookDefinitionCreateOptions>, BookDefinitionCreationValidator>();
+        container.Register<IValidator<BookDefinition>, BookDefinitionValidator>();
     }
 }
