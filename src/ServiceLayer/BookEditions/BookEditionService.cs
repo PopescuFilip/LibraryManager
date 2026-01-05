@@ -1,4 +1,5 @@
 ﻿using DomainModel;
+using FluentValidation;
 using ServiceLayer.CRUD;
 
 namespace ServiceLayer.BookEditions;
@@ -10,7 +11,8 @@ public interface IBookEditionService
 
 public class BookEditionService(
     IEntityService<BookEdition> _entityService,
-    IEntityService<BookDefinition> _bookDefinitionService)
+    IEntityService<BookDefinition> _bookDefinitionService,
+    IValidator<BookEdition> _validator)
     : IBookEditionService
 {
     public Result<BookEdition> Create(string name, int pagesCount, BookType bookType, int bookDefinitionId)
@@ -21,6 +23,6 @@ public class BookEditionService(
             return Result.Invalid();
 
         var bookEdition = new BookEdition(name, pagesCount, bookType, bookDefinitionId);
-        return _entityService.Insert(bookEdition, EmptyValidator.Create<BookEdition>());
+        return _entityService.Insert(bookEdition, _validator);
     }
 }
