@@ -15,6 +15,8 @@ public class BookEditionServiceTests
     private IEntityService<BookEdition> _entityService = default!;
     private IEntityService<BookDefinition> _bookDefinitionService = default!;
     private IValidator<BookEdition> _validator = default!;
+    private IValidator<BookAddOptions> _optionsValidator = default!;
+    private IBookEditionQueryService _queryService = default!;
 
     [TestInitialize]
     public void Init()
@@ -22,10 +24,14 @@ public class BookEditionServiceTests
         _entityService = Substitute.For<IEntityService<BookEdition>>();
         _bookDefinitionService = Substitute.For<IEntityService<BookDefinition>>();
         _validator = Substitute.For<IValidator<BookEdition>>();
+        _optionsValidator = Substitute.For<IValidator<BookAddOptions>>();
+        _queryService = Substitute.For<IBookEditionQueryService>();
         _bookEditionService = new BookEditionService(
             _entityService,
             _bookDefinitionService,
-            _validator);
+            _validator,
+            _optionsValidator,
+            _queryService);
     }
 
     [TestMethod]

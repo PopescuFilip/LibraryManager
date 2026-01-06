@@ -52,7 +52,7 @@ public class FakeRepository<T> : IRepository<T> where T : IEntity
         throw new NotImplementedException();
     }
 
-    public void Update(T entity)
+    public T Update(T entity)
     {
         throw new NotImplementedException();
     }
