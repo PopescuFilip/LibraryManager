@@ -27,6 +27,13 @@ internal class Program
 
         using var scope = AsyncScopedLifestyle.BeginScope(container);
 
+        var queryService = scope.GetRequiredService<IDomainQueryService>();
+        var bookService = scope.GetRequiredService<IBookDefinitionService>();
+        var bookEditionService = scope.GetRequiredService<IBookEditionService>();
+
+        var original = scope.GetAllEntities<BookEdition>(x => x.BookRecords)
+            .Single(x => x.Id == 2);
+
         var authorIds = scope.GetAllEntities<Author>()
             .Take(2)
             .Select(a => a.Id)
@@ -38,14 +45,10 @@ internal class Program
             DomainInitialization.AlgoritmicaGrafurilor
         };
 
-        var queryService = scope.GetRequiredService<IDomainQueryService>();
-
         var domainIds = domains
             .Select(queryService.GetIdByName)
             .Select(x => x ?? 0)
             .ToList() ?? [];
-
-        var bookService = scope.GetRequiredService<IBookDefinitionService>();
 
         var options = new BookDefinitionCreateOptions(
             "blabla",
@@ -54,7 +57,6 @@ internal class Program
 
         var createdBook = bookService.Create(options).Get();
 
-        var bookEditionService = scope.GetRequiredService<IBookEditionService>();
         var createdBookEdition = bookEditionService
             .Create("edition11 name", 100, BookType.Hardcover, createdBook.Id)
             .Get();
