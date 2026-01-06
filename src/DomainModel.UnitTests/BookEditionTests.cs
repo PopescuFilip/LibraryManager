@@ -52,12 +52,11 @@ public class BookEditionTests
         bookEdition.AddBooks(BookStatus.ForReadingRoom, forReadingRoomCount);
         bookEdition.AddBooks(BookStatus.Available, availableCount);
 
-        Assert.AreEqual(forReadingRoomCount + availableCount, bookEdition.BookRecords.Count());
-        var dict = bookEdition.BookRecords
-            .GroupBy(b => b.Status)
-            .Select(g => new { g.Key, Count = g.Count() })
-            .ToDictionary(x => x.Key, x => x.Count);
-        Assert.AreEqual(forReadingRoomCount, dict[BookStatus.ForReadingRoom]);
-        Assert.AreEqual(availableCount, dict[BookStatus.Available]);
+        var dict = new Dictionary<BookStatus, int>()
+        {
+            { BookStatus.ForReadingRoom, forReadingRoomCount },
+            { BookStatus.Available, availableCount }
+        };
+        Assert.IsTrue(bookEdition.BookRecords.MatchesPerfectly(dict));
     }
 }
