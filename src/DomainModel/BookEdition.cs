@@ -42,6 +42,9 @@ public class BookEdition : IEntity
 
     public void AddBooks(BookStatus bookStatus, int count)
     {
+        if (count <= 0)
+            return;
+
         _books.AddRange(GetBooks(bookStatus, Id, count));
     }
 
