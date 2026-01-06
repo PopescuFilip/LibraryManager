@@ -32,8 +32,19 @@ public class BookEdition : IEntity
 
     public BookDefinition BookDefinition { get; private set; } = null!;
 
-    public List<Book> BookRecords { get; } = [];
+    public IEnumerable<Book> BookRecords => _books;
+
+    private readonly List<Book> _books = [];
 
     public BookEdition(string name, int pagesCount, BookType bookType, int bookDefinitionId) =>
-        (Name, PagesCount, BookType, BookDefinitionId) = (name, pagesCount, bookType, bookDefinitionId);
+        (Name, PagesCount, BookType, BookDefinitionId) =
+        (name, pagesCount, bookType, bookDefinitionId);
+
+    public void AddBooks(BookStatus bookStatus, int count)
+    {
+        _books.AddRange(GetBooks(bookStatus, Id, count));
+    }
+
+    private static IEnumerable<Book> GetBooks(BookStatus bookStatus, int bookEditionId, int count) =>
+        Enumerable.Range(0, count).Select(_ => new Book(bookStatus, bookEditionId));
 }

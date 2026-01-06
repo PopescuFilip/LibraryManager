@@ -20,4 +20,7 @@ public class Book : IEntity
     public int BookEditionId { get; init; }
 
     public BookEdition BookEdition { get; private set; } = null!;
+
+    public Book(BookStatus status, int bookEditionId) =>
+        (Status, BookEditionId) = (status, bookEditionId);
 }
