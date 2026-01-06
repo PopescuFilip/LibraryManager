@@ -2,9 +2,9 @@
 
 namespace ServiceLayer.BookEditions;
 
-public class BookAddOptionsValidator : AbstractValidator<BookAddOptions>
+public class BooksAddOptionsValidator : AbstractValidator<BooksAddOptions>
 {
-    public BookAddOptionsValidator()
+    public BooksAddOptionsValidator()
     {
         RuleFor(x => x.ForReadingRoomCount).GreaterThanOrEqualTo(0);
         RuleFor(x => x.ForBorrowingCount).GreaterThanOrEqualTo(0);

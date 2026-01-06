@@ -8,14 +8,16 @@ public interface IBookEditionService
 {
     Result<BookEdition> Create(string name, int pagesCount, BookType bookType, int bookDefinitionId);
 
-    Result<BookEdition> AddBooks(BookAddOptions options);
+    Result<BookEdition> AddBooks(BooksAddOptions options);
+
+    //Result<BookEdition> UpdateBooks(BooksUpdateOptions options);
 }
 
 public class BookEditionService(
     IEntityService<BookEdition> _entityService,
     IEntityService<BookDefinition> _bookDefinitionService,
     IValidator<BookEdition> _validator,
-    IValidator<BookAddOptions> _optionsValidator,
+    IValidator<BooksAddOptions> _optionsValidator,
     IBookEditionQueryService _queryService)
     : IBookEditionService
 {
@@ -30,7 +32,7 @@ public class BookEditionService(
         return _entityService.Insert(bookEdition, _validator);
     }
 
-    public Result<BookEdition> AddBooks(BookAddOptions options)
+    public Result<BookEdition> AddBooks(BooksAddOptions options)
     {
         if (!_optionsValidator.Validate(options).IsValid)
             return Result.Invalid();

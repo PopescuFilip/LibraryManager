@@ -1,6 +1,6 @@
 ﻿namespace ServiceLayer.BookEditions;
 
-public record BookAddOptions(
+public record BooksAddOptions(
     int ForReadingRoomCount,
     int ForBorrowingCount,
     int BookEditionId);

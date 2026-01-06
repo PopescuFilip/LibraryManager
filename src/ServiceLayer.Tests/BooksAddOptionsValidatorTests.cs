@@ -6,14 +6,14 @@ namespace ServiceLayer.UnitTests;
 
 [TestClass]
 [ExcludeFromCodeCoverage]
-public class BookAddOptionsValidatorTests
+public class BooksAddOptionsValidatorTests
 {
-    private BookAddOptionsValidator _validator = default!;
+    private BooksAddOptionsValidator _validator = default!;
 
     [TestInitialize]
     public void Init()
     {
-        _validator = new BookAddOptionsValidator();
+        _validator = new BooksAddOptionsValidator();
     }
 
     [TestMethod]
@@ -22,7 +22,7 @@ public class BookAddOptionsValidatorTests
         var forReadingRoomCount = 31;
         var forBorrowingCount = -4;
         var bookEditionId = 1;
-        var options = new BookAddOptions(forReadingRoomCount, forBorrowingCount, bookEditionId);
+        var options = new BooksAddOptions(forReadingRoomCount, forBorrowingCount, bookEditionId);
 
         var result = _validator.TestValidate(options);
 
@@ -35,7 +35,7 @@ public class BookAddOptionsValidatorTests
         var forReadingRoomCount = -1;
         var forBorrowingCount = 44;
         var bookEditionId = 1;
-        var options = new BookAddOptions(forReadingRoomCount, forBorrowingCount, bookEditionId);
+        var options = new BooksAddOptions(forReadingRoomCount, forBorrowingCount, bookEditionId);
 
         var result = _validator.TestValidate(options);
 
@@ -48,7 +48,7 @@ public class BookAddOptionsValidatorTests
         var forReadingRoomCount = 23;
         var forBorrowingCount = 0;
         var bookEditionId = 1;
-        var options = new BookAddOptions(forReadingRoomCount, forBorrowingCount, bookEditionId);
+        var options = new BooksAddOptions(forReadingRoomCount, forBorrowingCount, bookEditionId);
 
         var result = _validator.TestValidate(options);
 

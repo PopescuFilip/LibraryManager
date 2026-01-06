@@ -59,7 +59,7 @@ internal class Program
             .Create("edition11 name", 100, BookType.Hardcover, createdBook.Id)
             .Get();
 
-        var addOptios = new BookAddOptions(2, 3, 2);
+        var addOptios = new BooksAddOptions(2, 3, 2);
         var updatedBookEdition = bookEditionService.AddBooks(addOptios).Get();
 
         Console.WriteLine("Hello world!");
@@ -114,6 +114,6 @@ internal class Program
 
         container.Register<IBookEditionService, BookEditionService>();
         container.Register<IValidator<BookEdition>, BookEditionValidator>();
-        container.Register<IValidator<BookAddOptions>, BookAddOptionsValidator>();
+        container.Register<IValidator<BooksAddOptions>, BooksAddOptionsValidator>();
     }
 }
