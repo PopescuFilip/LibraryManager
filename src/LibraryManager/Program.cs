@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ServiceLayer.Authors;
 using ServiceLayer.BookDefinitions;
+using ServiceLayer.BookEditions;
 using ServiceLayer.CRUD;
 using ServiceLayer.Domains;
 using SimpleInjector;
@@ -52,6 +53,11 @@ internal class Program
             [.. domainIds]);
 
         var createdBook = bookService.Create(options).Get();
+
+        var bookEditionService = scope.GetRequiredService<IBookEditionService>();
+        var createdBookEdition = bookEditionService
+            .Create("edition name", 100, BookType.Hardcover, createdBook.Id)
+            .Get();
 
         Console.WriteLine("Hello world!");
     }
@@ -102,5 +108,8 @@ internal class Program
         container.Register<IBookDefinitionService, BookDefinitionService>();
         container.Register<IValidator<BookDefinitionCreateOptions>, BookDefinitionCreationValidator>();
         container.Register<IValidator<BookDefinition>, BookDefinitionValidator>();
+
+        container.Register<IBookEditionService, BookEditionService>();
+        container.Register<IValidator<BookEdition>, BookEditionValidator>();
     }
 }

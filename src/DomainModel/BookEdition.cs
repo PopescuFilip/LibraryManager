@@ -33,4 +33,7 @@ public class BookEdition : IEntity
     public BookDefinition BookDefinition { get; private set; } = null!;
 
     public List<Book> BookRecords { get; } = [];
+
+    public BookEdition(string name, int pagesCount, BookType bookType, int bookDefinitionId) =>
+        (Name, PagesCount, BookType, BookDefinitionId) = (name, pagesCount, bookType, bookDefinitionId);
 }
