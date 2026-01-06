@@ -1,5 +1,6 @@
 ﻿using DomainModel;
 using FluentValidation;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using ServiceLayer.BookEditions;
 using ServiceLayer.CRUD;
@@ -139,14 +140,7 @@ public class BookEditionServiceTests
 
         Assert.IsTrue(result.IsValid);
         var updatedBookEdition = result.Get();
-        var totalCount = options.ForReadingRoomCount + options.ForBorrowingCount;
-        Assert.AreEqual(totalCount, updatedBookEdition.BookRecords.Count());
-        Assert.AreEqual(
-            options.ForReadingRoomCount,
-            updatedBookEdition.BookRecords.Count(x => x.Status == BookStatus.ForReadingRoom));
-        Assert.AreEqual(
-            options.ForBorrowingCount,
-            updatedBookEdition.BookRecords.Count(x => x.Status == BookStatus.Available));
+        Assert.IsTrue(updatedBookEdition.BookRecords.MatchesPerfectly(options));
     }
 
     [TestMethod]
@@ -160,6 +154,46 @@ public class BookEditionServiceTests
             .Returns(call => Result.Valid(call.Arg<BookEdition>()));
 
         var result = _bookEditionService.AddBooks(options);
+
+        Assert.IsTrue(result.IsValid);
+    }
+
+    [TestMethod]
+    public void RemoveBooks_ShouldUpdateBookEdition_WhenBooksAreRemovedSuccessfully()
+    {
+        var removeOptions = new BooksUpdateOptions(20, 14, 1);
+        var bookEdition = new BookEdition("nameHere", 321, BookType.LargePrint, removeOptions.BookEditionId);
+        var addOptions = removeOptions with
+        {
+            ForBorrowingCount = removeOptions.ForReadingRoomCount + 10,
+            ForReadingRoomCount = removeOptions.ForReadingRoomCount + 3,
+        };
+        bookEdition.AddBooks(addOptions.ToStatusCountDictionary());
+        _optionsValidator.Validate(removeOptions).Returns(Validation.ValidResult);
+        _queryService.GetByIdWithBooks(removeOptions.BookEditionId).Returns(bookEdition);
+        _entityService.Update(bookEdition, _validator)
+            .Returns(call => Result.Valid(call.Arg<BookEdition>()));
+
+        var result = _bookEditionService.RemoveBooks(removeOptions);
+
+        Assert.IsTrue(result.IsValid);
+        var updatedBookEdition = result.Get();
+        var resultingOptions = addOptions.Substract(removeOptions);
+        Assert.IsTrue(bookEdition.BookRecords.MatchesPerfectly(resultingOptions));
+    }
+
+    [TestMethod]
+    public void RemoveBooks_ShouldReturnBookEdition_WhenBooksAreRemovedSuccessfully()
+    {
+        var options = new BooksUpdateOptions(20, 14, 1);
+        var bookEdition = new BookEdition("nameHere", 321, BookType.LargePrint, options.BookEditionId);
+        bookEdition.AddBooks(options.ToStatusCountDictionary());
+        _optionsValidator.Validate(options).Returns(Validation.ValidResult);
+        _queryService.GetByIdWithBooks(options.BookEditionId).Returns(bookEdition);
+        _entityService.Update(bookEdition, _validator)
+            .Returns(call => Result.Valid(call.Arg<BookEdition>()));
+
+        var result = _bookEditionService.RemoveBooks(options);
 
         Assert.IsTrue(result.IsValid);
     }
