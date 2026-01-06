@@ -16,7 +16,7 @@ public class BookEditionServiceTests
     private IEntityService<BookEdition> _entityService = default!;
     private IEntityService<BookDefinition> _bookDefinitionService = default!;
     private IValidator<BookEdition> _validator = default!;
-    private IValidator<BooksAddOptions> _optionsValidator = default!;
+    private IValidator<BooksUpdateOptions> _optionsValidator = default!;
     private IBookEditionQueryService _queryService = default!;
 
     [TestInitialize]
@@ -25,7 +25,7 @@ public class BookEditionServiceTests
         _entityService = Substitute.For<IEntityService<BookEdition>>();
         _bookDefinitionService = Substitute.For<IEntityService<BookDefinition>>();
         _validator = Substitute.For<IValidator<BookEdition>>();
-        _optionsValidator = Substitute.For<IValidator<BooksAddOptions>>();
+        _optionsValidator = Substitute.For<IValidator<BooksUpdateOptions>>();
         _queryService = Substitute.For<IBookEditionQueryService>();
         _bookEditionService = new BookEditionService(
             _entityService,
@@ -99,7 +99,7 @@ public class BookEditionServiceTests
     [TestMethod]
     public void AddBooks_ShouldReturnInvalid_WhenBookEditionIsNotFound()
     {
-        var options = new BooksAddOptions(20, 14, 1);
+        var options = new BooksUpdateOptions(20, 14, 1);
         _optionsValidator.Validate(options).Returns(Validation.ValidResult);
         _queryService.GetByIdWithBooks(options.BookEditionId).Returns((BookEdition?)null);
         _entityService.Update(Arg.Any<BookEdition>(), _validator)
@@ -113,7 +113,7 @@ public class BookEditionServiceTests
     [TestMethod]
     public void AddBooks_ShouldReturnInvalid_WhenOptionsValidationFails()
     {
-        var options = new BooksAddOptions(20, 14, 1);
+        var options = new BooksUpdateOptions(20, 14, 1);
         var bookEdition = new BookEdition("nameHere", 321, BookType.LargePrint, options.BookEditionId);
         _optionsValidator.Validate(options).Returns(Validation.InvalidResult);
         _queryService.GetByIdWithBooks(options.BookEditionId).Returns(bookEdition);
@@ -128,7 +128,7 @@ public class BookEditionServiceTests
     [TestMethod]
     public void AddBooks_ShouldUpdateBookEdition_WhenBooksAreAddedSuccessfully()
     {
-        var options = new BooksAddOptions(20, 14, 1);
+        var options = new BooksUpdateOptions(20, 14, 1);
         var bookEdition = new BookEdition("nameHere", 321, BookType.LargePrint, options.BookEditionId);
         _optionsValidator.Validate(options).Returns(Validation.ValidResult);
         _queryService.GetByIdWithBooks(options.BookEditionId).Returns(bookEdition);
@@ -152,7 +152,7 @@ public class BookEditionServiceTests
     [TestMethod]
     public void AddBooks_ShouldReturnBookEdition_WhenBooksAreAddedSuccessfully()
     {
-        var options = new BooksAddOptions(20, 14, 1);
+        var options = new BooksUpdateOptions(20, 14, 1);
         var bookEdition = new BookEdition("nameHere", 321, BookType.LargePrint, options.BookEditionId);
         _optionsValidator.Validate(options).Returns(Validation.ValidResult);
         _queryService.GetByIdWithBooks(options.BookEditionId).Returns(bookEdition);
