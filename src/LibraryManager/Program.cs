@@ -114,5 +114,6 @@ internal class Program
 
         container.Register<IBookEditionService, BookEditionService>();
         container.Register<IValidator<BookEdition>, BookEditionValidator>();
+        container.Register<IValidator<BookAddOptions>, BookAddOptionsValidator>();
     }
 }

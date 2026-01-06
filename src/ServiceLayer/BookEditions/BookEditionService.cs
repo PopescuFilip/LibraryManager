@@ -15,6 +15,7 @@ public class BookEditionService(
     IEntityService<BookEdition> _entityService,
     IEntityService<BookDefinition> _bookDefinitionService,
     IValidator<BookEdition> _validator,
+    IValidator<BookAddOptions> _optionsValidator,
     IBookEditionQueryService _queryService)
     : IBookEditionService
 {
@@ -31,8 +32,6 @@ public class BookEditionService(
 
     public Result<BookEdition> AddBooks(BookAddOptions options)
     {
-        var _optionsValidator = EmptyValidator.Create<BookAddOptions>();
-
         if (!_optionsValidator.Validate(options).IsValid)
             return Result.Invalid();
 
