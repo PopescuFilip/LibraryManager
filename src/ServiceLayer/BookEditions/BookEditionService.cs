@@ -10,7 +10,7 @@ public interface IBookEditionService
 
     Result<BookEdition> AddBooks(BooksUpdateOptions options);
 
-    //Result<BookEdition> RemoveBooks(BooksUpdateOptions options);
+    Result<BookEdition> RemoveBooks(BooksUpdateOptions options);
 }
 
 public class BookEditionService(
@@ -37,15 +37,28 @@ public class BookEditionService(
         if (!_optionsValidator.Validate(options).IsValid)
             return Result.Invalid();
 
-        var (forReadingCount, forBorrowCount, editionId) = options;
-
-        var bookEdition = _queryService.GetByIdWithBooks(editionId);
+        var bookEdition = _queryService.GetByIdWithBooks(options.BookEditionId);
 
         if (bookEdition is null)
             return Result.Invalid();
 
-        bookEdition.AddBooks(BookStatus.ForReadingRoom, forReadingCount);
-        bookEdition.AddBooks(BookStatus.Available, forBorrowCount);
+        bookEdition.AddBooks(options.ToStatusCountDictionary());
+
+        return _entityService.Update(bookEdition, _validator);
+    }
+
+    public Result<BookEdition> RemoveBooks(BooksUpdateOptions options)
+    {
+        if (!_optionsValidator.Validate(options).IsValid)
+            return Result.Invalid();
+
+        var bookEdition = _queryService.GetByIdWithBooks(options.BookEditionId);
+
+        if (bookEdition is null)
+            return Result.Invalid();
+
+        if (!bookEdition.TryRemoveBooks(options.ToStatusCountDictionary()))
+            return Result.Invalid();
 
         return _entityService.Update(bookEdition, _validator);
     }
