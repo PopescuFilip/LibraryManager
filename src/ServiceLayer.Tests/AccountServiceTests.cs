@@ -236,4 +236,96 @@ public class AccountServiceTests
 
         Assert.IsTrue(result.IsValid);
     }
+
+    [TestMethod]
+    public void CreateEmployee_ShouldReturnInvalid_WhenInsertFails()
+    {
+        var accountId = 32;
+        var name = "namee";
+        var address = "Maple Stree 189";
+        string? email = "someTest@gmail.com";
+        string? phoneNumber = null;
+        var account = new Account(name, address, email, phoneNumber) { Id = accountId };
+        _entityService.GetById(accountId).Returns(account);
+        _queryService.EmployeeForAccountExists(accountId).Returns(false);
+        _employeeEntityService.Insert(Arg.Any<Employee>(), Arg.Any<IValidator<Employee>>())
+            .Returns(Result.Invalid());
+
+        var result = _accountService.CreateEmployee(accountId);
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void CreateEmployee_ShouldReturnInvalid_WhenEmployeeForAccountExists()
+    {
+        var accountId = 32;
+        var name = "namee";
+        var address = "Maple Stree 189";
+        string? email = "someTest@gmail.com";
+        string? phoneNumber = null;
+        var account = new Account(name, address, email, phoneNumber) { Id = accountId };
+        _entityService.GetById(accountId).Returns(account);
+        _queryService.EmployeeForAccountExists(accountId).Returns(true);
+        _employeeEntityService.Insert(Arg.Any<Employee>(), Arg.Any<IValidator<Employee>>())
+            .Returns(call => Result.Valid(call.Arg<Employee>()));
+
+        var result = _accountService.CreateEmployee(accountId);
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void CreateEmployee_ShouldReturnInvalid_WhenAccountIsNotFound()
+    {
+        var accountId = 32;
+        _entityService.GetById(accountId).Returns((Account?)null);
+        _queryService.EmployeeForAccountExists(accountId).Returns(false);
+        _employeeEntityService.Insert(Arg.Any<Employee>(), Arg.Any<IValidator<Employee>>())
+            .Returns(call => Result.Valid(call.Arg<Employee>()));
+
+        var result = _accountService.CreateEmployee(accountId);
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void CreateEmployee_ShouldReturnCreatedEmployee_WhenAllValidationsPass()
+    {
+        var accountId = 32;
+        var name = "namee";
+        var address = "Maple Stree 189";
+        string? email = "someTest@gmail.com";
+        string? phoneNumber = null;
+        var account = new Account(name, address, email, phoneNumber) { Id = accountId };
+        _entityService.GetById(accountId).Returns(account);
+        _queryService.EmployeeForAccountExists(accountId).Returns(false);
+        _employeeEntityService.Insert(Arg.Any<Employee>(), Arg.Any<IValidator<Employee>>())
+            .Returns(call => Result.Valid(call.Arg<Employee>()));
+
+        var result = _accountService.CreateEmployee(accountId);
+
+        Assert.IsTrue(result.IsValid);
+        var employee = result.Get();
+        Assert.AreEqual(accountId, employee.AccountId);
+    }
+
+    [TestMethod]
+    public void CreateEmployee_ShouldReturnValid_WhenAllValidationsPass()
+    {
+        var accountId = 32;
+        var name = "namee";
+        var address = "Maple Stree 189";
+        string? email = "someTest@gmail.com";
+        string? phoneNumber = null;
+        var account = new Account(name, address, email, phoneNumber) { Id = accountId };
+        _entityService.GetById(accountId).Returns(account);
+        _queryService.EmployeeForAccountExists(accountId).Returns(false);
+        _employeeEntityService.Insert(Arg.Any<Employee>(), Arg.Any<IValidator<Employee>>())
+            .Returns(call => Result.Valid(call.Arg<Employee>()));
+
+        var result = _accountService.CreateEmployee(accountId);
+
+        Assert.IsTrue(result.IsValid);
+    }
 }
