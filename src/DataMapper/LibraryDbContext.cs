@@ -39,6 +39,14 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
             .HasMany(x => x.SubDomains)
             .WithOne(x => x.ParentDomain);
 
+        modelBuilder.Entity<Client>()
+            .HasOne(x => x.Account)
+            .WithOne();
+
+        modelBuilder.Entity<Employee>()
+            .HasOne(x => x.Account)
+            .WithOne();
+
         base.OnModelCreating(modelBuilder);
     }
 }
