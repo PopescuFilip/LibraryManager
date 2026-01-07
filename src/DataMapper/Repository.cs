@@ -17,11 +17,13 @@ public class Repository<T>(LibraryDbContext _context)
         return entityEntry.Entity;
     }
 
-    public void Update(T entity)
+    public T Update(T entity)
     {
-        _context.Set<T>().Update(entity);
+        var entityEntry = _context.Set<T>().Update(entity);
 
         _context.SaveChanges();
+
+        return entityEntry.Entity;
     }
 
     public void Delete(T entity)

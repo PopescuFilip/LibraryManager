@@ -7,7 +7,7 @@ public interface IEntityService<T> where T : IEntity
 {
     Result<T> Insert(T entity, IValidator<T> validator);
 
-    bool Update(T entity, IValidator<T> validator);
+    Result<T> Update(T entity, IValidator<T> validator);
 
     void Delete(T entity);
 

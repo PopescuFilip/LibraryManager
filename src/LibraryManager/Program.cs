@@ -27,6 +27,13 @@ internal class Program
 
         using var scope = AsyncScopedLifestyle.BeginScope(container);
 
+        var queryService = scope.GetRequiredService<IDomainQueryService>();
+        var bookService = scope.GetRequiredService<IBookDefinitionService>();
+        var bookEditionService = scope.GetRequiredService<IBookEditionService>();
+
+        var original = scope.GetAllEntities<BookEdition>(x => x.BookRecords)
+            .Single(x => x.Id == 2);
+
         var authorIds = scope.GetAllEntities<Author>()
             .Take(2)
             .Select(a => a.Id)
@@ -38,26 +45,24 @@ internal class Program
             DomainInitialization.AlgoritmicaGrafurilor
         };
 
-        var queryService = scope.GetRequiredService<IDomainQueryService>();
-
         var domainIds = domains
             .Select(queryService.GetIdByName)
             .Select(x => x ?? 0)
             .ToList() ?? [];
 
-        var bookService = scope.GetRequiredService<IBookDefinitionService>();
-
         var options = new BookDefinitionCreateOptions(
-            "bookName23",
+            "blabla",
             [.. authorIds],
-            [.. domainIds]);
+            [.. domainIds.Take(1)]);
 
         var createdBook = bookService.Create(options).Get();
 
-        var bookEditionService = scope.GetRequiredService<IBookEditionService>();
         var createdBookEdition = bookEditionService
-            .Create("edition name", 100, BookType.Hardcover, createdBook.Id)
+            .Create("edition11 name", 100, BookType.Hardcover, createdBook.Id)
             .Get();
+
+        var addOptios = new BooksUpdateOptions(2, 3, 2);
+        var updatedBookEdition = bookEditionService.AddBooks(addOptios).Get();
 
         Console.WriteLine("Hello world!");
     }
@@ -89,13 +94,13 @@ internal class Program
     {
         container.Register(typeof(IRepository<>), typeof(Repository<>));
         container.Register<IRestrictionsProvider, RestrictionsProvider>();
-
-        container.Register<IDomainQueryService, DomainQueryService>();
     }
 
     private static void AddServiceLayerDependencies(Container container)
     {
         container.Register(typeof(IEntityService<>), typeof(EntityService<>));
+        container.Register<IDomainQueryService, DomainQueryService>();
+        container.Register<IBookEditionQueryService, BookEditionQueryService>();
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
         container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
 
@@ -111,5 +116,6 @@ internal class Program
 
         container.Register<IBookEditionService, BookEditionService>();
         container.Register<IValidator<BookEdition>, BookEditionValidator>();
+        container.Register<IValidator<BooksUpdateOptions>, BooksUpdateOptionsValidator>();
     }
 }

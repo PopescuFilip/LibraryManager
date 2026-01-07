@@ -17,13 +17,13 @@ public class EntityService<T>(IRepository<T> _repository)
         return Result.Valid(insertedEntity);
     }
 
-    public bool Update(T entity, IValidator<T> validator)
+    public Result<T> Update(T entity, IValidator<T> validator)
     {
         if (!validator.Validate(entity).IsValid)
-            return false;
+            return Result.Invalid();
 
-        _repository.Update(entity);
-        return true;
+        var updatedEntity = _repository.Update(entity);
+        return Result.Valid(updatedEntity);
     }
 
     public void Delete(T entity) => _repository.Delete(entity);
