@@ -16,9 +16,13 @@ public class AccountService(
     IEntityService<Account> _entityService,
     IEntityService<Client> _clientEntityService,
     IEntityService<Employee> _employeeEntityService,
-    IValidator<Account> _validator)
+    IValidator<Account> _validator,
+    IAccountQueryService _queryService)
     : IAccountService
 {
+    private readonly IValidator<Client> _clientValidator = EmptyValidator.Create<Client>();
+    private readonly IValidator<Employee> _employeeValidator = EmptyValidator.Create<Employee>();
+
     public Result<Account> Create(string name, string address, string? email, string? phoneNumber)
     {
         var account = new Account(name, address, email, phoneNumber);
@@ -43,11 +47,24 @@ public class AccountService(
         if (account is null)
             return Result.Invalid();
 
-        return new InvalidResult();
+        if (_queryService.ClientForAccountExists(accountId))
+            return Result.Invalid();
+
+        var client = new Client(accountId);
+        return _clientEntityService.Insert(client, _clientValidator);
     }
 
     public Result<Employee> CreateEmployee(int accountId)
     {
-        throw new NotImplementedException();
+        var account = _entityService.GetById(accountId);
+
+        if (account is null)
+            return Result.Invalid();
+
+        if (_queryService.EmployeeForAccountExists(accountId))
+            return Result.Invalid();
+
+        var employee = new Employee(accountId);
+        return _employeeEntityService.Insert(employee, _employeeValidator);
     }
 }

@@ -102,6 +102,7 @@ internal class Program
         container.Register(typeof(IEntityService<>), typeof(EntityService<>));
         container.Register<IDomainQueryService, DomainQueryService>();
         container.Register<IBookEditionQueryService, BookEditionQueryService>();
+        container.Register<IAccountQueryService, AccountQueryService>();
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
         container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
 

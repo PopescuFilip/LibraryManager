@@ -12,9 +12,6 @@ public static class Optional
 
     public static Optional<T> None<T>() => new None<T>();
 
-    public static void ApplySet<T>(this Optional<T> optional, T value) =>
-        optional.Apply(x => value = x);
-
     public static void Apply<T>(this Optional<T> optional, Action<T> action)
     {
         switch (optional)
