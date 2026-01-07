@@ -7,7 +7,7 @@ namespace ServiceLayer.Accounts;
 public interface IAccountService
 {
     Result<Account> Create(string name, string address, string? email, string? phoneNumber);
-    Result<Account> Update(AccountUpdateOptions options);
+    Result<Account> Update(int id, AccountUpdateOptions options);
 }
 
 public class AccountService(
@@ -21,8 +21,14 @@ public class AccountService(
         return _entityService.Insert(account, _validator);
     }
 
-    public Result<Account> Update(AccountUpdateOptions options)
+    public Result<Account> Update(int id, AccountUpdateOptions options)
     {
-        throw new NotImplementedException();
+        var account = _entityService.GetById(id);
+
+        if (account is null)
+            return Result.Invalid();
+
+        options.ApplyTo(account);
+        return _entityService.Update(account, _validator);
     }
 }
