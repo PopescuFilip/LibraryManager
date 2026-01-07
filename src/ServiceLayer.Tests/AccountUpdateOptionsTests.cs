@@ -1,6 +1,5 @@
 ﻿using ServiceLayer.Accounts;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 
 namespace ServiceLayer.UnitTests;
 
