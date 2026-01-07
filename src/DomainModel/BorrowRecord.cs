@@ -20,4 +20,15 @@ public class BorrowRecord : IEntity
     public Employee Lender { get; private set; } = null!;
 
     public List<Book> BorrowedBooks { get; } = [];
+
+    // used by EF
+    public BorrowRecord() {}
+
+    public BorrowRecord(int borrowerId, int lenderId, IEnumerable<Book> borrowedBooks)
+    {
+        BorrowerId = borrowerId;
+        LenderId = lenderId;
+        BorrowDateTime = DateTime.Now;
+        BorrowedBooks = borrowedBooks.ToList();
+    }
 }
