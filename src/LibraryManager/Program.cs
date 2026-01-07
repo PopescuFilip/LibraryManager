@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ServiceLayer;
 using ServiceLayer.Accounts;
 using ServiceLayer.Authors;
 using ServiceLayer.BookDefinitions;

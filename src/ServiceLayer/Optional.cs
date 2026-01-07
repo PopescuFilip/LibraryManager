@@ -23,4 +23,16 @@ public static class Optional
                 break;
         }
     }
+
+    /// <summary>
+    /// Checks if the <see cref="Optional{T}"/> is a <see cref="ServiceLayer.Some{T}"/> and returns its containing value. Throws otherwise.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="optional"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static T Get<T>(this Optional<T> optional) =>
+        optional is Some<T> some
+        ? some.Value
+        : throw new InvalidOperationException();
 }
