@@ -159,6 +159,80 @@ public class BookEditionServiceTests
     }
 
     [TestMethod]
+    public void RemoveBooks_ShouldNotChangeBookEdition_WhenBooksCannotBeRemoved()
+    {
+        var removeOptions = new BooksUpdateOptions(20, 14, 1);
+        var bookEdition = new BookEdition("nameHere", 321, BookType.LargePrint, removeOptions.BookEditionId);
+        var addOptions = removeOptions with
+        {
+            ForBorrowingCount = removeOptions.ForReadingRoomCount,
+            ForReadingRoomCount = removeOptions.ForReadingRoomCount - 3,
+        };
+        bookEdition.AddBooks(addOptions.ToStatusCountDictionary());
+        _optionsValidator.Validate(removeOptions).Returns(Validation.ValidResult);
+        _queryService.GetByIdWithBooks(removeOptions.BookEditionId).Returns(bookEdition);
+        _entityService.Update(bookEdition, _validator)
+            .Returns(call => Result.Valid(call.Arg<BookEdition>()));
+
+        var result = _bookEditionService.RemoveBooks(removeOptions);
+
+        Assert.IsFalse(result.IsValid);
+        Assert.IsTrue(bookEdition.BookRecords.MatchesPerfectly(addOptions));
+        _entityService.DidNotReceiveWithAnyArgs().Update(default!, default!);
+    }
+
+    [TestMethod]
+    public void RemoveBooks_ShouldReturnInvalid_WhenBooksCannotBeRemoved()
+    {
+        var removeOptions = new BooksUpdateOptions(20, 14, 1);
+        var bookEdition = new BookEdition("nameHere", 321, BookType.LargePrint, removeOptions.BookEditionId);
+        var addOptions = removeOptions with
+        {
+            ForBorrowingCount = removeOptions.ForReadingRoomCount,
+            ForReadingRoomCount = removeOptions.ForReadingRoomCount - 3,
+        };
+        bookEdition.AddBooks(addOptions.ToStatusCountDictionary());
+        _optionsValidator.Validate(removeOptions).Returns(Validation.ValidResult);
+        _queryService.GetByIdWithBooks(removeOptions.BookEditionId).Returns(bookEdition);
+        _entityService.Update(bookEdition, _validator)
+            .Returns(call => Result.Valid(call.Arg<BookEdition>()));
+
+        var result = _bookEditionService.RemoveBooks(removeOptions);
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void RemoveBooks_ShouldReturnInvalid_WhenBookEditionIsNotFound()
+    {
+        var options = new BooksUpdateOptions(20, 14, 1);
+        _optionsValidator.Validate(options).Returns(Validation.ValidResult);
+        _queryService.GetByIdWithBooks(options.BookEditionId).Returns((BookEdition?)null);
+        _entityService.Update(Arg.Any<BookEdition>(), _validator)
+            .Returns(call => Result.Valid(call.Arg<BookEdition>()));
+
+        var result = _bookEditionService.RemoveBooks(options);
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void RemoveBooks_ShouldReturnInvalid_WhenOptionsValidationFails()
+    {
+        var options = new BooksUpdateOptions(20, 14, 1);
+        var bookEdition = new BookEdition("nameHere", 321, BookType.LargePrint, options.BookEditionId);
+        bookEdition.AddBooks(options.ToStatusCountDictionary());
+        _optionsValidator.Validate(options).Returns(Validation.InvalidResult);
+        _queryService.GetByIdWithBooks(options.BookEditionId).Returns(bookEdition);
+        _entityService.Update(bookEdition, _validator)
+            .Returns(call => Result.Valid(call.Arg<BookEdition>()));
+
+        var result = _bookEditionService.RemoveBooks(options);
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
     public void RemoveBooks_ShouldUpdateBookEdition_WhenBooksAreRemovedSuccessfully()
     {
         var removeOptions = new BooksUpdateOptions(20, 14, 1);
