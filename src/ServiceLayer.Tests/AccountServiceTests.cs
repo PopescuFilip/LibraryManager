@@ -3,6 +3,7 @@ using FluentValidation;
 using NSubstitute;
 using ServiceLayer.Accounts;
 using ServiceLayer.CRUD;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceLayer.UnitTests;
@@ -16,6 +17,7 @@ public class AccountServiceTests
     private IEntityService<Client> _clientEntityService = default!;
     private IEntityService<Employee> _employeeEntityService = default!;
     private IValidator<Account> _validator = default!;
+    private IAccountQueryService _queryService = default!;
 
     [TestInitialize]
     public void Init()
@@ -24,11 +26,14 @@ public class AccountServiceTests
         _clientEntityService = Substitute.For<IEntityService<Client>>();
         _employeeEntityService = Substitute.For<IEntityService<Employee>>();
         _validator = Substitute.For<IValidator<Account>>();
+        _queryService = Substitute.For<IAccountQueryService>();
+
         _accountService = new AccountService(
             _entityService,
             _clientEntityService,
             _employeeEntityService,
-            _validator);
+            _validator,
+            _queryService);
     }
 
     [TestMethod]
@@ -136,6 +141,98 @@ public class AccountServiceTests
             .Returns(Result.Valid(account));
 
         var result = _accountService.Update(id, options);
+
+        Assert.IsTrue(result.IsValid);
+    }
+
+    [TestMethod]
+    public void CreateClient_ShouldReturnInvalid_WhenInsertFails()
+    {
+        var accountId = 32;
+        var name = "namee";
+        var address = "Maple Stree 189";
+        string? email = "someTest@gmail.com";
+        string? phoneNumber = null;
+        var account = new Account(name, address, email, phoneNumber) { Id = accountId };
+        _entityService.GetById(accountId).Returns(account);
+        _queryService.ClientForAccountExists(accountId).Returns(false);
+        _clientEntityService.Insert(Arg.Any<Client>(), Arg.Any<IValidator<Client>>())
+            .Returns(Result.Invalid());
+
+        var result = _accountService.CreateClient(accountId);
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void CreateClient_ShouldReturnInvalid_WhenClientForAccountExists()
+    {
+        var accountId = 32;
+        var name = "namee";
+        var address = "Maple Stree 189";
+        string? email = "someTest@gmail.com";
+        string? phoneNumber = null;
+        var account = new Account(name, address, email, phoneNumber) { Id = accountId };
+        _entityService.GetById(accountId).Returns(account);
+        _queryService.ClientForAccountExists(accountId).Returns(true);
+        _clientEntityService.Insert(Arg.Any<Client>(), Arg.Any<IValidator<Client>>())
+            .Returns(call => Result.Valid(call.Arg<Client>()));
+
+        var result = _accountService.CreateClient(accountId);
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void CreateClient_ShouldReturnInvalid_WhenAccountIsNotFound()
+    {
+        var accountId = 32;
+        _entityService.GetById(accountId).Returns((Account?)null);
+        _queryService.ClientForAccountExists(accountId).Returns(false);
+        _clientEntityService.Insert(Arg.Any<Client>(), Arg.Any<IValidator<Client>>())
+            .Returns(call => Result.Valid(call.Arg<Client>()));
+
+        var result = _accountService.CreateClient(accountId);
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void CreateClient_ShouldReturnCreatedClient_WhenAllValidationsPass()
+    {
+        var accountId = 32;
+        var name = "namee";
+        var address = "Maple Stree 189";
+        string? email = "someTest@gmail.com";
+        string? phoneNumber = null;
+        var account = new Account(name, address, email, phoneNumber) { Id = accountId };
+        _entityService.GetById(accountId).Returns(account);
+        _queryService.ClientForAccountExists(accountId).Returns(false);
+        _clientEntityService.Insert(Arg.Any<Client>(), Arg.Any<IValidator<Client>>())
+            .Returns(call => Result.Valid(call.Arg<Client>()));
+
+        var result = _accountService.CreateClient(accountId);
+
+        Assert.IsTrue(result.IsValid);
+        var client = result.Get();
+        Assert.AreEqual(accountId, client.AccountId);
+    }
+
+    [TestMethod]
+    public void CreateClient_ShouldReturnValid_WhenAllValidationsPass()
+    {
+        var accountId = 32;
+        var name = "namee";
+        var address = "Maple Stree 189";
+        string? email = "someTest@gmail.com";
+        string? phoneNumber = null;
+        var account = new Account(name, address, email, phoneNumber) { Id = accountId };
+        _entityService.GetById(accountId).Returns(account);
+        _queryService.ClientForAccountExists(accountId).Returns(false);
+        _clientEntityService.Insert(Arg.Any<Client>(), Arg.Any<IValidator<Client>>())
+            .Returns(call => Result.Valid(call.Arg<Client>()));
+
+        var result = _accountService.CreateClient(accountId);
 
         Assert.IsTrue(result.IsValid);
     }
