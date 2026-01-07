@@ -8,7 +8,7 @@ public record AccountUpdateOptions(
     Optional<string?> Email,
     Optional<string?> PhoneNumber)
 {
-    public static readonly AccountUpdateOptions Empty = new(
+    public static readonly AccountUpdateOptions Default = new(
         Optional.None<string>(),
         Optional.None<string>(),
         Optional.None<string?>(),
