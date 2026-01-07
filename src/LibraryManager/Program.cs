@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ServiceLayer;
+using ServiceLayer.Accounts;
 using ServiceLayer.Authors;
 using ServiceLayer.BookDefinitions;
 using ServiceLayer.BookEditions;
@@ -101,6 +103,7 @@ internal class Program
         container.Register(typeof(IEntityService<>), typeof(EntityService<>));
         container.Register<IDomainQueryService, DomainQueryService>();
         container.Register<IBookEditionQueryService, BookEditionQueryService>();
+        container.Register<IAccountQueryService, AccountQueryService>();
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
         container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
 
@@ -117,5 +120,8 @@ internal class Program
         container.Register<IBookEditionService, BookEditionService>();
         container.Register<IValidator<BookEdition>, BookEditionValidator>();
         container.Register<IValidator<BooksUpdateOptions>, BooksUpdateOptionsValidator>();
+
+        container.Register<IAccountService, AccountService>();
+        container.Register<IValidator<Account>, AccountValidator>();
     }
 }

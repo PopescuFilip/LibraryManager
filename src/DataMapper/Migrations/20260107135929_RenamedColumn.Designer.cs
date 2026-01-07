@@ -4,6 +4,7 @@ using DataMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataMapper.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    partial class LibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260107135929_RenamedColumn")]
+    partial class RenamedColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,8 +226,7 @@ namespace DataMapper.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId")
-                        .IsUnique();
+                    b.HasIndex("AccountId");
 
                     b.ToTable("Clients");
                 });
@@ -265,8 +267,7 @@ namespace DataMapper.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId")
-                        .IsUnique();
+                    b.HasIndex("AccountId");
 
                     b.ToTable("Employees");
                 });
@@ -360,8 +361,8 @@ namespace DataMapper.Migrations
             modelBuilder.Entity("DomainModel.Client", b =>
                 {
                     b.HasOne("DomainModel.Account", "Account")
-                        .WithOne()
-                        .HasForeignKey("DomainModel.Client", "AccountId")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -380,8 +381,8 @@ namespace DataMapper.Migrations
             modelBuilder.Entity("DomainModel.Employee", b =>
                 {
                     b.HasOne("DomainModel.Account", "Account")
-                        .WithOne()
-                        .HasForeignKey("DomainModel.Employee", "AccountId")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -12,4 +12,6 @@ public class Employee : IEntity
     public Account Account { get; set; } = null!;
 
     public List<BorrowRecord> BorrowRecords { get; } = [];
+
+    public Employee(int accountId) => AccountId = accountId;
 }

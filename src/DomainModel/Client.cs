@@ -12,4 +12,6 @@ public class Client : IEntity
     public Account Account { get; private set; } = null!;
 
     public List<BorrowRecord> BorrowRecords { get; } = [];
+
+    public Client(int accountId) => AccountId = accountId;
 }
