@@ -19,4 +19,14 @@ public static class Generator
 
     public static List<BookEdition> GenerateBookEditionsFrom(IEnumerable<int> ids) =>
         ids.Select(id => new BookEdition("", 21, BookType.BoardBook, 1) { Id = id }).ToList();
+
+    public static List<Client> GenerateClientsFrom(List<(int Id, int AccountId)> idsWithAccounts) =>
+        idsWithAccounts
+        .Select(kvp => new Client(kvp.AccountId) { Id = kvp.Id })
+        .ToList();
+
+    public static List<Employee> GenerateEmployeesFrom(List<(int Id, int AccountId)> idsWithAccounts) =>
+        idsWithAccounts
+        .Select(kvp => new Employee(kvp.AccountId) { Id = kvp.Id })
+        .ToList();
 }

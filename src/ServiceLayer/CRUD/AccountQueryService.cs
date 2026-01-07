@@ -1,5 +1,4 @@
 ﻿using DataMapper;
-using DataMapper.QueryHelpers;
 using DomainModel;
 
 namespace ServiceLayer.CRUD;

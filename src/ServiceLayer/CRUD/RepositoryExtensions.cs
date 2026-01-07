@@ -8,7 +8,7 @@ namespace ServiceLayer.CRUD;
 public static class RepositoryExtensions
 {
     public static bool Exists<T>(this IRepository<T> repository,
-        Expression<Func<T, bool>>? filter = null)
+        Expression<Func<T, bool>> filter)
         where T : IEntity
         =>
         repository.Get(
@@ -16,5 +16,5 @@ public static class RepositoryExtensions
             Collector<int>.Any,
             asNoTracking: true,
             Order<T>.ById,
-            filter: filter);
+            filter);
 }
