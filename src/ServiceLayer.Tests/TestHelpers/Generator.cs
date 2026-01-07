@@ -16,4 +16,7 @@ public static class Generator
 
     public static List<Author> GenerateAuthorsFrom(IEnumerable<int> ids) =>
         ids.Select(id => new Author("") { Id = id }).ToList();
+
+    public static List<BookEdition> GenerateBookEditionsFrom(IEnumerable<int> ids) =>
+        ids.Select(id => new BookEdition("", 21, BookType.BoardBook, 1) { Id = id }).ToList();
 }
