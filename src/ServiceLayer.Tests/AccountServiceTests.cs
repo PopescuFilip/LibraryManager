@@ -13,14 +13,22 @@ public class AccountServiceTests
 {
     private AccountService _accountService = default!;
     private IEntityService<Account> _entityService = default!;
+    private IEntityService<Client> _clientEntityService = default!;
+    private IEntityService<Employee> _employeeEntityService = default!;
     private IValidator<Account> _validator = default!;
 
     [TestInitialize]
     public void Init()
     {
         _entityService = Substitute.For<IEntityService<Account>>();
+        _clientEntityService = Substitute.For<IEntityService<Client>>();
+        _employeeEntityService = Substitute.For<IEntityService<Employee>>();
         _validator = Substitute.For<IValidator<Account>>();
-        _accountService = new AccountService(_entityService, _validator);
+        _accountService = new AccountService(
+            _entityService,
+            _clientEntityService,
+            _employeeEntityService,
+            _validator);
     }
 
     [TestMethod]
