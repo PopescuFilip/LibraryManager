@@ -1,15 +1,23 @@
 ﻿using DomainModel;
-using ServiceLayer.Authors;
 using ServiceLayer.CRUD;
 
 namespace ServiceLayer.Accounts;
 
 public interface IAccountService
 {
-    Result<Account> Create(AuthorOptions options);
-    Result<Account> Update(AuthorOptions options);
+    Result<Account> Create(AccountOptions options);
+    Result<Account> Update(AccountOptions options);
 }
 
-public class AccountService(IEntityService<Account> _entityService)
+public class AccountService(IEntityService<Account> _entityService) : IAccountService
 {
+    public Result<Account> Create(AccountOptions options)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Result<Account> Update(AccountOptions options)
+    {
+        throw new NotImplementedException();
+    }
 }

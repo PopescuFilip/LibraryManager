@@ -1,6 +1,6 @@
-﻿namespace ServiceLayer.Authors;
+﻿namespace ServiceLayer.Accounts;
 
-public record AuthorOptions(
+public record AccountOptions(
     string Name,
     string Address,
     string? Email,
