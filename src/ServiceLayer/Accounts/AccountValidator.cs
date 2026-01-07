@@ -1,13 +1,14 @@
-﻿using FluentValidation;
+﻿using DomainModel;
+using FluentValidation;
 using System.Net.Mail;
 
 namespace ServiceLayer.Accounts;
 
-public class AccountOptionsValidator : AbstractValidator<AccountOptions>
+public class AccountValidator : AbstractValidator<Account>
 {
     private const char Plus = '+';
 
-    public AccountOptionsValidator()
+    public AccountValidator()
     {
         RuleFor(x => x.Name).NotEmpty();
         RuleFor(x => x.Address).NotEmpty();

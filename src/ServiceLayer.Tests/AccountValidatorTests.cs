@@ -1,4 +1,5 @@
-﻿using FluentValidation.TestHelper;
+﻿using DomainModel;
+using FluentValidation.TestHelper;
 using ServiceLayer.Accounts;
 using System.Diagnostics.CodeAnalysis;
 
@@ -6,14 +7,14 @@ namespace ServiceLayer.UnitTests;
 
 [TestClass]
 [ExcludeFromCodeCoverage]
-public class AccountOptionsValidatorTests
+public class AccountValidatorTests
 {
-    private AccountOptionsValidator _validator = default!;
+    private AccountValidator _validator = default!;
 
     [TestInitialize]
     public void Init()
     {
-        _validator = new AccountOptionsValidator();
+        _validator = new AccountValidator();
     }
 
     [TestMethod]
@@ -23,9 +24,9 @@ public class AccountOptionsValidatorTests
         var address = "Maple Street no. 12";
         string? email = "test@.com";
         string? phoneNumber = "0765123123";
-        var options = new AccountOptions(name, address, email, phoneNumber);
+        var account = new Account(name, address, email, phoneNumber);
 
-        var result = _validator.TestValidate(options);
+        var result = _validator.TestValidate(account);
 
         result.ShouldHaveValidationErrorFor(x => x.Email);
     }
@@ -37,9 +38,9 @@ public class AccountOptionsValidatorTests
         var address = "Maple Street no. 12";
         string? email = null;
         string? phoneNumber = "0765123ab3";
-        var options = new AccountOptions(name, address, email, phoneNumber);
+        var account = new Account(name, address, email, phoneNumber);
 
-        var result = _validator.TestValidate(options);
+        var result = _validator.TestValidate(account);
 
         result.ShouldHaveValidationErrorFor(x => x.PhoneNumber);
     }
@@ -51,9 +52,9 @@ public class AccountOptionsValidatorTests
         var address = "Maple Street no. 12";
         string? email = "test@gmail.com";
         string? phoneNumber = "0765123123456";
-        var options = new AccountOptions(name, address, email, phoneNumber);
+        var account = new Account(name, address, email, phoneNumber);
 
-        var result = _validator.TestValidate(options);
+        var result = _validator.TestValidate(account);
 
         result.ShouldHaveValidationErrorFor(x => x.PhoneNumber);
     }
@@ -65,9 +66,9 @@ public class AccountOptionsValidatorTests
         var address = "Maple Street no. 12";
         string? email = null;
         string? phoneNumber = "07651231";
-        var options = new AccountOptions(name, address, email, phoneNumber);
+        var account = new Account(name, address, email, phoneNumber);
 
-        var result = _validator.TestValidate(options);
+        var result = _validator.TestValidate(account);
 
         result.ShouldHaveValidationErrorFor(x => x.PhoneNumber);
     }
@@ -79,9 +80,9 @@ public class AccountOptionsValidatorTests
         var address = "Maple Street no. 12";
         string? email = null;
         string? phoneNumber = null;
-        var options = new AccountOptions(name, address, email, phoneNumber);
+        var account = new Account(name, address, email, phoneNumber);
 
-        var result = _validator.TestValidate(options);
+        var result = _validator.TestValidate(account);
 
         result.ShouldHaveValidationErrorFor(x => x.Email);
         result.ShouldHaveValidationErrorFor(x => x.PhoneNumber);
@@ -94,9 +95,9 @@ public class AccountOptionsValidatorTests
         var address = "";
         string? email = "test@gmail.com";
         string? phoneNumber = "0765123123";
-        var options = new AccountOptions(name, address, email, phoneNumber);
+        var account = new Account(name, address, email, phoneNumber);
 
-        var result = _validator.TestValidate(options);
+        var result = _validator.TestValidate(account);
 
         result.ShouldHaveValidationErrorFor(x => x.Address);
     }
@@ -108,9 +109,9 @@ public class AccountOptionsValidatorTests
         var address = "Maple Street no. 12";
         string? email = "test@gmail.com";
         string? phoneNumber = "0765123123";
-        var options = new AccountOptions(name, address, email, phoneNumber);
+        var account = new Account(name, address, email, phoneNumber);
 
-        var result = _validator.TestValidate(options);
+        var result = _validator.TestValidate(account);
 
         result.ShouldHaveValidationErrorFor(x => x.Name);
     }
@@ -122,9 +123,9 @@ public class AccountOptionsValidatorTests
         var address = "Maple Street no. 12";
         string? email = "test@gmail.com";
         string? phoneNumber = "+40765123123";
-        var options = new AccountOptions(name, address, email, phoneNumber);
+        var account = new Account(name, address, email, phoneNumber);
 
-        var result = _validator.TestValidate(options);
+        var result = _validator.TestValidate(account);
 
         result.ShouldNotHaveAnyValidationErrors();
     }
@@ -136,9 +137,9 @@ public class AccountOptionsValidatorTests
         var address = "Maple Street no. 12";
         string? email = "test@gmail.com";
         string? phoneNumber = "0765123123";
-        var options = new AccountOptions(name, address, email, phoneNumber);
+        var account = new Account(name, address, email, phoneNumber);
 
-        var result = _validator.TestValidate(options);
+        var result = _validator.TestValidate(account);
 
         result.ShouldNotHaveAnyValidationErrors();
     }

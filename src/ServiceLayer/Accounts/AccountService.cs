@@ -6,18 +6,19 @@ namespace ServiceLayer.Accounts;
 
 public interface IAccountService
 {
-    Result<Account> Create(AccountOptions options);
+    Result<Account> Create(string name, string address, string? email, string? phoneNumber);
     Result<Account> Update(AccountOptions options);
 }
 
 public class AccountService(
     IEntityService<Account> _entityService,
-    IValidator<AccountOptions> _optionsValidator)
+    IValidator<Account> _validator)
     : IAccountService
 {
-    public Result<Account> Create(AccountOptions options)
+    public Result<Account> Create(string name, string address, string? email, string? phoneNumber)
     {
-        throw new NotImplementedException();
+        var account = new Account(name, address, email, phoneNumber);
+        return _entityService.Insert(account, _validator);
     }
 
     public Result<Account> Update(AccountOptions options)

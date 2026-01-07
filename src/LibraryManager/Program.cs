@@ -120,6 +120,6 @@ internal class Program
         container.Register<IValidator<BooksUpdateOptions>, BooksUpdateOptionsValidator>();
 
         container.Register<IAccountService, AccountService>();
-        container.Register<IValidator<AccountOptions>, AccountOptionsValidator>();
+        container.Register<IValidator<Account>, AccountValidator>();
     }
 }
