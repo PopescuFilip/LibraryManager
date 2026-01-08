@@ -24,11 +24,11 @@ public class BookDefinitionService(
 
         var (name, authorIds, domainIds) = options;
         var authors = _authorEntityService.GetAllById(authorIds);
-        if (authors.Count != authorIds.Length)
+        if (authors.Count != authorIds.Count)
             return Result.Invalid();
 
         var domains = _domainEntityService.GetAllById(domainIds);
-        if (domains.Count != domainIds.Length)
+        if (domains.Count != domainIds.Count)
             return Result.Invalid();
 
         var bookDefinition = new BookDefinition(name, authors, domains);

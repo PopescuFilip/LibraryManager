@@ -54,8 +54,8 @@ internal class Program
 
         var options = new BookDefinitionCreateOptions(
             "blabla",
-            [.. authorIds],
-            [.. domainIds.Take(1)]);
+            authorIds.ToIdCollection(),
+            domainIds.Take(1).ToIdCollection());
 
         var createdBook = bookService.Create(options).Get();
 

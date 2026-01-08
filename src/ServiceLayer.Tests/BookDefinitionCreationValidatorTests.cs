@@ -21,8 +21,8 @@ public class BookDefinitionCreationValidatorTests
     public void Validator_ShouldReturnInvalid_WhenNameIsEmpty()
     {
         var name = string.Empty;
-        var authorIds = ImmutableArray.Create(1, 2, 3);
-        var domainIds = ImmutableArray.Create(4, 5, 6, 7);
+        var authorIds = ImmutableArray.Create(1, 2, 3).ToIdCollection();
+        var domainIds = ImmutableArray.Create(4, 5, 6, 7).ToIdCollection();
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
 
         var validationResult = _validator.TestValidate(options);
@@ -34,34 +34,34 @@ public class BookDefinitionCreationValidatorTests
     public void Validator_ShouldReturnInvalid_WhenAuthorIdsIsEmpty()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create<int>();
-        var domainIds = ImmutableArray.Create(4, 5, 6, 7);
+        var authorIds = ImmutableArray.Create<int>().ToIdCollection();
+        var domainIds = ImmutableArray.Create(4, 5, 6, 7).ToIdCollection();
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
 
         var validationResult = _validator.TestValidate(options);
 
-        validationResult.ShouldHaveValidationErrorFor(x => x.AuthorIds.Length);
+        validationResult.ShouldHaveValidationErrorFor(x => x.AuthorIds.Count);
     }
 
     [TestMethod]
     public void Validator_ShouldReturnInvalid_WhenDomainIdsIsEmpty()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create(1, 2, 3);
-        var domainIds = ImmutableArray.Create<int>();
+        var authorIds = ImmutableArray.Create(1, 2, 3).ToIdCollection();
+        var domainIds = ImmutableArray.Create<int>().ToIdCollection();
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
 
         var validationResult = _validator.TestValidate(options);
 
-        validationResult.ShouldHaveValidationErrorFor(x => x.DomainIds.Length);
+        validationResult.ShouldHaveValidationErrorFor(x => x.DomainIds.Count);
     }
 
     [TestMethod]
     public void Validator_ShouldReturnInvalid_WhenAuthorIdsContainsDuplicates()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create(1, 2, 3, 3);
-        var domainIds = ImmutableArray.Create(4, 5, 6, 7);
+        var authorIds = ImmutableArray.Create(1, 2, 3, 3).ToIdCollection();
+        var domainIds = ImmutableArray.Create(4, 5, 6, 7).ToIdCollection();
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
 
         var validationResult = _validator.TestValidate(options);
@@ -73,8 +73,8 @@ public class BookDefinitionCreationValidatorTests
     public void Validator_ShouldReturnInvalid_WhenDomainIdsContainsDuplicates()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create(1, 2, 3);
-        var domainIds = ImmutableArray.Create(4, 5, 6, 7, 4);
+        var authorIds = ImmutableArray.Create(1, 2, 3).ToIdCollection();
+        var domainIds = ImmutableArray.Create(4, 5, 6, 7, 4).ToIdCollection();
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
 
         var validationResult = _validator.TestValidate(options);
@@ -86,8 +86,8 @@ public class BookDefinitionCreationValidatorTests
     public void Validator_ShouldReturnValid_WhenOptionsAreInCorrectState()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create(1, 2, 3);
-        var domainIds = ImmutableArray.Create(4, 5, 6, 7);
+        var authorIds = ImmutableArray.Create(1, 2, 3).ToIdCollection();
+        var domainIds = ImmutableArray.Create(4, 5, 6, 7).ToIdCollection();
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
 
         var validationResult = _validator.TestValidate(options);
