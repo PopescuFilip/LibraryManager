@@ -29,4 +29,17 @@ public static class Generator
         idsWithAccounts
         .Select(kvp => new Employee(kvp.AccountId) { Id = kvp.Id })
         .ToList();
+
+    public static List<BorrowRecord> GenerateBorrowRecordsFrom(IEnumerable<(int LenderId, int BookCount, DateTime Date)> borrowRecordCreateOptions) =>
+        borrowRecordCreateOptions
+        .Select(opt => new BorrowRecord(321, opt.LenderId, GenerateBooksFrom(opt.BookCount))
+        {
+            BorrowDateTime = opt.Date
+        })
+        .ToList();
+
+    public static IEnumerable<Book> GenerateBooksFrom(int count) =>
+        Enumerable
+        .Range(0, count)
+        .Select(_ => new Book(BookStatus.Borrowed, 32));
 }
