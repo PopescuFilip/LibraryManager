@@ -124,7 +124,6 @@ public class ClientRestrictionsProviderTests
         Assert.AreEqual(TimeUnit.Day, timeUnit);
     }
 
-    // big one
     [TestMethod]
     public void GetClientRestrictions_ShouldReturnCorrectRestrictions()
     {
@@ -169,7 +168,6 @@ public class ClientRestrictionsProviderTests
         Assert.AreEqual(restrictions.MaxBorrowedBooksPerDay, perDayLimit);
     }
 
-    //------------------------------------------------------------------------
     [TestMethod]
     public void GetPrivilegedClientRestrictions_ShouldMapMaxBooksBorrowedPerDayPropertiesCorrectly()
     {
