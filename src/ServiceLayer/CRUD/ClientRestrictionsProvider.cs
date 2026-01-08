@@ -17,18 +17,20 @@ public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvi
     {
         var restrictions = _restrictionsProvider.GetRestrictions()!;
 
-        var periodLimit = Limit.PerDay(restrictions.MaxBorrowedBooksPerPeriod, restrictions.PerPeriodLimitDayCount);
-        var sameDomainLimit = Limit.PerMonth(restrictions.MaxBorrowedBooksFromSameDomain, restrictions.SameDomainLimitMonthCount);
-        var extensionLimit = Limit.PerMonth(restrictions.MaxExtensionDays, ExtensionDaysLimitMonthCount);
-        var sameBookLimit = Limit.PerDay(1, restrictions.SameBookLimitDayCount);
+        var periodLimit = Limit.PerPeriodInDays(restrictions.MaxBorrowedBooksPerPeriod, restrictions.PerPeriodLimitDayCount);
+        var borrowedBooksAtOnceLimit = Limit.PerRequest(restrictions.MaxBorrowedBooksAtOnce);
+        var sameDomainLimit = Limit.PerPeriodInMonths(restrictions.MaxBorrowedBooksFromSameDomain, restrictions.SameDomainLimitMonthCount);
+        var extensionLimit = Limit.PerPeriodInMonths(restrictions.MaxExtensionDays, ExtensionDaysLimitMonthCount);
+        var sameBookLimit = Limit.PerPeriodInDays(1, restrictions.SameBookLimitDayCount);
+        var borrowedBooksPerDayLimit = Limit.PerDay(restrictions.MaxBorrowedBooksPerDay);
 
         return new ClientRestrictions(
             BorrowedBooksLimit: periodLimit,
-            MaxBorrowedBooksAtOnce: restrictions.MaxBorrowedBooksAtOnce,
+            BorrowedBooksPerRequestLimit: borrowedBooksAtOnceLimit,
             SameDomainBorrowedBooksLimit: sameDomainLimit,
             ExtensionDaysLimit: extensionLimit,
             BorrowedSameBookLimit: sameBookLimit,
-            MaxBorrowedBooksPerDay: restrictions.MaxBorrowedBooksPerDay
+            BorrowedBooksPerDayLimit: borrowedBooksPerDayLimit
             );
     }
 
@@ -38,11 +40,11 @@ public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvi
         var privilegedClientRestrictions = basicRestrictions with
         {
             BorrowedBooksLimit = basicRestrictions.BorrowedBooksLimit.DoubleItem().HalfTime(),
-            MaxBorrowedBooksAtOnce = basicRestrictions.MaxBorrowedBooksAtOnce * 2,
+            BorrowedBooksPerRequestLimit = basicRestrictions.BorrowedBooksPerRequestLimit.DoubleItem(),
             SameDomainBorrowedBooksLimit = basicRestrictions.SameDomainBorrowedBooksLimit.DoubleItem(),
             ExtensionDaysLimit = basicRestrictions.ExtensionDaysLimit.DoubleItem(),
             BorrowedSameBookLimit = basicRestrictions.BorrowedSameBookLimit.HalfTime(),
-            MaxBorrowedBooksPerDay = int.MaxValue
+            BorrowedBooksPerDayLimit = Limit.PerDay(int.MaxValue)
         };
 
         return privilegedClientRestrictions;
