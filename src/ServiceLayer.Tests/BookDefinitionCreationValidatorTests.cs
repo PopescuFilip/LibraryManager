@@ -14,7 +14,8 @@ public class BookDefinitionCreationValidatorTests
     [TestInitialize]
     public void Init()
     {
-        _validator = new BookDefinitionCreationValidator();
+        var idValidator = new IdCollectionValidator();
+        _validator = new BookDefinitionCreationValidator(idValidator);
     }
 
     [TestMethod]

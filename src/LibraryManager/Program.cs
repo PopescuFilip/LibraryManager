@@ -107,6 +107,8 @@ internal class Program
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
         container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
 
+        container.Register<IValidator<IdCollection>, IdCollectionValidator>();
+
         container.Register<IDomainService, DomainService>();
         container.Register<IValidator<Domain>, DomainValidator>();
 
