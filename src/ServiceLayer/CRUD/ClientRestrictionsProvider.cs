@@ -11,8 +11,6 @@ public interface IClientRestrictionsProvider
 
 public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvider) : IClientRestrictionsProvider
 {
-    private const int ExtensionDaysLimitMonthCount = 3;
-
     public ClientRestrictions GetClientRestrictions()
     {
         var restrictions = _restrictionsProvider.GetRestrictions()!;
@@ -20,7 +18,7 @@ public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvi
         var periodLimit = Limit.PerPeriodInDays(restrictions.MaxBorrowedBooksPerPeriod, restrictions.PerPeriodLimitDayCount);
         var borrowedBooksAtOnceLimit = Limit.PerRequest(restrictions.MaxBorrowedBooksAtOnce);
         var sameDomainLimit = Limit.PerPeriodInMonths(restrictions.MaxBorrowedBooksFromSameDomain, restrictions.SameDomainLimitMonthCount);
-        var extensionLimit = Limit.PerPeriodInMonths(restrictions.MaxExtensionDays, ExtensionDaysLimitMonthCount);
+        var extensionLimit = Limit.PerPeriodInMonths(restrictions.MaxExtensionDays, restrictions.ExtensionDaysLimitMonthCount);
         var sameBookLimit = Limit.PerPeriodInDays(1, restrictions.SameBookLimitDayCount);
         var borrowedBooksPerDayLimit = Limit.PerDay(restrictions.MaxBorrowedBooksPerDay);
 

@@ -5,13 +5,13 @@ namespace DataMapper;
 
 public interface IRestrictionsProvider
 {
-    Restrictions? GetRestrictions();
+    RawRestrictions? GetRestrictions();
 }
 
 public class RestrictionsProvider(IConfiguration configuration) : IRestrictionsProvider
 {
     private const string RestrictionsSection = "Restrictions";
 
-    public Restrictions? GetRestrictions() =>
-        configuration.GetRequiredSection(RestrictionsSection).Get<Restrictions>();
+    public RawRestrictions? GetRestrictions() =>
+        configuration.GetRequiredSection(RestrictionsSection).Get<RawRestrictions>();
 }

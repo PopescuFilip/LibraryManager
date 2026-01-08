@@ -23,7 +23,7 @@ public class BookRestrictionsProviderTests
     [TestMethod]
     public void Get_ShouldReturnCorrectBookRestrictions()
     {
-        var restrictions = new Restrictions()
+        var restrictions = new RawRestrictions()
         {
             MaxDomains = 10,
         };

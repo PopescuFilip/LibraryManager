@@ -7,7 +7,7 @@ public static class LimitExtensions
 
     public static PeriodLimit HalfTime(this PeriodLimit limit) => limit switch
     {
-        (1, _, _) => limit,
+        (_, 1, _) => limit,
         _ => limit with { TimeUnitCount = limit.TimeUnitCount / 2 },
     };
 
