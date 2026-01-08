@@ -13,8 +13,10 @@ using ServiceLayer.Accounts;
 using ServiceLayer.Authors;
 using ServiceLayer.BookDefinitions;
 using ServiceLayer.BookEditions;
+using ServiceLayer.Borrowing;
 using ServiceLayer.CRUD;
 using ServiceLayer.Domains;
+using ServiceLayer.Restriction;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 
@@ -29,42 +31,17 @@ internal class Program
 
         using var scope = AsyncScopedLifestyle.BeginScope(container);
 
-        var queryService = scope.GetRequiredService<IDomainQueryService>();
-        var bookService = scope.GetRequiredService<IBookDefinitionService>();
-        var bookEditionService = scope.GetRequiredService<IBookEditionService>();
+        var client = scope.GetAllEntities<Client>().First();
+        var employee = scope.GetAllEntities<Employee>().First();
 
-        var original = scope.GetAllEntities<BookEdition>(x => x.BookRecords)
-            .Single(x => x.Id == 2);
+        var queryService = scope.GetRequiredService<IBorrowRecordQueryService>();
+        var count = queryService.GetBooksLendedTodayCount(employee.Id);
 
-        var authorIds = scope.GetAllEntities<Author>()
-            .Take(2)
-            .Select(a => a.Id)
-            .ToList();
+        var books = scope.GetAllEntities<Book>().Take(2).Select(x => x.Id).ToIdCollection();
 
-        var domains = new List<string>()
-        {
-            DomainInitialization.AlgoritmiCuantici,
-            DomainInitialization.AlgoritmicaGrafurilor
-        };
+        var borrowService = scope.GetRequiredService<IBorrowService>();
 
-        var domainIds = domains
-            .Select(queryService.GetIdByName)
-            .Select(x => x ?? 0)
-            .ToList() ?? [];
-
-        var options = new BookDefinitionCreateOptions(
-            "blabla",
-            authorIds.ToIdCollection(),
-            domainIds.Take(1).ToIdCollection());
-
-        var createdBook = bookService.Create(options).Get();
-
-        var createdBookEdition = bookEditionService
-            .Create("edition11 name", 100, BookType.Hardcover, createdBook.Id)
-            .Get();
-
-        var addOptios = new BooksUpdateOptions(2, 3, 2);
-        var updatedBookEdition = bookEditionService.AddBooks(addOptios).Get();
+        var success = borrowService.Borrow(client.Id, employee.Id, books);
 
         Console.WriteLine("Hello world!");
     }
@@ -106,6 +83,7 @@ internal class Program
         container.Register<IAccountQueryService, AccountQueryService>();
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
         container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
+        container.Register<IBorrowRecordQueryService, BorrowRecordQueryService>();
 
         container.Register<IValidator<IdCollection>, IdCollectionValidator>();
 
@@ -125,5 +103,8 @@ internal class Program
 
         container.Register<IAccountService, AccountService>();
         container.Register<IValidator<Account>, AccountValidator>();
+
+        container.Register<IRestrictionsService, RestrictionsService>();
+        container.Register<IBorrowService, BorrowService>();
     }
 }

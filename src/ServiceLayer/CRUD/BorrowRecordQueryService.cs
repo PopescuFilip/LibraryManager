@@ -25,11 +25,11 @@ public class BorrowRecordQueryService(IRepository<BorrowRecord> _repository)
 
         return _repository.Get(
             x => x.BorrowedBooks.Count,
-            Collector<int>.From(q => q.Sum()),
+            Collector<int>.ToList,
             asNoTracking: true,
             Order<BorrowRecord>.ById,
             filter,
             includeProperties: x => x.BorrowedBooks
-            );
+            ).Sum();
     }
 }
