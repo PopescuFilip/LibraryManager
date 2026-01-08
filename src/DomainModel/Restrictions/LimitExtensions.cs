@@ -18,4 +18,7 @@ public static class LimitExtensions
         PerDayLimit => DateTime.Today,
         _ => throw new InvalidOperationException($"{limit} is not supported")
     };
+
+    public static bool ExceedsLimit(this BaseLimit limit, int count) =>
+        count > limit.ItemCount;
 }
