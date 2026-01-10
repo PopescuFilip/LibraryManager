@@ -25,6 +25,28 @@ public class BookDefinitionValidatorTests
     }
 
     [TestMethod]
+    public void Validator_ShouldReturnInvalid_WhenBookRestrictionsAreNotFound()
+    {
+        var name = "name";
+        var authors = new List<Author>()
+        {
+            new("name1") { Id = 1 },
+            new("name2") { Id = 2 },
+        };
+        var domains = new List<Domain>()
+        {
+            new("name32") { Id = 4 },
+            new("name33") { Id = 5 }
+        };
+        var bookDefinition = new BookDefinition(name, authors, domains);
+        _restrictionProvider.Get().Returns(Result.Invalid());
+
+        var result = _validator.TestValidate(bookDefinition);
+
+        result.ShouldHaveValidationErrorFor(x => x.Domains.Count);
+    }
+
+    [TestMethod]
     public void Validator_ShouldReturnInvalid_WhenNameIsEmpty()
     {
         var name = string.Empty;
