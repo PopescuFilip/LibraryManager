@@ -20,6 +20,26 @@ public class BorrowRecordQueryServiceTests
     }
 
     [TestMethod]
+    public void GetBooksLendedTodayCount_ShouldReturnZero_WhenNoItemsPassFilter()
+    {
+        var employeeId = 3;
+        var someOtherId = 33;
+        var options = new List<(int LenderId, int BookCount, DateTime Date)>()
+        {
+            (someOtherId, 43, DateTime.Today),
+            (someOtherId, 21, DateTime.Today),
+            (employeeId, 20, DateTime.Today.AddDays(2)),
+            (employeeId, 47, DateTime.Today.AddHours(-4)),
+        };
+        var borrowRecords = Generator.GenerateBorrowRecordsFrom(options);
+        _fakeRepository.SetSourceValues(borrowRecords);
+
+        var count = _queryService.GetBooksLendedTodayCount(employeeId);
+
+        Assert.AreEqual(0, count);
+    }
+
+    [TestMethod]
     public void GetBooksLendedTodayCount_ShouldReturnCorrectCount()
     {
         var employeeId = 3;
@@ -32,8 +52,8 @@ public class BorrowRecordQueryServiceTests
         {
             (employeeId, count1, DateTime.Today),
             (someOtherId, 21, DateTime.Today),
-            (employeeId, count2, DateTime.Today.AddDays(2)),
-            (employeeId, 20, DateTime.Today.AddHours(4)),
+            (employeeId, 60, DateTime.Today.AddDays(2)),
+            (employeeId, count2, DateTime.Today.AddHours(4)),
             (employeeId, 47, DateTime.Today.AddHours(-4)),
             (employeeId, count3, DateTime.Today.AddHours(20)),
         };
