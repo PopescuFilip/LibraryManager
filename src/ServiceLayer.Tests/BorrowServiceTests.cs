@@ -20,6 +20,7 @@ public class BorrowServiceTests
     private IEntityService<Employee> _employeeEntityService = default!;
     private IValidator<IdCollection> _idCollectionValidator = default!;
     private IRestrictionsService _restrictionsService = default!;
+    private IEmployeeRestrictionsProvider _employeeRestrictionsProvider = default!;
     private IBorrowRecordQueryService _borrowRecordQueryService = default!;
 
     [TestInitialize]
@@ -30,6 +31,7 @@ public class BorrowServiceTests
         _employeeEntityService = Substitute.For<IEntityService<Employee>>();
         _idCollectionValidator = Substitute.For<IValidator<IdCollection>>();
         _restrictionsService = Substitute.For<IRestrictionsService>();
+        _employeeRestrictionsProvider = Substitute.For<IEmployeeRestrictionsProvider>();
         _borrowRecordQueryService = Substitute.For<IBorrowRecordQueryService>();
 
         _borrowService = new BorrowService(
@@ -38,7 +40,9 @@ public class BorrowServiceTests
             _employeeEntityService,
             _idCollectionValidator,
             _restrictionsService,
-            _borrowRecordQueryService);
+            _employeeRestrictionsProvider,
+            _borrowRecordQueryService
+            );
     }
 
     [TestMethod]

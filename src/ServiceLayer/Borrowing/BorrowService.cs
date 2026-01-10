@@ -17,7 +17,9 @@ public class BorrowService(
     IEntityService<Employee> _employeeEntityService,
     IValidator<IdCollection> _idCollectionValidator,
     IRestrictionsService _restrictionsService,
-    IBorrowRecordQueryService _borrowRecordQueryService)
+    IEmployeeRestrictionsProvider _employeeRestrictionsProvider,
+    IBorrowRecordQueryService _borrowRecordQueryService
+    )
     : IBorrowService
 {
     private readonly IValidator<BorrowRecord> _validator = EmptyValidator.Create<BorrowRecord>();
