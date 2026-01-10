@@ -29,8 +29,10 @@ public class BookRestrictionsProviderTests
         };
         _restrictionProvider.GetRestrictions().Returns(restrictions);
 
-        var bookRestrictions = _bookRestrictionsProvider.Get();
+        var result = _bookRestrictionsProvider.Get();
 
+        Assert.IsTrue(result.IsValid);
+        var bookRestrictions = result.Get();
         Assert.AreEqual(restrictions.MaxDomains, bookRestrictions.MaxDomains);
     }
 }

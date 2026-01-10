@@ -45,7 +45,9 @@ public class BorrowService(
         if (clientRestrictions.BorrowedBooksPerRequestLimit.ExceedsLimit(bookIds.Count))
             return false;
 
+        var employeeRestrictionsResult = _employeeRestrictionsProvider.Get();
         var booksLendedToday = _borrowRecordQueryService.GetBooksLendedTodayCount(lender.Id);
+
 
         var someBooks = new List<Book>();
         var borrowRecord = new BorrowRecord(borrowerId, lenderId, someBooks);

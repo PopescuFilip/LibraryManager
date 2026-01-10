@@ -19,8 +19,18 @@ public class RestrictionsService(
             return Result.Invalid();
 
         if (_accountQueryService.EmployeeForAccountExists(accountId))
-            return Result.Valid(_clientRestrictionsProvider.GetPrivilegedClientRestrictions());
+        {
+            var privilegedClientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+            if (privilegedClientRestrictions is null)
+                return Result.Invalid();
 
-        return Result.Valid(_clientRestrictionsProvider.GetClientRestrictions());
+            return Result.Valid(privilegedClientRestrictions);
+        }
+
+        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions();
+        if (clientRestrictions is null)
+            return Result.Invalid();
+
+        return Result.Valid(clientRestrictions);
     }
 }

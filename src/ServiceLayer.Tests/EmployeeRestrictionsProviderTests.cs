@@ -19,7 +19,17 @@ public class EmployeeRestrictionsProviderTests
     }
 
     [TestMethod]
-    public void Get_ShouldReturnCorrectRestrictions()
+    public void Get_ShouldReturnValid_WhenNoRestrictionsAreFound()
+    {
+        _restrictionsProvider.GetRestrictions().Returns((RawRestrictions?)null);
+
+        var result = _employeeRestrictionsProvider.Get();
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void Get_ShouldReturnCorrectRestrictions_WhenRestrictionsProviderReturnsRestrictions()
     {
         var restrictions = new RawRestrictions()
         {
@@ -28,8 +38,24 @@ public class EmployeeRestrictionsProviderTests
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
         var expectedLimit = new PerDayLimit(restrictions.MaxBorrowedBooksGivenPerDay);
 
-        var employeeRestrictions = _employeeRestrictionsProvider.Get();
+        var result = _employeeRestrictionsProvider.Get();
 
+        Assert.IsTrue(result.IsValid);
+        var employeeRestrictions = result.Get();
         Assert.AreEqual(expectedLimit, employeeRestrictions.BorrowedBooksGivenLimit);
+    }
+
+    [TestMethod]
+    public void Get_ShouldReturnValid_WhenRestrictionsProviderReturnsRestrictions()
+    {
+        var restrictions = new RawRestrictions()
+        {
+            MaxBorrowedBooksGivenPerDay = 34
+        };
+        _restrictionsProvider.GetRestrictions().Returns(restrictions);
+
+        var result = _employeeRestrictionsProvider.Get();
+
+        Assert.IsTrue(result.IsValid);
     }
 }

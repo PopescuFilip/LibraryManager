@@ -5,13 +5,18 @@ namespace ServiceLayer.CRUD;
 
 public interface IBookRestrictionsProvider
 {
-    BookRestrictions Get();
+    Result<BookRestrictions> Get();
 }
 
 public class BookRestrictionsProvider(IRestrictionsProvider _restrictionsProvider)
     : IBookRestrictionsProvider
 {
-    public BookRestrictions Get() => _restrictionsProvider
-        .GetRestrictions()!
-        .ToBookRestrictions();
+    public Result<BookRestrictions> Get()
+    {
+        var restrictions = _restrictionsProvider.GetRestrictions();
+        if (restrictions is null)
+            return Result.Invalid();
+
+        return Result.Valid(restrictions.ToBookRestrictions());
+    }
 }

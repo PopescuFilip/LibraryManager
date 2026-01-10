@@ -5,15 +5,17 @@ namespace ServiceLayer.CRUD;
 
 public interface IClientRestrictionsProvider
 {
-    ClientRestrictions GetClientRestrictions();
-    ClientRestrictions GetPrivilegedClientRestrictions();
+    ClientRestrictions? GetClientRestrictions();
+    ClientRestrictions? GetPrivilegedClientRestrictions();
 }
 
 public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvider) : IClientRestrictionsProvider
 {
-    public ClientRestrictions GetClientRestrictions()
+    public ClientRestrictions? GetClientRestrictions()
     {
         var restrictions = _restrictionsProvider.GetRestrictions()!;
+        if (restrictions is null)
+            return null;
 
         var periodLimit = Limit.PerPeriodInDays(restrictions.MaxBorrowedBooksPerPeriod, restrictions.PerPeriodLimitDayCount);
         var borrowedBooksAtOnceLimit = Limit.PerRequest(restrictions.MaxBorrowedBooksAtOnce);
@@ -32,9 +34,12 @@ public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvi
             );
     }
 
-    public ClientRestrictions GetPrivilegedClientRestrictions()
+    public ClientRestrictions? GetPrivilegedClientRestrictions()
     {
         var basicRestrictions = GetClientRestrictions();
+        if (basicRestrictions is null)
+            return null;
+
         var privilegedClientRestrictions = basicRestrictions with
         {
             BorrowedBooksLimit = basicRestrictions.BorrowedBooksLimit.DoubleItem().HalfTime(),

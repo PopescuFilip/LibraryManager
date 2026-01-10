@@ -40,7 +40,7 @@ public class BookDefinitionValidatorTests
         };
         var bookDefinition = new BookDefinition(name, authors, domains);
         var bookRestriction = new BookRestrictions(domains.Count);
-        _restrictionProvider.Get().Returns(bookRestriction);
+        _restrictionProvider.Get().Returns(Result.Valid(bookRestriction));
 
         var result = _validator.TestValidate(bookDefinition);
 
@@ -59,7 +59,7 @@ public class BookDefinitionValidatorTests
         };
         var bookDefinition = new BookDefinition(name, authors, domains);
         var bookRestriction = new BookRestrictions(domains.Count);
-        _restrictionProvider.Get().Returns(bookRestriction);
+        _restrictionProvider.Get().Returns(Result.Valid(bookRestriction));
 
         var result = _validator.TestValidate(bookDefinition);
 
@@ -78,7 +78,7 @@ public class BookDefinitionValidatorTests
         var domains = new List<Domain>();
         var bookDefinition = new BookDefinition(name, authors, domains);
         var bookRestriction = new BookRestrictions(domains.Count);
-        _restrictionProvider.Get().Returns(bookRestriction);
+        _restrictionProvider.Get().Returns(Result.Valid(bookRestriction));
 
         var result = _validator.TestValidate(bookDefinition);
 
@@ -102,7 +102,7 @@ public class BookDefinitionValidatorTests
         };
         var bookDefinition = new BookDefinition(name, authors, domains);
         var bookRestriction = new BookRestrictions(domains.Count - 1);
-        _restrictionProvider.Get().Returns(bookRestriction);
+        _restrictionProvider.Get().Returns(Result.Valid(bookRestriction));
 
         var result = _validator.TestValidate(bookDefinition);
 
@@ -126,7 +126,7 @@ public class BookDefinitionValidatorTests
         };
         var bookDefinition = new BookDefinition(name, authors, domains);
         var bookRestriction = new BookRestrictions(domains.Count - 1);
-        _restrictionProvider.Get().Returns(bookRestriction);
+        _restrictionProvider.Get().Returns(Result.Valid(bookRestriction));
         var implicitDomains = domains.Select(x => x.Name).Take(1);
         var domainIds = domains.Select(x => x.Id);
         _domainQueryService
@@ -154,7 +154,7 @@ public class BookDefinitionValidatorTests
         };
         var bookDefinition = new BookDefinition(name, authors, domains);
         var bookRestriction = new BookRestrictions(domains.Count);
-        _restrictionProvider.Get().Returns(bookRestriction);
+        _restrictionProvider.Get().Returns(Result.Valid(bookRestriction));
 
         var result = _validator.TestValidate(bookDefinition);
 
