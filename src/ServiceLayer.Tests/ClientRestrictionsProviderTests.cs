@@ -21,6 +21,27 @@ public class ClientRestrictionsProviderTests
     }
 
     [TestMethod]
+    public void GetClientRestrictions_ShouldReturnInvalid_WhenNoRestrictionsAreFound()
+    {
+        _restrictionsProvider.GetRestrictions().Returns((RawRestrictions?)null);
+
+        var result = _clientRestrictionsProvider.GetClientRestrictions();
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void GetClientRestrictions_ShouldReturnValid_WhenRestrictionsAreFound()
+    {
+        var restrictions = new RawRestrictions();
+        _restrictionsProvider.GetRestrictions().Returns(restrictions);
+
+        var result = _clientRestrictionsProvider.GetClientRestrictions();
+
+        Assert.IsTrue(result.IsValid);
+    }
+
+    [TestMethod]
     public void GetClientRestrictions_ShouldMapMaxBooksBorrowedPerDayPropertiesCorrectly()
     {
         var restrictions = new RawRestrictions()
@@ -29,7 +50,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions().Get();
 
         var perDayLimit = clientRestrictions.BorrowedBooksPerDayLimit.ItemCount;
         Assert.AreEqual(restrictions.MaxBorrowedBooksPerDay, perDayLimit);
@@ -44,7 +65,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions().Get();
 
         var (sameBookItemCount, sameBookTimeUnitCount, sameBookTimeUnit) =
             clientRestrictions.BorrowedSameBookLimit;
@@ -63,7 +84,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions().Get();
 
         var (extensionItemCount, extensionTimeUnitCount, extensionTimeUnit) =
             clientRestrictions.ExtensionDaysLimit;
@@ -82,7 +103,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions().Get();
 
         var (sameDomainItemCount, sameDomainTimeUnitCount, sameDomainTimeUnit) =
             clientRestrictions.SameDomainBorrowedBooksLimit;
@@ -100,7 +121,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions().Get();
 
         var maxBooksAtOnce = clientRestrictions.BorrowedBooksPerRequestLimit.ItemCount;
         Assert.AreEqual(restrictions.MaxBorrowedBooksAtOnce, maxBooksAtOnce);
@@ -116,7 +137,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions().Get();
 
         var (itemCount, timeUnitCount, timeUnit) = clientRestrictions.BorrowedBooksLimit;
         Assert.AreEqual(restrictions.MaxBorrowedBooksPerPeriod, itemCount);
@@ -141,7 +162,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetClientRestrictions().Get();
 
         var (itemCount, timeUnitCount, timeUnit) = clientRestrictions.BorrowedBooksLimit;
         Assert.AreEqual(restrictions.MaxBorrowedBooksPerPeriod, itemCount);
@@ -169,6 +190,27 @@ public class ClientRestrictionsProviderTests
     }
 
     [TestMethod]
+    public void GetPrivilegedClientRestrictions_ShouldReturnInvalid_WhenNoRestrictionsAreFound()
+    {
+        _restrictionsProvider.GetRestrictions().Returns((RawRestrictions?)null);
+
+        var result = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
+    public void GetPrivilegedClientRestrictions_ShouldReturnValid_WhenRestrictionsAreFound()
+    {
+        var restrictions = new RawRestrictions();
+        _restrictionsProvider.GetRestrictions().Returns(restrictions);
+
+        var result = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+
+        Assert.IsTrue(result.IsValid);
+    }
+
+    [TestMethod]
     public void GetPrivilegedClientRestrictions_ShouldMapMaxBooksBorrowedPerDayPropertiesCorrectly()
     {
         var restrictions = new RawRestrictions()
@@ -177,7 +219,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions().Get();
 
         var perDayLimit = clientRestrictions.BorrowedBooksPerDayLimit.ItemCount;
         Assert.AreEqual(int.MaxValue, perDayLimit);
@@ -192,7 +234,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions().Get();
 
         var (sameBookItemCount, sameBookTimeUnitCount, sameBookTimeUnit) =
             clientRestrictions.BorrowedSameBookLimit;
@@ -211,7 +253,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions().Get();
 
         var (extensionItemCount, extensionTimeUnitCount, extensionTimeUnit) =
             clientRestrictions.ExtensionDaysLimit;
@@ -230,7 +272,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions().Get();
 
         var (sameDomainItemCount, sameDomainTimeUnitCount, sameDomainTimeUnit) =
             clientRestrictions.SameDomainBorrowedBooksLimit;
@@ -248,7 +290,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions().Get();
 
         var maxBooksAtOnce = clientRestrictions.BorrowedBooksPerRequestLimit.ItemCount;
         Assert.AreEqual(restrictions.MaxBorrowedBooksAtOnce * 2, maxBooksAtOnce);
@@ -264,7 +306,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions().Get();
 
         var (itemCount, timeUnitCount, timeUnit) = clientRestrictions.BorrowedBooksLimit;
         Assert.AreEqual(restrictions.MaxBorrowedBooksPerPeriod * 2, itemCount);
@@ -289,7 +331,7 @@ public class ClientRestrictionsProviderTests
         };
         _restrictionsProvider.GetRestrictions().Returns(restrictions);
 
-        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions();
+        var clientRestrictions = _clientRestrictionsProvider.GetPrivilegedClientRestrictions().Get();
 
         var (itemCount, timeUnitCount, timeUnit) = clientRestrictions.BorrowedBooksLimit;
         Assert.AreEqual(restrictions.MaxBorrowedBooksPerPeriod * 2, itemCount);

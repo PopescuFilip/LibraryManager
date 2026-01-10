@@ -5,17 +5,17 @@ namespace ServiceLayer.CRUD;
 
 public interface IClientRestrictionsProvider
 {
-    ClientRestrictions? GetClientRestrictions();
-    ClientRestrictions? GetPrivilegedClientRestrictions();
+    Result<ClientRestrictions> GetClientRestrictions();
+    Result<ClientRestrictions> GetPrivilegedClientRestrictions();
 }
 
 public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvider) : IClientRestrictionsProvider
 {
-    public ClientRestrictions? GetClientRestrictions()
+    public Result<ClientRestrictions> GetClientRestrictions()
     {
         var restrictions = _restrictionsProvider.GetRestrictions()!;
         if (restrictions is null)
-            return null;
+            return Result.Invalid();
 
         var periodLimit = Limit.PerPeriodInDays(restrictions.MaxBorrowedBooksPerPeriod, restrictions.PerPeriodLimitDayCount);
         var borrowedBooksAtOnceLimit = Limit.PerRequest(restrictions.MaxBorrowedBooksAtOnce);
@@ -24,7 +24,7 @@ public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvi
         var sameBookLimit = Limit.PerPeriodInDays(1, restrictions.SameBookLimitDayCount);
         var borrowedBooksPerDayLimit = Limit.PerDay(restrictions.MaxBorrowedBooksPerDay);
 
-        return new ClientRestrictions(
+        var clientRestrictions = new ClientRestrictions (
             BorrowedBooksLimit: periodLimit,
             BorrowedBooksPerRequestLimit: borrowedBooksAtOnceLimit,
             SameDomainBorrowedBooksLimit: sameDomainLimit,
@@ -32,14 +32,17 @@ public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvi
             BorrowedSameBookLimit: sameBookLimit,
             BorrowedBooksPerDayLimit: borrowedBooksPerDayLimit
             );
+
+        return Result.Valid(clientRestrictions);
     }
 
-    public ClientRestrictions? GetPrivilegedClientRestrictions()
+    public Result<ClientRestrictions> GetPrivilegedClientRestrictions()
     {
-        var basicRestrictions = GetClientRestrictions();
-        if (basicRestrictions is null)
-            return null;
+        var result = GetClientRestrictions();
+        if (!result.IsValid)
+            return Result.Invalid();
 
+        var basicRestrictions = result.Get();
         var privilegedClientRestrictions = basicRestrictions with
         {
             BorrowedBooksLimit = basicRestrictions.BorrowedBooksLimit.DoubleItem().HalfTime(),
@@ -50,6 +53,6 @@ public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvi
             BorrowedBooksPerDayLimit = Limit.PerDay(int.MaxValue)
         };
 
-        return privilegedClientRestrictions;
+        return Result.Valid(privilegedClientRestrictions);
     }
 }
