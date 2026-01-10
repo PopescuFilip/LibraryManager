@@ -82,6 +82,7 @@ internal class Program
         container.Register<IBookEditionQueryService, BookEditionQueryService>();
         container.Register<IAccountQueryService, AccountQueryService>();
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
+        container.Register<IEmployeeRestrictionsProvider, EmployeeRestrictionsProvider>();
         container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
         container.Register<IBorrowRecordQueryService, BorrowRecordQueryService>();
 

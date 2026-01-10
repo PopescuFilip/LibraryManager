@@ -16,7 +16,8 @@ public class BorrowService(
     IEntityService<Client> _clientEntityService,
     IEntityService<Employee> _employeeEntityService,
     IValidator<IdCollection> _idCollectionValidator,
-    IRestrictionsService _restrictionsService)
+    IRestrictionsService _restrictionsService,
+    IBorrowRecordQueryService _borrowRecordQueryService)
     : IBorrowService
 {
     private readonly IValidator<BorrowRecord> _validator = EmptyValidator.Create<BorrowRecord>();
@@ -41,6 +42,8 @@ public class BorrowService(
         var clientRestrictions = clientRestrictionsResult.Get();
         if (clientRestrictions.BorrowedBooksPerRequestLimit.ExceedsLimit(bookIds.Count))
             return false;
+
+        var booksLendedToday = _borrowRecordQueryService.GetBooksLendedTodayCount(lender.Id);
 
         var someBooks = new List<Book>();
         var borrowRecord = new BorrowRecord(borrowerId, lenderId, someBooks);
