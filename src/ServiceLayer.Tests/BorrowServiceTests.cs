@@ -1,6 +1,7 @@
 ﻿using DomainModel;
 using DomainModel.Restrictions;
 using FluentValidation;
+using FluentValidation.Results;
 using NSubstitute;
 using ServiceLayer.Borrowing;
 using ServiceLayer.CRUD;
@@ -51,6 +52,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var borrower = new Client(borrowerAccountId) { Id = borrowerId };
         var lenderAccountId = 32;
@@ -66,7 +68,8 @@ public class BorrowServiceTests
         var employeeRestrictions = new EmployeeRestrictions(
             Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
             );
-        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -76,7 +79,7 @@ public class BorrowServiceTests
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(Result.Invalid());
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsFalse(success);
     }
@@ -87,6 +90,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var borrower = new Client(borrowerAccountId) { Id = borrowerId };
         var lenderAccountId = 32;
@@ -102,7 +106,8 @@ public class BorrowServiceTests
         var employeeRestrictions = new EmployeeRestrictions(
             Limit.PerDay(ids.Count + borrowedBooksGiven - 2)
             );
-        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -112,7 +117,7 @@ public class BorrowServiceTests
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsFalse(success);
     }
@@ -123,6 +128,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var borrower = new Client(borrowerAccountId) { Id = borrowerId };
         var lenderAccountId = 32;
@@ -135,7 +141,8 @@ public class BorrowServiceTests
             default!,
             default!);
         var borrowedBooksGiven = 3;
-        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -145,7 +152,7 @@ public class BorrowServiceTests
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsFalse(success);
     }
@@ -156,6 +163,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var borrower = new Client(borrowerAccountId) { Id = borrowerId };
         var lenderAccountId = 32;
@@ -167,7 +175,8 @@ public class BorrowServiceTests
             default!,
             default!,
             default!);
-        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -175,7 +184,7 @@ public class BorrowServiceTests
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsFalse(success);
     }
@@ -186,6 +195,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var borrower = new Client(borrowerAccountId) { Id = borrowerId };
         var lenderAccountId = 32;
@@ -197,7 +207,8 @@ public class BorrowServiceTests
             default!,
             default!,
             default!);
-        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -205,7 +216,7 @@ public class BorrowServiceTests
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsFalse(success);
     }
@@ -216,6 +227,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var borrower = new Client(borrowerAccountId) { Id = borrowerId };
         var clientRestrictions = new ClientRestrictions(
@@ -225,7 +237,8 @@ public class BorrowServiceTests
             default!,
             default!,
             default!);
-        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns((Employee?)null);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -233,7 +246,7 @@ public class BorrowServiceTests
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsFalse(success);
     }
@@ -244,6 +257,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var lenderAccountId = 32;
         var lender = new Employee(lenderAccountId) { Id = lenderId };
@@ -254,7 +268,8 @@ public class BorrowServiceTests
             default!,
             default!,
             default!);
-        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns((Client?)null);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -262,7 +277,7 @@ public class BorrowServiceTests
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsFalse(success);
     }
@@ -273,6 +288,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var borrower = new Client(borrowerAccountId) { Id = borrowerId };
         var lenderAccountId = 32;
@@ -284,7 +300,8 @@ public class BorrowServiceTests
             default!,
             default!,
             default!);
-        _idCollectionValidator.Validate(ids).Returns(Validation.InvalidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.InvalidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -292,7 +309,7 @@ public class BorrowServiceTests
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsFalse(success);
     }
@@ -303,6 +320,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var borrower = new Client(borrowerAccountId) { Id = borrowerId };
         var lenderAccountId = 32;
@@ -319,7 +337,8 @@ public class BorrowServiceTests
             Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
             );
         BorrowRecord? borrowRecord = null;
-        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -331,7 +350,7 @@ public class BorrowServiceTests
             Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsTrue(success);
         Assert.IsNotNull(borrowRecord);
@@ -345,6 +364,7 @@ public class BorrowServiceTests
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var options = Generator.GenerateBorrowOptionsFrom(ids, DateTime.Now.AddDays(3));
         var borrowerAccountId = 21;
         var borrower = new Client(borrowerAccountId) { Id = borrowerId };
         var lenderAccountId = 32;
@@ -360,7 +380,8 @@ public class BorrowServiceTests
         var employeeRestrictions = new EmployeeRestrictions(
             Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
             );
-        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
@@ -370,7 +391,7 @@ public class BorrowServiceTests
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
-        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+        var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsTrue(success);
     }

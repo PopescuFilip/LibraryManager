@@ -19,6 +19,7 @@ using ServiceLayer.Domains;
 using ServiceLayer.Restriction;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
+using System.Collections.Immutable;
 
 internal class Program
 {
@@ -37,11 +38,13 @@ internal class Program
         var queryService = scope.GetRequiredService<IBorrowRecordQueryService>();
         var count = queryService.GetBooksLendedTodayCount(employee.Id);
 
-        var books = scope.GetAllEntities<Book>().Take(2).Select(x => x.Id).ToIdCollection();
+        var options = scope.GetAllEntities<Book>().Take(2).Select(x => x.Id)
+            .Select(id => new BorrowOptions(id, DateTime.Now.AddDays(7)))
+            .ToImmutableArray();
 
         var borrowService = scope.GetRequiredService<IBorrowService>();
 
-        var success = borrowService.Borrow(client.Id, employee.Id, books);
+        var success = borrowService.Borrow(client.Id, employee.Id, options);
 
         Console.WriteLine("Hello world!");
     }

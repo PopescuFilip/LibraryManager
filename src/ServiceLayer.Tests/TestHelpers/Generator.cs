@@ -1,4 +1,6 @@
 ﻿using DomainModel;
+using ServiceLayer.Borrowing;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceLayer.UnitTests.TestHelpers;
@@ -38,4 +40,7 @@ public static class Generator
                 BorrowDateTime = opt.Date
             }))
         .ToList();
+
+    public static ImmutableArray<BorrowOptions> GenerateBorrowOptionsFrom(IEnumerable<int> ids, DateTime borrowUntil) =>
+        ids.Select(id => new BorrowOptions(id, borrowUntil)).ToImmutableArray();
 }

@@ -3,12 +3,13 @@ using DomainModel.Restrictions;
 using FluentValidation;
 using ServiceLayer.CRUD;
 using ServiceLayer.Restriction;
+using System.Collections.Immutable;
 
 namespace ServiceLayer.Borrowing;
 
 public interface IBorrowService
 {
-    bool Borrow(int borrowerId, int lenderId, IdCollection bookIds);
+    bool Borrow(int borrowerId, int lenderId, ImmutableArray<BorrowOptions> options);
 }
 
 public class BorrowService(
@@ -24,9 +25,13 @@ public class BorrowService(
 {
     private readonly IValidator<BorrowRecord> _validator = EmptyValidator.Create<BorrowRecord>();
 
-    public bool Borrow(int borrowerId, int lenderId, IdCollection bookIds)
+    public bool Borrow(int borrowerId, int lenderId, ImmutableArray<BorrowOptions> options)
     {
+        var bookIds = options.ToIdCollection();
         if (!_idCollectionValidator.Validate(bookIds).IsValid)
+            return false;
+
+        if (options.Any(x => x.BorrowUntil <= DateTime.Now))
             return false;
 
         var borrower = _clientEntityService.GetById(borrowerId);
