@@ -46,8 +46,14 @@ public class BorrowService(
             return false;
 
         var employeeRestrictionsResult = _employeeRestrictionsProvider.Get();
-        var booksLendedToday = _borrowRecordQueryService.GetBooksLendedTodayCount(lender.Id);
+        if (!employeeRestrictionsResult.IsValid)
+            return false;
 
+        var employeeRestrictions = employeeRestrictionsResult.Get();
+        var booksLendedToday = _borrowRecordQueryService.GetBooksLendedTodayCount(lender.Id);
+        var booksLendedAfterBorrow = booksLendedToday + bookIds.Count;
+        if (employeeRestrictions.BorrowedBooksGivenLimit.ExceedsLimit(booksLendedAfterBorrow))
+            return false;
 
         var someBooks = new List<Book>();
         var borrowRecord = new BorrowRecord(borrowerId, lenderId, someBooks);

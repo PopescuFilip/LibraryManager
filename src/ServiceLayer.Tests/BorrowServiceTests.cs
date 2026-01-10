@@ -62,13 +62,88 @@ public class BorrowServiceTests
             default!,
             default!,
             default!);
+        var borrowedBooksGiven = 3;
+        var employeeRestrictions = new EmployeeRestrictions(
+            Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
+            );
         _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
             .Returns(Result.Valid(clientRestrictions));
+        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
+        _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(Result.Invalid());
+
+        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+
+        Assert.IsFalse(success);
+    }
+
+    [TestMethod]
+    public void Borrow_ShouldReturnFalse_WhenLenderWouldExceedLendLimit()
+    {
+        var borrowerId = 1;
+        var lenderId = 4;
+        var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var borrowerAccountId = 21;
+        var borrower = new Client(borrowerAccountId) { Id = borrowerId };
+        var lenderAccountId = 32;
+        var lender = new Employee(lenderAccountId) { Id = lenderId };
+        var clientRestrictions = new ClientRestrictions(
+            default!,
+            Limit.PerRequest(ids.Count + 1),
+            default!,
+            default!,
+            default!,
+            default!);
+        var borrowedBooksGiven = 3;
+        var employeeRestrictions = new EmployeeRestrictions(
+            Limit.PerDay(ids.Count + borrowedBooksGiven - 2)
+            );
+        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _clientEntityService.GetById(borrowerId).Returns(borrower);
+        _employeeEntityService.GetById(lenderId).Returns(lender);
+        _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
+            .Returns(Result.Valid(clientRestrictions));
+        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
+        _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
+        _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
+            .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
+
+        var success = _borrowService.Borrow(borrowerId, lenderId, ids);
+
+        Assert.IsFalse(success);
+    }
+
+    [TestMethod]
+    public void Borrow_ShouldReturnFalse_WhenGetEmployeeRestrictionsReturnsInvalid()
+    {
+        var borrowerId = 1;
+        var lenderId = 4;
+        var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
+        var borrowerAccountId = 21;
+        var borrower = new Client(borrowerAccountId) { Id = borrowerId };
+        var lenderAccountId = 32;
+        var lender = new Employee(lenderAccountId) { Id = lenderId };
+        var clientRestrictions = new ClientRestrictions(
+            default!,
+            Limit.PerRequest(ids.Count + 1),
+            default!,
+            default!,
+            default!,
+            default!);
+        var borrowedBooksGiven = 3;
+        _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
+        _clientEntityService.GetById(borrowerId).Returns(borrower);
+        _employeeEntityService.GetById(lenderId).Returns(lender);
+        _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
+            .Returns(Result.Valid(clientRestrictions));
+        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
+        _employeeRestrictionsProvider.Get().Returns(Result.Invalid());
+        _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
+            .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
         var success = _borrowService.Borrow(borrowerId, lenderId, ids);
 
@@ -239,12 +314,18 @@ public class BorrowServiceTests
             default!,
             default!,
             default!);
+        var borrowedBooksGiven = 3;
+        var employeeRestrictions = new EmployeeRestrictions(
+            Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
+            );
         BorrowRecord? borrowRecord = null;
         _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
             .Returns(Result.Valid(clientRestrictions));
+        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
+        _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
         _entityService.Insert(
             Arg.Do<BorrowRecord>(x => borrowRecord = x),
             Arg.Any<IValidator<BorrowRecord>>())
@@ -275,11 +356,17 @@ public class BorrowServiceTests
             default!,
             default!,
             default!);
+        var borrowedBooksGiven = 3;
+        var employeeRestrictions = new EmployeeRestrictions(
+            Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
+            );
         _idCollectionValidator.Validate(ids).Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
             .Returns(Result.Valid(clientRestrictions));
+        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
+        _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
         _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
             .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
 
