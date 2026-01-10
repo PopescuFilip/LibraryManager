@@ -21,6 +21,16 @@ public class BookRestrictionsProviderTests
     }
 
     [TestMethod]
+    public void Get_ShouldReturnInvalid_WhenRestrictionsAreNotFound()
+    {
+        _restrictionProvider.GetRestrictions().Returns((RawRestrictions?)null);
+
+        var result = _bookRestrictionsProvider.Get();
+
+        Assert.IsFalse(result.IsValid);
+    }
+
+    [TestMethod]
     public void Get_ShouldReturnCorrectBookRestrictions()
     {
         var restrictions = new RawRestrictions()
@@ -34,5 +44,19 @@ public class BookRestrictionsProviderTests
         Assert.IsTrue(result.IsValid);
         var bookRestrictions = result.Get();
         Assert.AreEqual(restrictions.MaxDomains, bookRestrictions.MaxDomains);
+    }
+
+    [TestMethod]
+    public void Get_ShouldReturnValid_WhenRestrictionsAreFound()
+    {
+        var restrictions = new RawRestrictions()
+        {
+            MaxDomains = 10,
+        };
+        _restrictionProvider.GetRestrictions().Returns(restrictions);
+
+        var result = _bookRestrictionsProvider.Get();
+
+        Assert.IsTrue(result.IsValid);
     }
 }
