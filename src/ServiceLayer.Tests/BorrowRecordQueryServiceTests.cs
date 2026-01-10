@@ -2,6 +2,7 @@
 using ServiceLayer.CRUD;
 using ServiceLayer.UnitTests.TestHelpers;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 namespace ServiceLayer.UnitTests;
 

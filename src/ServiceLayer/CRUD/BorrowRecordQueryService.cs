@@ -24,12 +24,11 @@ public class BorrowRecordQueryService(IRepository<BorrowRecord> _repository)
             && x.BorrowDateTime < tomorrow;
 
         return _repository.Get(
-            x => x.BorrowedBooks.Count,
+            Select<BorrowRecord>.Id,
             Collector<int>.ToList,
             asNoTracking: true,
             Order<BorrowRecord>.ById,
-            filter,
-            includeProperties: x => x.BorrowedBooks
-            ).Sum();
+            filter
+            ).Count;
     }
 }

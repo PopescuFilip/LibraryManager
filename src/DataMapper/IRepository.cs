@@ -7,6 +7,8 @@ public interface IRepository<T> where T : IEntity
 {
     T Insert(T entity);
 
+    void InsertRange(IReadOnlyCollection<T> entities);
+
     T Update(T entity);
 
     void Delete(T entity);

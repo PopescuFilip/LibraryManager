@@ -28,7 +28,7 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<BorrowRecord>()
-            .HasMany(x => x.BorrowedBooks)
+            .HasOne(x => x.BorrowedBook)
             .WithMany();
 
         modelBuilder.Entity<BookDefinition>()

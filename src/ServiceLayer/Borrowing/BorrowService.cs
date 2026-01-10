@@ -55,8 +55,7 @@ public class BorrowService(
         if (employeeRestrictions.BorrowedBooksGivenLimit.ExceedsLimit(booksLendedAfterBorrow))
             return false;
 
-        var someBooks = new List<Book>();
-        var borrowRecord = new BorrowRecord(borrowerId, lenderId, someBooks);
+        var borrowRecord = new BorrowRecord(borrowerId, lenderId, 1, DateTime.Now);
         return _entityService.Insert(borrowRecord, _validator).IsValid;
     }
 }

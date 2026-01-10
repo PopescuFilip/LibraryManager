@@ -7,6 +7,8 @@ public interface IEntityService<T> where T : IEntity
 {
     Result<T> Insert(T entity, IValidator<T> validator);
 
+    bool InsertRange(IReadOnlyCollection<T> entities, IValidator<T> validator);
+
     Result<T> Update(T entity, IValidator<T> validator);
 
     void Delete(T entity);
