@@ -38,6 +38,7 @@ internal class Program
         var queryService = scope.GetRequiredService<IBorrowRecordQueryService>();
         var count = queryService.GetBooksLendedTodayCount(employee.Id);
         var countOther = queryService.GetBooksBorrowedInPeriodCount(client.Id, DateTime.Now.AddDays(-3), DateTime.Now);
+        var ids = queryService.GetDomainIdsForBorrowedInPeriod(client.Id, DateTime.Now.AddDays(-3), DateTime.Now).ToList();
 
         var books = scope.GetAllEntities<Book>();
         var options = books.Take(2).Select(x => x.Id)

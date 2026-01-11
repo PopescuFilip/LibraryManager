@@ -1,6 +1,7 @@
 ﻿using DataMapper;
 using DataMapper.QueryHelpers;
 using DomainModel;
+using System.Collections.Immutable;
 using System.Linq.Expressions;
 
 namespace ServiceLayer.CRUD;
@@ -9,6 +10,7 @@ public interface IBorrowRecordQueryService
 {
     int GetBooksLendedTodayCount(int employeeId);
     int GetBooksBorrowedInPeriodCount(int clientId, DateTime start, DateTime end);
+    IReadOnlyCollection<ImmutableArray<int>> GetDomainIdsForBorrowedInPeriod(int clientId, DateTime start, DateTime end);
 }
 
 public class BorrowRecordQueryService(IRepository<BorrowRecord> _repository)
@@ -35,10 +37,7 @@ public class BorrowRecordQueryService(IRepository<BorrowRecord> _repository)
 
     public int GetBooksBorrowedInPeriodCount(int clientId, DateTime start, DateTime end)
     {
-        Expression<Func<BorrowRecord, bool>> filter = x =>
-            x.BorrowerId == clientId
-            && start <= x.BorrowDateTime
-            && x.BorrowDateTime <= end;
+        var filter = GetFilter(clientId, start, end);
 
         return _repository.Get(
             Select<BorrowRecord>.Id,
@@ -47,4 +46,24 @@ public class BorrowRecordQueryService(IRepository<BorrowRecord> _repository)
             Order<BorrowRecord>.ById,
             filter);
     }
+
+    public IReadOnlyCollection<ImmutableArray<int>> GetDomainIdsForBorrowedInPeriod(int clientId, DateTime start, DateTime end)
+    {
+        var filter = GetFilter(clientId, start, end);
+
+        return _repository.Get(
+            x => x.BorrowedBook.BookEdition.BookDefinition.Domains.Select(x => x.Id).ToImmutableArray(),
+            Collector<ImmutableArray<int>>.ToList,
+            asNoTracking: true,
+            Order<BorrowRecord>.ById,
+            includeProperties: x => x.BorrowedBook.BookEdition.BookDefinition.Domains
+            );
+    }
+
+    private static Expression<Func<BorrowRecord, bool>> GetFilter(int clientId, DateTime start, DateTime end) =>
+        x =>
+        x.BorrowerId == clientId
+        && start <= x.BorrowDateTime
+        && x.BorrowDateTime <= end;
+
 }

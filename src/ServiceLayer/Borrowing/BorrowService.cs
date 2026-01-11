@@ -1,4 +1,5 @@
 ﻿using DomainModel;
+using DomainModel.DTOs;
 using DomainModel.Restrictions;
 using FluentValidation;
 using ServiceLayer.CRUD;
@@ -19,7 +20,9 @@ public class BorrowService(
     IValidator<IdCollection> _idCollectionValidator,
     IRestrictionsService _restrictionsService,
     IEmployeeRestrictionsProvider _employeeRestrictionsProvider,
-    IBorrowRecordQueryService _borrowRecordQueryService
+    IBorrowRecordQueryService _borrowRecordQueryService,
+    IBookQueryService _bookQueryService,
+    IDomainQueryService _domainQueryService
     )
     : IBorrowService
 {
@@ -67,7 +70,49 @@ public class BorrowService(
         if (clientRestrictions.BorrowedBooksLimit.ExceedsLimit(booksBorrowed + bookIds.Count))
             return false;
 
-        var borrowRecord = new BorrowRecord(borrowerId, lenderId, 1, DateTime.Now);
-        return _entityService.Insert(borrowRecord, _validator).IsValid;
+        var bookDetails = _bookQueryService.GetBookDetails(bookIds);
+        if (bookDetails.ContainsDuplicateBookEdition())
+            return false;
+
+        if (bookIds.Count >= MultipleDomainRequirementThreshold)
+        {
+            var distinctParentDomainsCount = _domainQueryService
+                .GetParentIds(bookDetails.SelectDomainIds())
+                .Distinct()
+                .Count();
+
+            if (distinctParentDomainsCount < 2)
+                return false;
+        }
+
+        if (!ValidateSameDomainLimit(borrower, bookDetails, clientRestrictions))
+            return false;
+
+        var borrowRecords = options
+            .Select(options => new BorrowRecord(borrower.Id, lender.Id, options.BookId, options.BorrowUntil))
+            .ToImmutableArray();
+        return _entityService.InsertRange(borrowRecords, _validator);
+    }
+
+    private bool ValidateSameDomainLimit(Client borrower, IReadOnlyCollection<BookDetails> bookDetails, ClientRestrictions clientRestrictions)
+    {
+        var sameDomainStartTime = clientRestrictions.SameDomainBorrowedBooksLimit.GetStartTimeToCheck();
+
+        var borrowedBookDomainIds = _borrowRecordQueryService
+            .GetDomainIdsForBorrowedInPeriod(borrower.Id, sameDomainStartTime, DateTime.Now)
+            .Select(x => new BookDomainIds(x));
+        var currentBookDomainIds = bookDetails.Select(x => new BookDomainIds(x.DomainIds));
+        var allDomainIds = borrowedBookDomainIds.Concat(currentBookDomainIds);
+
+        var parentDomainIds = _domainQueryService.GetParentDomainIds(allDomainIds);
+
+        var maxParentDomain = parentDomainIds.SelectMany(bookParentDomainIds => bookParentDomainIds.Select(x => x))
+            .GroupBy(x => x)
+            .Max(x => x.Count());
+
+        if (clientRestrictions.SameDomainBorrowedBooksLimit.ExceedsLimit(maxParentDomain))
+            return false;
+
+        return true;
     }
 }

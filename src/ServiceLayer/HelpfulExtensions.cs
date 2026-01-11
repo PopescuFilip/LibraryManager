@@ -22,4 +22,7 @@ public static class HelpfulExtensions
         books.Matches(options.ToStatusCountDictionary());
 
     public static IdCollection ToIdCollection(this IEnumerable<int> ids) => new(ids);
+
+    public static UniqueCollection<T> ToUniqueCollection<T>(this IEnumerable<T> items) =>
+        new(items);
 }
