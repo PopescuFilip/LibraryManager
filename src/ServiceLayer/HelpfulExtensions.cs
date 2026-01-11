@@ -20,4 +20,9 @@ public static class HelpfulExtensions
 
     public static bool Matches(this IEnumerable<Book> books, BooksUpdateOptions options) =>
         books.Matches(options.ToStatusCountDictionary());
+
+    public static IdCollection ToIdCollection(this IEnumerable<int> ids) => new(ids);
+
+    public static UniqueCollection<T> ToUniqueCollection<T>(this IEnumerable<T> items) =>
+        new(items);
 }

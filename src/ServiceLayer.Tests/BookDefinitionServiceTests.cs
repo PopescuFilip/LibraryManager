@@ -41,8 +41,8 @@ public class BookDefinitionServiceTests
     public void Create_ShouldReturnInvalidResult_WhenOptionValidationFails()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create(1, 2);
-        var domainIds = ImmutableArray.Create(3, 6);
+        var authorIds = ImmutableArray.Create(1, 2).ToIdCollection();
+        var domainIds = ImmutableArray.Create(3, 6).ToIdCollection();
         var authors = Generator.GenerateAuthorsFrom(authorIds);
         var domains = Generator.GenerateDomainsFrom(domainIds);
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
@@ -61,8 +61,8 @@ public class BookDefinitionServiceTests
     public void Create_ShouldReturnInvalidResult_WhenNotAllDomainsAreFound()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create(1, 2);
-        var domainIds = ImmutableArray.Create(3, 6);
+        var authorIds = ImmutableArray.Create(1, 2).ToIdCollection();
+        var domainIds = ImmutableArray.Create(3, 6).ToIdCollection();
         var authors = Generator.GenerateAuthorsFrom(authorIds);
         var domains = Generator.GenerateDomainsFrom(domainIds);
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
@@ -81,8 +81,8 @@ public class BookDefinitionServiceTests
     public void Create_ShouldReturnInvalidResult_WhenNotAllAuthorsAreFound()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create(1, 2);
-        var domainIds = ImmutableArray.Create(3, 6);
+        var authorIds = ImmutableArray.Create(1, 2).ToIdCollection();
+        var domainIds = ImmutableArray.Create(3, 6).ToIdCollection();
         var authors = Generator.GenerateAuthorsFrom(authorIds);
         var domains = Generator.GenerateDomainsFrom(domainIds);
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
@@ -101,8 +101,8 @@ public class BookDefinitionServiceTests
     public void Create_ShouldReturnInvalidResult_WhenInsertionFails()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create(1, 2);
-        var domainIds = ImmutableArray.Create(3, 6);
+        var authorIds = ImmutableArray.Create(1, 2).ToIdCollection();
+        var domainIds = ImmutableArray.Create(3, 6).ToIdCollection();
         var authors = Generator.GenerateAuthorsFrom(authorIds);
         var domains = Generator.GenerateDomainsFrom(domainIds);
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);
@@ -123,8 +123,8 @@ public class BookDefinitionServiceTests
     public void Create_ShouldInsertBookDefinitionAndReturnValidResult_WhenAllValidationsPass()
     {
         var name = "name";
-        var authorIds = ImmutableArray.Create(1, 2);
-        var domainIds = ImmutableArray.Create(3, 6);
+        var authorIds = ImmutableArray.Create(1, 2).ToIdCollection();
+        var domainIds = ImmutableArray.Create(3, 6).ToIdCollection();
         var authors = Generator.GenerateAuthorsFrom(authorIds);
         var domains = Generator.GenerateDomainsFrom(domainIds);
         var options = new BookDefinitionCreateOptions(name, authorIds, domainIds);

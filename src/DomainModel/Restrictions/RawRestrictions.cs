@@ -2,7 +2,7 @@
 
 namespace DomainModel.Restrictions;
 
-public class Restrictions
+public class RawRestrictions
 {
     [ConfigurationKeyName("DOMENII")]
     public int MaxDomains { get; init; }
@@ -24,6 +24,8 @@ public class Restrictions
 
     [ConfigurationKeyName("LIM")]
     public int MaxExtensionDays { get; init; }
+
+    public int ExtensionDaysLimitMonthCount { get; init; } = 3;
 
     [ConfigurationKeyName("DELTA")]
     public int SameBookLimitDayCount { get; init; }

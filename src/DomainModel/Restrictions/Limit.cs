@@ -2,18 +2,25 @@
 
 public enum TimeUnit { Day, Month };
 
-public readonly record struct Limit(int ItemCount, int TimeUnitCount, TimeUnit TimeUnit)
+public abstract record BaseLimit(int ItemCount);
+
+public abstract record TimewiseLimit(int ItemCount) : BaseLimit(ItemCount);
+
+public record PerRequestLimit(int ItemCount) : BaseLimit(ItemCount);
+
+public sealed record PerDayLimit(int ItemCount) : TimewiseLimit(ItemCount);
+
+public sealed record PeriodLimit(int ItemCount, int TimeUnitCount, TimeUnit TimeUnit) : TimewiseLimit(ItemCount);
+
+public static class Limit
 {
-    public static Limit PerMonth(int ItemCount, int TimeUnitCount) =>
-        new(ItemCount, TimeUnitCount, TimeUnit.Month);
-    public static Limit PerDay(int ItemCount, int TimeUnitCount) =>
-        new(ItemCount, TimeUnitCount, TimeUnit.Day);
+    public static PerDayLimit PerDay(int ItemCount) => new(ItemCount);
 
-    public Limit DoubleItem() => this with { ItemCount = ItemCount * 2 };
+    public static PerRequestLimit PerRequest(int ItemCount) => new(ItemCount);
 
-    public Limit HalfTime() => this switch
-    {
-        (1, _, _) => this,
-        _ => this with { TimeUnitCount = TimeUnitCount / 2 },
-    };
+    public static PeriodLimit PerPeriodInDays(int ItemCount, int DayCount) =>
+        new(ItemCount, DayCount, TimeUnit.Day);
+
+    public static PeriodLimit PerPeriodInMonths(int ItemCount, int DayCount) =>
+        new(ItemCount, DayCount, TimeUnit.Month);
 }

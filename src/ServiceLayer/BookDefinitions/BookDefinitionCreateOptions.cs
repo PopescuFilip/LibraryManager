@@ -1,8 +1,6 @@
-﻿using System.Collections.Immutable;
-
-namespace ServiceLayer.BookDefinitions;
+﻿namespace ServiceLayer.BookDefinitions;
 
 public record BookDefinitionCreateOptions(
     string Name,
-    ImmutableArray<int> AuthorIds,
-    ImmutableArray<int> DomainIds);
+    IdCollection AuthorIds,
+    IdCollection DomainIds);

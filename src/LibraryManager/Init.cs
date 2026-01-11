@@ -25,6 +25,9 @@ public static class Init
             authorCreator.Create("Name");
             authorCreator.Create("Other name");
         }
+
+        scope.InitAccounts();
+        scope.InitBooks();
     }
 
     public static List<T> GetAllEntities<T>(this IServiceProvider serviceProvider,

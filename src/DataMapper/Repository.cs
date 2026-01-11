@@ -17,6 +17,13 @@ public class Repository<T>(LibraryDbContext _context)
         return entityEntry.Entity;
     }
 
+    public void InsertRange(IReadOnlyCollection<T> entities)
+    {
+        _context.Set<T>().AddRange(entities);
+
+        _context.SaveChanges();
+    }
+
     public T Update(T entity)
     {
         var entityEntry = _context.Set<T>().Update(entity);

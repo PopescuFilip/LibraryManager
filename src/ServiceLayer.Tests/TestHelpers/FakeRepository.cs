@@ -56,4 +56,9 @@ public class FakeRepository<T> : IRepository<T> where T : IEntity
     {
         throw new NotImplementedException();
     }
+
+    public void InsertRange(IReadOnlyCollection<T> entities)
+    {
+        throw new NotImplementedException();
+    }
 }

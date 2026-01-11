@@ -17,6 +17,15 @@ public class EntityService<T>(IRepository<T> _repository)
         return Result.Valid(insertedEntity);
     }
 
+    public bool InsertRange(IReadOnlyCollection<T> entities, IValidator<T> validator)
+    {
+        if (entities.Any(x => !validator.Validate(x).IsValid))
+            return false;
+
+        _repository.InsertRange(entities);
+        return true;
+    }
+
     public Result<T> Update(T entity, IValidator<T> validator)
     {
         if (!validator.Validate(entity).IsValid)

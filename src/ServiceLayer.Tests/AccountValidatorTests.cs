@@ -74,6 +74,20 @@ public class AccountValidatorTests
     }
 
     [TestMethod]
+    public void Validator_ShouldReturnInvalid_WhenPhoneNumberHasFirstCharPlusAndIsNotInValidState()
+    {
+        var name = "namee";
+        var address = "Maple Street no. 12";
+        string? email = "test@gmail.com";
+        string? phoneNumber = "+40765123+23";
+        var account = new Account(name, address, email, phoneNumber);
+
+        var result = _validator.TestValidate(account);
+
+        result.ShouldHaveValidationErrorFor(x => x.PhoneNumber);
+    }
+
+    [TestMethod]
     public void Validator_ShouldReturnInvalid_WhenBothEmailAndPhoneAreNull()
     {
         var name = "name";

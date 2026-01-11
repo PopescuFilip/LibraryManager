@@ -4,12 +4,10 @@ namespace ServiceLayer.BookDefinitions;
 
 public class BookDefinitionCreationValidator : AbstractValidator<BookDefinitionCreateOptions>
 {
-    public BookDefinitionCreationValidator()
+    public BookDefinitionCreationValidator(IValidator<IdCollection> idsValidator)
     {
         RuleFor(x => x.Name).NotEmpty();
-        RuleFor(x => x.AuthorIds.Length).GreaterThan(0);
-        RuleFor(x => x.AuthorIds).Must(ids => ids.Length == ids.Distinct().Count());
-        RuleFor(x => x.DomainIds.Length).GreaterThan(0);
-        RuleFor(x => x.DomainIds).Must(ids => ids.Length == ids.Distinct().Count());
+        RuleFor(x => x.AuthorIds).SetValidator(idsValidator);
+        RuleFor(x => x.DomainIds).SetValidator(idsValidator);
     }
 }

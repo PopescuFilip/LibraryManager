@@ -7,16 +7,20 @@ using LibraryManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Config;
 using ServiceLayer;
 using ServiceLayer.Accounts;
 using ServiceLayer.Authors;
 using ServiceLayer.BookDefinitions;
 using ServiceLayer.BookEditions;
+using ServiceLayer.Borrowing;
 using ServiceLayer.CRUD;
 using ServiceLayer.Domains;
+using ServiceLayer.Restriction;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
+using System.Collections.Immutable;
 
 internal class Program
 {
@@ -29,42 +33,43 @@ internal class Program
 
         using var scope = AsyncScopedLifestyle.BeginScope(container);
 
-        var queryService = scope.GetRequiredService<IDomainQueryService>();
-        var bookService = scope.GetRequiredService<IBookDefinitionService>();
-        var bookEditionService = scope.GetRequiredService<IBookEditionService>();
+        var logger = scope.GetRequiredService<ILogger>();
 
-        var original = scope.GetAllEntities<BookEdition>(x => x.BookRecords)
-            .Single(x => x.Id == 2);
+        logger.Info("somethinss");
+        logger.Info("somethin Eldsadas");
+        logger.Info("somethin  sdaidoajdsoiEldsadas");
 
-        var authorIds = scope.GetAllEntities<Author>()
-            .Take(2)
-            .Select(a => a.Id)
+        var client = scope.GetAllEntities<Client>().First();
+        var employee = scope.GetAllEntities<Employee>().First();
+
+        var queryService = scope.GetRequiredService<IBorrowRecordQueryService>();
+        var count = queryService.GetBooksLendedTodayCount(employee.Id);
+        var countOther = queryService.GetBooksBorrowedInPeriodCount(client.Id, DateTime.Now.AddDays(-3), DateTime.Now);
+        var ids = queryService.GetDomainIdsForBorrowedInPeriod(client.Id, DateTime.Now.AddDays(-3), DateTime.Now).ToList();
+
+        var books = scope.GetAllEntities<Book>();
+        var options = books.Take(2).Select(x => x.Id)
+            .Select(id => new BorrowOptions(id, DateTime.Now.AddDays(7)))
+            .ToImmutableArray();
+
+        var borrowed = scope.GetAllEntities<Book>()
+            .Where(x => x.Status == BookStatus.Borrowed)
             .ToList();
 
-        var domains = new List<string>()
-        {
-            DomainInitialization.AlgoritmiCuantici,
-            DomainInitialization.AlgoritmicaGrafurilor
-        };
+        var booksQS = scope.GetRequiredService<IBookQueryService>();
 
-        var domainIds = domains
-            .Select(queryService.GetIdByName)
-            .Select(x => x ?? 0)
-            .ToList() ?? [];
+        var bookDetails = booksQS.GetBookDetails(books.Select(x => x.Id).Distinct().ToIdCollection());
 
-        var options = new BookDefinitionCreateOptions(
-            "blabla",
-            [.. authorIds],
-            [.. domainIds.Take(1)]);
+        var borrowService = scope.GetRequiredService<IBorrowService>();
+        var succ = borrowService.BorrowNoValidation(client.Id, employee.Id, options);
 
-        var createdBook = bookService.Create(options).Get();
+        var repo = scope.GetRequiredService<IRepository<BorrowRecord>>();
+        var borrowRecords = options.Select(s => s.BookId)
+            .Select(id => new BorrowRecord(client.Id, employee.Id, id, DateTime.Now.AddDays(3)))
+            .ToList();
+        repo.InsertRange(borrowRecords);
 
-        var createdBookEdition = bookEditionService
-            .Create("edition11 name", 100, BookType.Hardcover, createdBook.Id)
-            .Get();
-
-        var addOptios = new BooksUpdateOptions(2, 3, 2);
-        var updatedBookEdition = bookEditionService.AddBooks(addOptios).Get();
+        //var success = borrowService.Borrow(client.Id, employee.Id, options);
 
         Console.WriteLine("Hello world!");
     }
@@ -102,10 +107,15 @@ internal class Program
     {
         container.Register(typeof(IEntityService<>), typeof(EntityService<>));
         container.Register<IDomainQueryService, DomainQueryService>();
-        container.Register<IBookEditionQueryService, BookEditionQueryService>();
         container.Register<IAccountQueryService, AccountQueryService>();
+        container.Register<IBookEditionQueryService, BookEditionQueryService>();
+        container.Register<IBookQueryService, BookQueryService>();
+        container.Register<IBorrowRecordQueryService, BorrowRecordQueryService>();
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
+        container.Register<IEmployeeRestrictionsProvider, EmployeeRestrictionsProvider>();
         container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
+
+        container.Register<IValidator<IdCollection>, IdCollectionValidator>();
 
         container.Register<IDomainService, DomainService>();
         container.Register<IValidator<Domain>, DomainValidator>();
@@ -123,5 +133,12 @@ internal class Program
 
         container.Register<IAccountService, AccountService>();
         container.Register<IValidator<Account>, AccountValidator>();
+
+        container.Register<IRestrictionsService, RestrictionsService>();
+        container.Register<IBorrowService, BorrowService>();
+
+        LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
+        var logger = LogManager.GetCurrentClassLogger();
+        container.RegisterInstance<ILogger>(logger);
     }
 }

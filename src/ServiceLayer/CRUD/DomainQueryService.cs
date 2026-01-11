@@ -10,6 +10,10 @@ public interface IDomainQueryService
     int? GetIdByName(string name);
 
     IEnumerable<string> GetImplicitDomainNames(IEnumerable<int> ids);
+
+    IEnumerable<int> GetParentIds(IEnumerable<int> ids);
+
+    IEnumerable<BookParentDomainIds> GetParentDomainIds(IEnumerable<BookDomainIds> ids);
 }
 
 public class DomainQueryService(IRepository<Domain> _repository)
@@ -33,18 +37,48 @@ public class DomainQueryService(IRepository<Domain> _repository)
 
     public IEnumerable<string> GetImplicitDomainNames(IEnumerable<int> ids)
     {
-        var allDomains = _repository.Get(
-            select: Select<Domain>.Default,
-            collector: Collector<Domain>.ToList,
-            asNoTracking: false,
-            orderBy: Order<Domain>.ById,
-            includeProperties: d => d.ParentDomain
-            );
+        var allDomains = GetAllDomains();
 
-        return ids.SelectMany(id => GetImplicitDomainNames(allDomains, id));
+        return ids.Distinct().SelectMany(id => GetImplicitDomainNames(allDomains, id));
     }
 
-    private static IEnumerable<string> GetImplicitDomainNames(IReadOnlyCollection<Domain> domains, int id)
+    public IEnumerable<int> GetParentIds(IEnumerable<int> ids)
+    {
+        var allDomains = GetAllDomains();
+
+        return ids.Distinct().Select(id => GetParentId(allDomains, id));
+    }
+
+    public IEnumerable<BookParentDomainIds> GetParentDomainIds(IEnumerable<BookDomainIds> ids)
+    {
+        var allDomains = GetAllDomains();
+        var cachedParentDomainIds = new Dictionary<int, int>();
+
+        foreach (var bookDomainIds in ids)
+        {
+            var bookParentDomainIds = new List<int>();
+
+            foreach (var domainId in bookDomainIds)
+            {
+                if (!cachedParentDomainIds.TryGetValue(domainId, out int parentId))
+                {
+                    parentId = GetParentId(allDomains, domainId);
+                    cachedParentDomainIds[domainId] = parentId;
+                }
+                bookParentDomainIds.Add(parentId);
+            }
+
+            yield return new BookParentDomainIds(bookParentDomainIds);
+        }
+    }
+
+    private static IEnumerable<string> GetImplicitDomainNames(IReadOnlyCollection<Domain> domains, int id) =>
+        GetImplicitDomains(domains, id).Select(x => x.Name);
+
+    private static int GetParentId(IReadOnlyCollection<Domain> domains, int id) =>
+        GetImplicitDomains(domains, id).Select(x => x.Id).Last();
+
+    private static IEnumerable<Domain> GetImplicitDomains(IReadOnlyCollection<Domain> domains, int id)
     {
         var currentDomain = domains.FirstOrDefault(d => d.Id == id);
         if (currentDomain is null)
@@ -52,8 +86,17 @@ public class DomainQueryService(IRepository<Domain> _repository)
 
         while (currentDomain.ParentDomain is not null)
         {
-            yield return currentDomain.ParentDomain.Name;
+            yield return currentDomain.ParentDomain;
             currentDomain = currentDomain.ParentDomain;
         }
     }
+
+    private IReadOnlyCollection<Domain> GetAllDomains() =>
+        _repository.Get(
+            select: Select<Domain>.Default,
+            collector: Collector<Domain>.ToList,
+            asNoTracking: false,
+            orderBy: Order<Domain>.ById,
+            includeProperties: d => d.ParentDomain
+            );
 }

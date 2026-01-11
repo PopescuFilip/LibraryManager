@@ -10,6 +10,9 @@ public class BorrowRecord : IEntity
     public DateTime BorrowDateTime { get; init; }
 
     [Required]
+    public DateTime BorrowedUntil { get; init; }
+
+    [Required]
     public int BorrowerId { get; init; }
 
     public Client Borrower { get; private set; } = null!;
@@ -19,5 +22,17 @@ public class BorrowRecord : IEntity
 
     public Employee Lender { get; private set; } = null!;
 
-    public List<Book> BorrowedBooks { get; } = [];
+    [Required]
+    public int BorrowedBookId { get; init; }
+
+    public Book BorrowedBook { get; private set; }
+
+    public BorrowRecord(int borrowerId, int lenderId, int borrowedBookId, DateTime borrowedUntil)
+    {
+        BorrowerId = borrowerId;
+        LenderId = lenderId;
+        BorrowedBookId = borrowedBookId;
+        BorrowedUntil = borrowedUntil;
+        BorrowDateTime = DateTime.Now;
+    }
 }

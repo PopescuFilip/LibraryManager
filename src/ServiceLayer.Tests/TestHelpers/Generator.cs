@@ -1,4 +1,6 @@
 ﻿using DomainModel;
+using ServiceLayer.Borrowing;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceLayer.UnitTests.TestHelpers;
@@ -29,4 +31,16 @@ public static class Generator
         idsWithAccounts
         .Select(kvp => new Employee(kvp.AccountId) { Id = kvp.Id })
         .ToList();
+
+    public static List<BorrowRecord> GenerateBorrowRecordsFrom(IEnumerable<(int LenderId, int BookCount, DateTime Date)> borrowRecordCreateOptions) =>
+        borrowRecordCreateOptions
+        .SelectMany(opt => Enumerable.Range(0, opt.BookCount).Select(_ =>
+            new BorrowRecord(321, opt.LenderId, 32, opt.Date.AddDays(1))
+            {
+                BorrowDateTime = opt.Date
+            }))
+        .ToList();
+
+    public static ImmutableArray<BorrowOptions> GenerateBorrowOptionsFrom(IEnumerable<int> ids, DateTime borrowUntil) =>
+        ids.Select(id => new BorrowOptions(id, borrowUntil)).ToImmutableArray();
 }
