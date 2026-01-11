@@ -2,13 +2,11 @@
 using DomainModel.DTOs;
 using DomainModel.Restrictions;
 using FluentValidation;
-using FluentValidation.Results;
 using NSubstitute;
 using ServiceLayer.Borrowing;
 using ServiceLayer.CRUD;
 using ServiceLayer.Restriction;
 using ServiceLayer.UnitTests.TestHelpers;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceLayer.UnitTests;

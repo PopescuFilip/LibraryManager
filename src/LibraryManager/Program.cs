@@ -7,7 +7,8 @@ using LibraryManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Config;
 using ServiceLayer;
 using ServiceLayer.Accounts;
 using ServiceLayer.Authors;
@@ -31,6 +32,12 @@ internal class Program
         container.Initialize();
 
         using var scope = AsyncScopedLifestyle.BeginScope(container);
+
+        var logger = scope.GetRequiredService<ILogger>();
+
+        logger.Info("somethinss");
+        logger.Info("somethin Eldsadas");
+        logger.Info("somethin  sdaidoajdsoiEldsadas");
 
         var client = scope.GetAllEntities<Client>().First();
         var employee = scope.GetAllEntities<Employee>().First();
@@ -129,5 +136,9 @@ internal class Program
 
         container.Register<IRestrictionsService, RestrictionsService>();
         container.Register<IBorrowService, BorrowService>();
+
+        LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
+        var logger = LogManager.GetCurrentClassLogger();
+        container.RegisterInstance<ILogger>(logger);
     }
 }
