@@ -11,7 +11,8 @@ public class EntityServiceLoggingDecorator<T>(
     INLogLoggerFactory loggerFactory) :
     IEntityService<T> where T : IEntity
 {
-    private readonly ILogger _logger = loggerFactory.GetLogger<EntityService<T>>();
+    private readonly ILogger _logger =
+        loggerFactory.GetLogger<EntityServiceLoggingDecorator<T>>();
 
     public void Delete(T entity)
     {
