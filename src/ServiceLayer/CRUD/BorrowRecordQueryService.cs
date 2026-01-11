@@ -8,6 +8,7 @@ namespace ServiceLayer.CRUD;
 public interface IBorrowRecordQueryService
 {
     int GetBooksLendedTodayCount(int employeeId);
+    int GetBooksBorrowedInPeriodCount(int clientId, DateTime start, DateTime end);
 }
 
 public class BorrowRecordQueryService(IRepository<BorrowRecord> _repository)
@@ -25,10 +26,25 @@ public class BorrowRecordQueryService(IRepository<BorrowRecord> _repository)
 
         return _repository.Get(
             Select<BorrowRecord>.Id,
-            Collector<int>.ToList,
+            Collector<int>.Count,
             asNoTracking: true,
             Order<BorrowRecord>.ById,
             filter
-            ).Count;
+            );
+    }
+
+    public int GetBooksBorrowedInPeriodCount(int clientId, DateTime start, DateTime end)
+    {
+        Expression<Func<BorrowRecord, bool>> filter = x =>
+            x.BorrowerId == clientId
+            && start <= x.BorrowDateTime
+            && x.BorrowDateTime <= end;
+
+        return _repository.Get(
+            Select<BorrowRecord>.Id,
+            Collector<int>.Count,
+            asNoTracking: true,
+            Order<BorrowRecord>.ById,
+            filter);
     }
 }

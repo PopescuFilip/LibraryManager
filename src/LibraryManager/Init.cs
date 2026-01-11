@@ -27,6 +27,7 @@ public static class Init
         }
 
         scope.InitAccounts();
+        scope.InitBooks();
     }
 
     public static List<T> GetAllEntities<T>(this IServiceProvider serviceProvider,

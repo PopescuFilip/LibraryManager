@@ -37,6 +37,7 @@ internal class Program
 
         var queryService = scope.GetRequiredService<IBorrowRecordQueryService>();
         var count = queryService.GetBooksLendedTodayCount(employee.Id);
+        var countOther = queryService.GetBooksBorrowedInPeriodCount(client.Id, DateTime.Now.AddDays(-3), DateTime.Now);
 
         var options = scope.GetAllEntities<Book>().Take(2).Select(x => x.Id)
             .Select(id => new BorrowOptions(id, DateTime.Now.AddDays(7)))
@@ -44,7 +45,13 @@ internal class Program
 
         var borrowService = scope.GetRequiredService<IBorrowService>();
 
-        var success = borrowService.Borrow(client.Id, employee.Id, options);
+        var repo = scope.GetRequiredService<IRepository<BorrowRecord>>();
+        var borrowRecords = options.Select(s => s.BookId)
+            .Select(id => new BorrowRecord(client.Id, employee.Id, id, DateTime.Now.AddDays(3)))
+            .ToList();
+        repo.InsertRange(borrowRecords);
+
+        //var success = borrowService.Borrow(client.Id, employee.Id, options);
 
         Console.WriteLine("Hello world!");
     }

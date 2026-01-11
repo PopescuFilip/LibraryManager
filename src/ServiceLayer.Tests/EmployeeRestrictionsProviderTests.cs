@@ -2,10 +2,12 @@
 using DomainModel.Restrictions;
 using NSubstitute;
 using ServiceLayer.CRUD;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceLayer.UnitTests;
 
 [TestClass]
+[ExcludeFromCodeCoverage]
 public class EmployeeRestrictionsProviderTests
 {
     private EmployeeRestrictionsProvider _employeeRestrictionsProvider = default!;
