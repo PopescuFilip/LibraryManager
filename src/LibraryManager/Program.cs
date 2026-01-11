@@ -145,6 +145,7 @@ internal class Program
         container.Register<IBorrowService, BorrowService>();
 
         container.Register<IExtensionService, ExtensionService>();
+        container.Register<IValidator<Extension>, ExtensionValidator>();
 
         LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
         container.Register<INLogLoggerFactory, NLogLoggerFactory>();

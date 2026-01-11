@@ -25,7 +25,7 @@ public class BorrowRecord : IEntity
     [Required]
     public int BorrowedBookId { get; init; }
 
-    public Book BorrowedBook { get; private set; }
+    public Book BorrowedBook { get; init; }
 
     public BorrowRecord(int borrowerId, int lenderId, int borrowedBookId, DateTime borrowedUntil)
     {

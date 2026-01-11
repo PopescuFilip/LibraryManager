@@ -16,11 +16,10 @@ public class ExtensionService(
     IEntityService<Client> _clientEntityService,
     IRestrictionsService _restrictionsService,
     IExtensionQueryService _extensionQueryService,
-    IBorrowRecordQueryService _borrowRecordQueryService)
+    IBorrowRecordQueryService _borrowRecordQueryService,
+    IValidator<Extension> _validator)
     : IExtensionService
 {
-    private readonly IValidator<Extension> _validator = EmptyValidator.Create<Extension>();
-
     public bool Extend(int borrowerId, int bookId, int extendByDayCount)
     {
         if (extendByDayCount <= 0)
