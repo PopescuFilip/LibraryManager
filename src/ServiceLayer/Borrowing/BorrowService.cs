@@ -5,12 +5,15 @@ using FluentValidation;
 using ServiceLayer.CRUD;
 using ServiceLayer.Restriction;
 using System.Collections.Immutable;
+using System.Reflection;
 
 namespace ServiceLayer.Borrowing;
 
 public interface IBorrowService
 {
     bool Borrow(int borrowerId, int lenderId, ImmutableArray<BorrowOptions> options);
+
+    bool BorrowNoValidation(int borrowerId, int lenderId, ImmutableArray<BorrowOptions> options);
 }
 
 public class BorrowService(
@@ -91,6 +94,19 @@ public class BorrowService(
         var borrowRecords = options
             .Select(options => new BorrowRecord(borrower.Id, lender.Id, options.BookId, options.BorrowUntil))
             .ToImmutableArray();
+        return _entityService.InsertRange(borrowRecords, _validator);
+    }
+
+    public bool BorrowNoValidation(int borrowerId, int lenderId, ImmutableArray<BorrowOptions> options)
+    {
+        var borrowRecords = options
+            .Select(options => new BorrowRecord(borrowerId, lenderId, options.BookId, options.BorrowUntil))
+            .ToImmutableArray();
+        var bookDetails = _bookQueryService.GetBookDetails2(options.ToIdCollection());
+        foreach (var book in bookDetails.Select(x => x.Book))
+        {
+            book.Status = BookStatus.Borrowed;
+        }
         return _entityService.InsertRange(borrowRecords, _validator);
     }
 
