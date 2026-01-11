@@ -70,14 +70,16 @@ public class BorrowServiceTests
             Limit.PerRequest(ids.Count + 1),
             Limit.PerPeriodInMonths(12, 1),
             default!,
-            default!,
-            default!);
+            Limit.PerPeriodInDays(1, 10),
+            Limit.PerDay(10));
         var borrowedBooksGiven = 3;
         var employeeRestrictions = new EmployeeRestrictions(
             Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
             );
         var booksBorrowedInPeriod =
             clientRestrictions.BorrowedBooksLimit.ItemCount - ids.Count - 2;
+        var booksBorrowedToday =
+            clientRestrictions.BorrowedBooksPerDayLimit.ItemCount - ids.Count - 2;
         var bookDetails = ids
             .Select(id => new BookDetails(
                 id,
@@ -98,7 +100,13 @@ public class BorrowServiceTests
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
             .Returns(Result.Valid(clientRestrictions));
-        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
+        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId)
+            .Returns(borrowedBooksGiven);
+        _borrowRecordQueryService.GetBooksBorrowedTodayCount(borrowerId)
+            .Returns(booksBorrowedToday);
+        _borrowRecordQueryService
+            .GetBooksBorrowedInPeriodCount(borrowerId, Arg.Any<int>(), Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(0);
         _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
         _borrowRecordQueryService
             .GetBooksBorrowedInPeriodCount(borrowerId, Arg.Any<DateTime>(), Arg.Any<DateTime>())
@@ -369,14 +377,16 @@ public class BorrowServiceTests
             Limit.PerRequest(ids.Count + 1),
             Limit.PerPeriodInMonths(12, 1),
             default!,
-            default!,
-            default!);
+            Limit.PerPeriodInDays(1, 10),
+            Limit.PerDay(10));
         var borrowedBooksGiven = 3;
         var employeeRestrictions = new EmployeeRestrictions(
             Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
             );
         var booksBorrowedInPeriod =
             clientRestrictions.BorrowedBooksLimit.ItemCount - ids.Count - 2;
+        var booksBorrowedToday =
+            clientRestrictions.BorrowedBooksPerDayLimit.ItemCount - ids.Count - 2;
         var bookDetails = ids
             .Select(id => new BookDetails(
                 id,
@@ -397,7 +407,13 @@ public class BorrowServiceTests
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
             .Returns(Result.Valid(clientRestrictions));
-        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
+        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId)
+            .Returns(borrowedBooksGiven);
+        _borrowRecordQueryService.GetBooksBorrowedTodayCount(borrowerId)
+            .Returns(booksBorrowedToday);
+        _borrowRecordQueryService
+            .GetBooksBorrowedInPeriodCount(borrowerId, Arg.Any<int>(), Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(0);
         _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
         _borrowRecordQueryService
             .GetBooksBorrowedInPeriodCount(borrowerId, Arg.Any<DateTime>(), Arg.Any<DateTime>())
@@ -441,14 +457,16 @@ public class BorrowServiceTests
             Limit.PerRequest(ids.Count + 1),
             Limit.PerPeriodInMonths(12, 1),
             default!,
-            default!,
-            default!);
+            Limit.PerPeriodInDays(1, 10),
+            Limit.PerDay(10));
         var borrowedBooksGiven = 3;
         var employeeRestrictions = new EmployeeRestrictions(
             Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
             );
         var booksBorrowedInPeriod =
             clientRestrictions.BorrowedBooksLimit.ItemCount - ids.Count - 2;
+        var booksBorrowedToday =
+            clientRestrictions.BorrowedBooksPerDayLimit.ItemCount - ids.Count - 2;
         var bookDetails = ids
             .Select(id => new BookDetails(
                 id,
@@ -469,7 +487,13 @@ public class BorrowServiceTests
         _employeeEntityService.GetById(lenderId).Returns(lender);
         _restrictionsService.GetRestrictionsForAccount(borrowerAccountId)
             .Returns(Result.Valid(clientRestrictions));
-        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
+        _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId)
+            .Returns(borrowedBooksGiven);
+        _borrowRecordQueryService.GetBooksBorrowedTodayCount(borrowerId)
+            .Returns(booksBorrowedToday);
+        _borrowRecordQueryService
+            .GetBooksBorrowedInPeriodCount(borrowerId, Arg.Any<int>(), Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(0);
         _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
         _borrowRecordQueryService
             .GetBooksBorrowedInPeriodCount(borrowerId, Arg.Any<DateTime>(), Arg.Any<DateTime>())

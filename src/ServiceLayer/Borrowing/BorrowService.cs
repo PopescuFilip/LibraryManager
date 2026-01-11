@@ -5,7 +5,6 @@ using FluentValidation;
 using ServiceLayer.CRUD;
 using ServiceLayer.Restriction;
 using System.Collections.Immutable;
-using System.Reflection;
 
 namespace ServiceLayer.Borrowing;
 
@@ -68,6 +67,11 @@ public class BorrowService(
         if (employeeRestrictions.BorrowedBooksGivenLimit.ExceedsLimit(booksLendedAfterBorrow))
             return false;
 
+        var booksBorrowedToday = _borrowRecordQueryService.GetBooksBorrowedTodayCount(borrower.Id);
+        var booksBorrowedAfterBorrow = booksBorrowedToday + bookIds.Count;
+        if (clientRestrictions.BorrowedBooksPerDayLimit.ExceedsLimit(booksBorrowedAfterBorrow))
+            return false;
+
         var startTime = clientRestrictions.BorrowedBooksLimit.GetStartTimeToCheck();
         var booksBorrowed = _borrowRecordQueryService.GetBooksBorrowedInPeriodCount(borrower.Id, startTime, DateTime.Now);
         if (clientRestrictions.BorrowedBooksLimit.ExceedsLimit(booksBorrowed + bookIds.Count))
@@ -79,6 +83,16 @@ public class BorrowService(
             bookDetails.Any(x => x.Book.Status != BookStatus.Available) ||
             bookDetails.Any(x => x.BooksAvailable / x.BooksTotal < 0.1))
             return false;
+
+        var sameBookStart = clientRestrictions.BorrowedSameBookLimit.GetStartTimeToCheck();
+        foreach (var item in bookDetails)
+        {
+            var booksInPeriod = _borrowRecordQueryService.GetBooksBorrowedInPeriodCount(
+                borrower.Id, item.BookEditionId, sameBookStart, DateTime.Now);
+
+            if (clientRestrictions.BorrowedSameBookLimit.ExceedsLimit(booksInPeriod + 1))
+                return false;
+        }
 
         if (bookIds.Count >= MultipleDomainRequirementThreshold)
         {
