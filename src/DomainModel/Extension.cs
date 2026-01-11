@@ -11,6 +11,15 @@ public class Extension : IEntity
 
     public DateTime CreatedDateTime { get; init; }
 
-    public Extension(int dayCount, DateTime createdDateTime) =>
-        (DayCount, CreatedDateTime) = (dayCount, createdDateTime);
+    [Required]
+    public int RequestedById { get; init; }
+
+    public Client RequestedBy { get; private set; } = null!;
+
+    public Extension(int requestedById, int dayCount)
+    {
+        RequestedById = requestedById;
+        DayCount = dayCount;
+        CreatedDateTime = DateTime.Now;
+    }
 }

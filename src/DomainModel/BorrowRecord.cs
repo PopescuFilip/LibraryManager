@@ -10,7 +10,7 @@ public class BorrowRecord : IEntity
     public DateTime BorrowDateTime { get; init; }
 
     [Required]
-    public DateTime BorrowedUntil { get; init; }
+    public DateTime BorrowedUntil { get; set; }
 
     [Required]
     public int BorrowerId { get; init; }
