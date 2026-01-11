@@ -1,4 +1,5 @@
 ﻿using DomainModel;
+using DomainModel.DTOs;
 using DomainModel.Restrictions;
 using FluentValidation;
 using FluentValidation.Results;
@@ -7,6 +8,7 @@ using ServiceLayer.Borrowing;
 using ServiceLayer.CRUD;
 using ServiceLayer.Restriction;
 using ServiceLayer.UnitTests.TestHelpers;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ServiceLayer.UnitTests;
@@ -64,9 +66,9 @@ public class BorrowServiceTests
         var lenderAccountId = 32;
         var lender = new Employee(lenderAccountId) { Id = lenderId };
         var clientRestrictions = new ClientRestrictions(
-            default!,
+            Limit.PerPeriodInDays(30, 4),
             Limit.PerRequest(ids.Count + 1),
-            default!,
+            Limit.PerPeriodInMonths(12, 1),
             default!,
             default!,
             default!);
@@ -74,6 +76,17 @@ public class BorrowServiceTests
         var employeeRestrictions = new EmployeeRestrictions(
             Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
             );
+        var booksBorrowedInPeriod =
+            clientRestrictions.BorrowedBooksLimit.ItemCount - ids.Count - 2;
+        var bookDetails = ids
+            .Select(id => new BookDetails(id, id, [id]))
+            .ToList();
+        var parentDomainIds = new List<BookParentDomainIds>()
+        {
+            new(ids.Take(2)),
+            new(ids.Take(3)),
+            new(ids.Take(2)),
+        };
         _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
             .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
@@ -82,8 +95,22 @@ public class BorrowServiceTests
             .Returns(Result.Valid(clientRestrictions));
         _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
         _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
-        _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
-            .Returns(Result.Invalid());
+        _borrowRecordQueryService
+            .GetBooksBorrowedInPeriodCount(borrowerId, Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(booksBorrowedInPeriod);
+        _bookQueryService.GetBookDetails(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(bookDetails);
+        _domainQueryService.GetParentIds(Arg.Is<IEnumerable<int>>(x =>
+                x.SequenceEqual(bookDetails.SelectDomainIds())))
+            .Returns(bookDetails.SelectDomainIds());
+        _borrowRecordQueryService
+            .GetDomainIdsForBorrowedInPeriod(borrowerId, Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns([]);
+        _domainQueryService.GetParentDomainIds(Arg.Any<IEnumerable<BookDomainIds>>())
+            .Returns(parentDomainIds);
+        _entityService
+            .InsertRange(Arg.Any<IReadOnlyCollection<BorrowRecord>>(), Arg.Any<IValidator<BorrowRecord>>())
+            .Returns(false);
 
         var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
@@ -323,6 +350,7 @@ public class BorrowServiceTests
     [TestMethod]
     public void Borrow_ShouldReturnTrueAndInsertCorrectBorrowRecord_WhenAllValidationsPass()
     {
+        List<BorrowRecord>? borrowRecords = null;
         var borrowerId = 1;
         var lenderId = 4;
         var ids = new List<int>() { 1, 4, 5, 7, 9 }.ToIdCollection();
@@ -332,9 +360,9 @@ public class BorrowServiceTests
         var lenderAccountId = 32;
         var lender = new Employee(lenderAccountId) { Id = lenderId };
         var clientRestrictions = new ClientRestrictions(
-            default!,
+            Limit.PerPeriodInDays(30, 4),
             Limit.PerRequest(ids.Count + 1),
-            default!,
+            Limit.PerPeriodInMonths(12, 1),
             default!,
             default!,
             default!);
@@ -342,7 +370,17 @@ public class BorrowServiceTests
         var employeeRestrictions = new EmployeeRestrictions(
             Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
             );
-        BorrowRecord? borrowRecord = null;
+        var booksBorrowedInPeriod =
+            clientRestrictions.BorrowedBooksLimit.ItemCount - ids.Count - 2;
+        var bookDetails = ids
+            .Select(id => new BookDetails(id, id, [id]))
+            .ToList();
+        var parentDomainIds = new List<BookParentDomainIds>()
+        {
+            new(ids.Take(2)),
+            new(ids.Take(3)),
+            new(ids.Take(2)),
+        };
         _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
             .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
@@ -351,17 +389,30 @@ public class BorrowServiceTests
             .Returns(Result.Valid(clientRestrictions));
         _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
         _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
-        _entityService.Insert(
-            Arg.Do<BorrowRecord>(x => borrowRecord = x),
+        _borrowRecordQueryService
+            .GetBooksBorrowedInPeriodCount(borrowerId, Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(booksBorrowedInPeriod);
+        _bookQueryService.GetBookDetails(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(bookDetails);
+        _domainQueryService.GetParentIds(Arg.Is<IEnumerable<int>>(x =>
+                x.SequenceEqual(bookDetails.SelectDomainIds())))
+            .Returns(bookDetails.SelectDomainIds());
+        _borrowRecordQueryService
+            .GetDomainIdsForBorrowedInPeriod(borrowerId, Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns([]);
+        _domainQueryService.GetParentDomainIds(Arg.Any<IEnumerable<BookDomainIds>>())
+            .Returns(parentDomainIds);
+        _entityService.InsertRange(
+            Arg.Do<IReadOnlyCollection<BorrowRecord>>(x => borrowRecords = [.. x]),
             Arg.Any<IValidator<BorrowRecord>>())
-            .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
+            .Returns(true);
 
         var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
         Assert.IsTrue(success);
-        Assert.IsNotNull(borrowRecord);
-        Assert.AreEqual(borrowerId, borrowRecord.BorrowerId);
-        Assert.AreEqual(lenderId, borrowRecord.LenderId);
+        Assert.IsNotNull(borrowRecords);
+        Assert.IsTrue(borrowRecords.All(x => x.BorrowerId == borrowerId));
+        Assert.IsTrue(borrowRecords.All(x => x.LenderId == lenderId));
     }
 
     [TestMethod]
@@ -376,9 +427,9 @@ public class BorrowServiceTests
         var lenderAccountId = 32;
         var lender = new Employee(lenderAccountId) { Id = lenderId };
         var clientRestrictions = new ClientRestrictions(
-            default!,
+            Limit.PerPeriodInDays(30, 4),
             Limit.PerRequest(ids.Count + 1),
-            default!,
+            Limit.PerPeriodInMonths(12, 1),
             default!,
             default!,
             default!);
@@ -386,6 +437,17 @@ public class BorrowServiceTests
         var employeeRestrictions = new EmployeeRestrictions(
             Limit.PerDay(ids.Count + borrowedBooksGiven + 21)
             );
+        var booksBorrowedInPeriod =
+            clientRestrictions.BorrowedBooksLimit.ItemCount - ids.Count - 2;
+        var bookDetails = ids
+            .Select(id => new BookDetails(id, id, [id]))
+            .ToList();
+        var parentDomainIds = new List<BookParentDomainIds>()
+        {
+            new(ids.Take(2)),
+            new(ids.Take(3)),
+            new(ids.Take(2)),
+        };
         _idCollectionValidator.Validate(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
             .Returns(Validation.ValidResult);
         _clientEntityService.GetById(borrowerId).Returns(borrower);
@@ -394,8 +456,22 @@ public class BorrowServiceTests
             .Returns(Result.Valid(clientRestrictions));
         _borrowRecordQueryService.GetBooksLendedTodayCount(lenderId).Returns(borrowedBooksGiven);
         _employeeRestrictionsProvider.Get().Returns(Result.Valid(employeeRestrictions));
-        _entityService.Insert(Arg.Any<BorrowRecord>(), Arg.Any<IValidator<BorrowRecord>>())
-            .Returns(call => Result.Valid(call.Arg<BorrowRecord>()));
+        _borrowRecordQueryService
+            .GetBooksBorrowedInPeriodCount(borrowerId, Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(booksBorrowedInPeriod);
+        _bookQueryService.GetBookDetails(Arg.Is<IdCollection>(x => x.SequenceEqual(ids)))
+            .Returns(bookDetails);
+        _domainQueryService.GetParentIds(Arg.Is<IEnumerable<int>>(x =>
+                x.SequenceEqual(bookDetails.SelectDomainIds())))
+            .Returns(bookDetails.SelectDomainIds());
+        _borrowRecordQueryService
+            .GetDomainIdsForBorrowedInPeriod(borrowerId, Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns([]);
+        _domainQueryService.GetParentDomainIds(Arg.Any<IEnumerable<BookDomainIds>>())
+            .Returns(parentDomainIds);
+        _entityService
+            .InsertRange(Arg.Any<IReadOnlyCollection<BorrowRecord>>(), Arg.Any<IValidator<BorrowRecord>>())
+            .Returns(true);
 
         var success = _borrowService.Borrow(borrowerId, lenderId, options);
 
