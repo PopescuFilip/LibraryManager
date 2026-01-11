@@ -23,6 +23,9 @@ public class ExtensionService(
 
     public bool Extend(int borrowerId, int bookId, int extendByDayCount)
     {
+        if (extendByDayCount <= 0)
+            return false;
+
         var borrower = _clientEntityService.GetById(borrowerId);
         if (borrower is null)
             return false;

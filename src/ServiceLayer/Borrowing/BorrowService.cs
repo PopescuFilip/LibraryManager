@@ -128,6 +128,7 @@ public class BorrowService(
         foreach (var book in bookDetails.Select(x => x.Book))
         {
             book.Status = BookStatus.Borrowed;
+            book.BorrowedById = borrowerId;
         }
         return _entityService.InsertRange(borrowRecords, _validator);
     }
