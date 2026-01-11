@@ -32,12 +32,32 @@ public static class Generator
         .Select(kvp => new Employee(kvp.AccountId) { Id = kvp.Id })
         .ToList();
 
-    public static List<BorrowRecord> GenerateBorrowRecordsFrom(IEnumerable<(int LenderId, int BookCount, DateTime Date)> borrowRecordCreateOptions) =>
+    public static List<BorrowRecord> GenerateBorrowRecordsForLender(IEnumerable<(int LenderId, int BookCount, DateTime Date)> borrowRecordCreateOptions) =>
         borrowRecordCreateOptions
         .SelectMany(opt => Enumerable.Range(0, opt.BookCount).Select(_ =>
             new BorrowRecord(321, opt.LenderId, 32, opt.Date.AddDays(1))
             {
                 BorrowDateTime = opt.Date
+            }))
+        .ToList();
+
+    public static List<BorrowRecord> GenerateBorrowRecordsForBorrower(IEnumerable<(int BorrowerId, int BookCount, DateTime Date)> borrowRecordCreateOptions) =>
+        borrowRecordCreateOptions
+        .SelectMany(opt => Enumerable.Range(0, opt.BookCount).Select(_ =>
+            new BorrowRecord(opt.BorrowerId, 43, 32, opt.Date.AddDays(1))
+            {
+                BorrowDateTime = opt.Date
+            }))
+        .ToList();
+
+    public static List<BorrowRecord> GenerateBorrowRecordsForBorrower(
+        IEnumerable<(int BorrowerId, int EditionId, int BookCount, DateTime Date)> borrowRecordCreateOptions) =>
+        borrowRecordCreateOptions
+        .SelectMany(opt => Enumerable.Range(0, opt.BookCount).Select(_ =>
+            new BorrowRecord(opt.BorrowerId, 43, 32, opt.Date.AddDays(1))
+            {
+                BorrowDateTime = opt.Date,
+                BorrowedBook = new Book(BookStatus.Borrowed, opt.EditionId)
             }))
         .ToList();
 
