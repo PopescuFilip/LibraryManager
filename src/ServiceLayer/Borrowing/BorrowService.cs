@@ -23,6 +23,8 @@ public class BorrowService(
     )
     : IBorrowService
 {
+    private const int MultipleDomainRequirementThreshold = 3;
+
     private readonly IValidator<BorrowRecord> _validator = EmptyValidator.Create<BorrowRecord>();
 
     public bool Borrow(int borrowerId, int lenderId, ImmutableArray<BorrowOptions> options)
@@ -58,6 +60,11 @@ public class BorrowService(
         var booksLendedToday = _borrowRecordQueryService.GetBooksLendedTodayCount(lender.Id);
         var booksLendedAfterBorrow = booksLendedToday + bookIds.Count;
         if (employeeRestrictions.BorrowedBooksGivenLimit.ExceedsLimit(booksLendedAfterBorrow))
+            return false;
+
+        var startTime = clientRestrictions.BorrowedBooksLimit.GetStartTimeToCheck();
+        var booksBorrowed = _borrowRecordQueryService.GetBooksBorrowedInPeriodCount(borrower.Id, startTime, DateTime.Now);
+        if (clientRestrictions.BorrowedBooksLimit.ExceedsLimit(booksBorrowed + bookIds.Count))
             return false;
 
         var borrowRecord = new BorrowRecord(borrowerId, lenderId, 1, DateTime.Now);

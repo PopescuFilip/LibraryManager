@@ -39,9 +39,14 @@ internal class Program
         var count = queryService.GetBooksLendedTodayCount(employee.Id);
         var countOther = queryService.GetBooksBorrowedInPeriodCount(client.Id, DateTime.Now.AddDays(-3), DateTime.Now);
 
-        var options = scope.GetAllEntities<Book>().Take(2).Select(x => x.Id)
+        var books = scope.GetAllEntities<Book>();
+        var options = books.Take(2).Select(x => x.Id)
             .Select(id => new BorrowOptions(id, DateTime.Now.AddDays(7)))
             .ToImmutableArray();
+
+        var booksQS = scope.GetRequiredService<IBookQueryService>();
+
+        var bookDetails = booksQS.GetBookDetails(books.Select(x => x.Id).Distinct().ToIdCollection());
 
         var borrowService = scope.GetRequiredService<IBorrowService>();
 
@@ -89,12 +94,13 @@ internal class Program
     {
         container.Register(typeof(IEntityService<>), typeof(EntityService<>));
         container.Register<IDomainQueryService, DomainQueryService>();
-        container.Register<IBookEditionQueryService, BookEditionQueryService>();
         container.Register<IAccountQueryService, AccountQueryService>();
+        container.Register<IBookEditionQueryService, BookEditionQueryService>();
+        container.Register<IBookQueryService, BookQueryService>();
+        container.Register<IBorrowRecordQueryService, BorrowRecordQueryService>();
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
         container.Register<IEmployeeRestrictionsProvider, EmployeeRestrictionsProvider>();
         container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
-        container.Register<IBorrowRecordQueryService, BorrowRecordQueryService>();
 
         container.Register<IValidator<IdCollection>, IdCollectionValidator>();
 
