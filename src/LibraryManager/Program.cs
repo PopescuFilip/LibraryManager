@@ -16,7 +16,9 @@ using ServiceLayer.BookDefinitions;
 using ServiceLayer.BookEditions;
 using ServiceLayer.Borrowing;
 using ServiceLayer.CRUD;
+using ServiceLayer.Decorators;
 using ServiceLayer.Domains;
+using ServiceLayer.Logging;
 using ServiceLayer.Restriction;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
@@ -33,11 +35,10 @@ internal class Program
 
         using var scope = AsyncScopedLifestyle.BeginScope(container);
 
-        var logger = scope.GetRequiredService<ILogger>();
-
-        logger.Info("somethinss");
-        logger.Info("somethin Eldsadas");
-        logger.Info("somethin  sdaidoajdsoiEldsadas");
+        var entityService = scope.GetRequiredService<IEntityService<Author>>();
+        var entityService2 = scope.GetRequiredService<IEntityService<Domain>>();
+        var doSth = entityService.GetById(1);
+        entityService2.GetAllById([]);
 
         var client = scope.GetAllEntities<Client>().First();
         var employee = scope.GetAllEntities<Employee>().First();
@@ -106,6 +107,7 @@ internal class Program
     private static void AddServiceLayerDependencies(Container container)
     {
         container.Register(typeof(IEntityService<>), typeof(EntityService<>));
+        container.RegisterDecorator(typeof(IEntityService<>), typeof(EntityServiceLoggingDecorator<>));
         container.Register<IDomainQueryService, DomainQueryService>();
         container.Register<IAccountQueryService, AccountQueryService>();
         container.Register<IBookEditionQueryService, BookEditionQueryService>();
@@ -138,7 +140,6 @@ internal class Program
         container.Register<IBorrowService, BorrowService>();
 
         LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
-        var logger = LogManager.GetCurrentClassLogger();
-        container.RegisterInstance<ILogger>(logger);
+        container.Register<INLogLoggerFactory, NLogLoggerFactory>();
     }
 }
