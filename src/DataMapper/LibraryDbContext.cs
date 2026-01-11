@@ -14,6 +14,7 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
     public DbSet<BookEdition> BookEditions { get; set; }
     public DbSet<Book> Books { get; set; }
     public DbSet<BorrowRecord> BorrowRecords { get; set; }
+    public DbSet<Extension> Extensions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

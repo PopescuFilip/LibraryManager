@@ -13,7 +13,7 @@ public class ClientRestrictionsProvider(IRestrictionsProvider _restrictionsProvi
 {
     public Result<ClientRestrictions> GetClientRestrictions()
     {
-        var restrictions = _restrictionsProvider.GetRestrictions()!;
+        var restrictions = _restrictionsProvider.GetRestrictions();
         if (restrictions is null)
             return Result.Invalid();
 
