@@ -52,7 +52,6 @@ internal class Program
         var booksQS = scope.GetRequiredService<IBookQueryService>();
 
         var bookDetails = booksQS.GetBookDetails(books.Select(x => x.Id).Distinct().ToIdCollection());
-        var bookDetails2 = booksQS.GetBookDetails2(books.Select(x => x.Id).Distinct().ToIdCollection());
 
         var borrowService = scope.GetRequiredService<IBorrowService>();
         var succ = borrowService.BorrowNoValidation(client.Id, employee.Id, options);

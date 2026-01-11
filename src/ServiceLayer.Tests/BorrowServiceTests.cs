@@ -79,7 +79,12 @@ public class BorrowServiceTests
         var booksBorrowedInPeriod =
             clientRestrictions.BorrowedBooksLimit.ItemCount - ids.Count - 2;
         var bookDetails = ids
-            .Select(id => new BookDetails(id, id, [id]))
+            .Select(id => new BookDetails(
+                id,
+                new Book(BookStatus.Available, id) { Id = 1 },
+                id,
+                51, 51,
+                [id]))
             .ToList();
         var parentDomainIds = new List<BookParentDomainIds>()
         {
@@ -373,7 +378,12 @@ public class BorrowServiceTests
         var booksBorrowedInPeriod =
             clientRestrictions.BorrowedBooksLimit.ItemCount - ids.Count - 2;
         var bookDetails = ids
-            .Select(id => new BookDetails(id, id, [id]))
+            .Select(id => new BookDetails(
+                id,
+                new Book(BookStatus.Available, id) { Id = 1 },
+                id,
+                51, 51,
+                [id]))
             .ToList();
         var parentDomainIds = new List<BookParentDomainIds>()
         {
@@ -440,7 +450,12 @@ public class BorrowServiceTests
         var booksBorrowedInPeriod =
             clientRestrictions.BorrowedBooksLimit.ItemCount - ids.Count - 2;
         var bookDetails = ids
-            .Select(id => new BookDetails(id, id, [id]))
+            .Select(id => new BookDetails(
+                id,
+                new Book(BookStatus.Available, id) { Id = 1 },
+                id,
+                51, 51,
+                [id]))
             .ToList();
         var parentDomainIds = new List<BookParentDomainIds>()
         {

@@ -102,7 +102,7 @@ public class BorrowService(
         var borrowRecords = options
             .Select(options => new BorrowRecord(borrowerId, lenderId, options.BookId, options.BorrowUntil))
             .ToImmutableArray();
-        var bookDetails = _bookQueryService.GetBookDetails2(options.ToIdCollection());
+        var bookDetails = _bookQueryService.GetBookDetails(options.ToIdCollection());
         foreach (var book in bookDetails.Select(x => x.Book))
         {
             book.Status = BookStatus.Borrowed;

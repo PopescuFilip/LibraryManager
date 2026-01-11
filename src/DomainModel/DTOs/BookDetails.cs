@@ -2,9 +2,7 @@
 
 namespace DomainModel.DTOs;
 
-public record BookDetails(int BookId, int BookEditionId, ImmutableArray<int> DomainIds);
-
-public record BookDetails2(
+public record BookDetails(
     int BookId,
     Book Book,
     int BookEditionId,
