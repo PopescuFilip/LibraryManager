@@ -28,11 +28,6 @@ public class BookQueryService(IRepository<Book> _repository) : IBookQueryService
             Collector<BookDetails>.ToList,
             asNoTracking: false,
             Order<Book>.ById,
-            filter: x => ids.Contains(x.Id),
-            includeProperties:
-            [
-                x => x.BookEdition.BookDefinition.Domains,
-                x => x.BookEdition.BookRecords
-            ]);
+            filter: x => ids.Contains(x.Id));
     }
 }

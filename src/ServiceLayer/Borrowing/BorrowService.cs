@@ -74,7 +74,10 @@ public class BorrowService(
             return false;
 
         var bookDetails = _bookQueryService.GetBookDetails(bookIds);
-        if (bookDetails.ContainsDuplicateBookEdition())
+        if (bookDetails.Count != bookIds.Count ||
+            bookDetails.ContainsDuplicateBookEdition() ||
+            bookDetails.Any(x => x.Book.Status != BookStatus.Available) ||
+            bookDetails.Any(x => x.BooksAvailable / x.BooksTotal < 0.1))
             return false;
 
         if (bookIds.Count >= MultipleDomainRequirementThreshold)
@@ -94,6 +97,10 @@ public class BorrowService(
         var borrowRecords = options
             .Select(options => new BorrowRecord(borrower.Id, lender.Id, options.BookId, options.BorrowUntil))
             .ToImmutableArray();
+        foreach (var book in bookDetails.Select(x => x.Book))
+        {
+            book.Status = BookStatus.Borrowed;
+        }
         return _entityService.InsertRange(borrowRecords, _validator);
     }
 
