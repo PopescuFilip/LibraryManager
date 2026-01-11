@@ -21,6 +21,10 @@ public class Book : IEntity
 
     public BookEdition BookEdition { get; private set; } = null!;
 
+    public int? BorrowedById { get; set; }
+
+    public Client? BorrowedBy { get; set; }
+
     public Book(BookStatus status, int bookEditionId) =>
         (Status, BookEditionId) = (status, bookEditionId);
 }

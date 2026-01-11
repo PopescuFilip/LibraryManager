@@ -49,9 +49,13 @@ internal class Program
         var ids = queryService.GetDomainIdsForBorrowedInPeriod(client.Id, DateTime.Now.AddDays(-3), DateTime.Now).ToList();
 
         var books = scope.GetAllEntities<Book>();
-        var options = books.Take(2).Select(x => x.Id)
+        var options = books.Take(1).Select(x => x.Id)
             .Select(id => new BorrowOptions(id, DateTime.Now.AddDays(7)))
             .ToImmutableArray();
+
+        var extensionService = scope.GetRequiredService<IExtensionService>();
+        var book = scope.GetAllEntities<Book>().First();
+        var succes = extensionService.Extend(client.Id, book.Id, 1);
 
         var borrowed = scope.GetAllEntities<Book>()
             .Where(x => x.Status == BookStatus.Borrowed)
@@ -113,6 +117,7 @@ internal class Program
         container.Register<IBookEditionQueryService, BookEditionQueryService>();
         container.Register<IBookQueryService, BookQueryService>();
         container.Register<IBorrowRecordQueryService, BorrowRecordQueryService>();
+        container.Register<IExtensionQueryService, ExtensionQueryService>();
         container.Register<IClientRestrictionsProvider, ClientRestrictionsProvider>();
         container.Register<IEmployeeRestrictionsProvider, EmployeeRestrictionsProvider>();
         container.Register<IBookRestrictionsProvider, BookRestrictionsProvider>();
@@ -138,6 +143,8 @@ internal class Program
 
         container.Register<IRestrictionsService, RestrictionsService>();
         container.Register<IBorrowService, BorrowService>();
+
+        container.Register<IExtensionService, ExtensionService>();
 
         LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
         container.Register<INLogLoggerFactory, NLogLoggerFactory>();

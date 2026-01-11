@@ -13,6 +13,7 @@ public interface IBorrowRecordQueryService
     int GetBooksBorrowedInPeriodCount(int clientId, DateTime start, DateTime end);
     int GetBooksBorrowedInPeriodCount(int clientId, int bookEditionId, DateTime start, DateTime end);
     IReadOnlyCollection<ImmutableArray<int>> GetDomainIdsForBorrowedInPeriod(int clientId, DateTime start, DateTime end);
+    BorrowRecord? GetActiveBorrowRecordWithBook(int clientId, int bookId);
 }
 
 public class BorrowRecordQueryService(IRepository<BorrowRecord> _repository)
@@ -94,6 +95,17 @@ public class BorrowRecordQueryService(IRepository<BorrowRecord> _repository)
             asNoTracking: true,
             Order<BorrowRecord>.ById,
             filter);
+    }
+
+    public BorrowRecord? GetActiveBorrowRecordWithBook(int clientId, int bookId)
+    {
+        return _repository.Get(
+            Select<BorrowRecord>.Default,
+            Collector<BorrowRecord>.FirstOrDefault,
+            asNoTracking: false,
+            q => q.OrderByDescending(x => x.BorrowedUntil),
+            filter: x => x.BorrowerId == clientId && x.BorrowedBookId == bookId,
+            includeProperties: x => x.BorrowedBook);
     }
 
     private static Expression<Func<BorrowRecord, bool>> GetFilter(int clientId, DateTime start, DateTime end) =>

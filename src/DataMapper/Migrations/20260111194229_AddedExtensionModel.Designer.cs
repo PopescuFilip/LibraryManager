@@ -4,6 +4,7 @@ using DataMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataMapper.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    partial class LibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260111194229_AddedExtensionModel")]
+    partial class AddedExtensionModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,17 +115,12 @@ namespace DataMapper.Migrations
                     b.Property<int>("BookEditionId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BorrowedById")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BookEditionId");
-
-                    b.HasIndex("BorrowedById");
 
                     b.ToTable("Books");
                 });
@@ -283,12 +281,7 @@ namespace DataMapper.Migrations
                     b.Property<int>("DayCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("RequestedById")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RequestedById");
 
                     b.ToTable("Extensions");
                 });
@@ -331,13 +324,7 @@ namespace DataMapper.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DomainModel.Client", "BorrowedBy")
-                        .WithMany()
-                        .HasForeignKey("BorrowedById");
-
                     b.Navigation("BookEdition");
-
-                    b.Navigation("BorrowedBy");
                 });
 
             modelBuilder.Entity("DomainModel.BookEdition", b =>
@@ -407,17 +394,6 @@ namespace DataMapper.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("DomainModel.Extension", b =>
-                {
-                    b.HasOne("DomainModel.Client", "RequestedBy")
-                        .WithMany()
-                        .HasForeignKey("RequestedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RequestedBy");
                 });
 
             modelBuilder.Entity("DomainModel.BookDefinition", b =>
