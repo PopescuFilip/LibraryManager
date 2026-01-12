@@ -19,7 +19,7 @@ public class Book : IEntity
     [Required]
     public int BookEditionId { get; init; }
 
-    public BookEdition BookEdition { get; private set; } = null!;
+    public BookEdition BookEdition { get; init; } = null!;
 
     public int? BorrowedById { get; set; }
 
