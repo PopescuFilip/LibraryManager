@@ -76,13 +76,18 @@ public class DomainQueryService(IRepository<Domain> _repository)
         GetImplicitDomains(domains, id).Select(x => x.Name);
 
     private static int GetParentId(IReadOnlyCollection<Domain> domains, int id) =>
-        GetImplicitDomains(domains, id).Select(x => x.Id).Last();
 
-    private static IEnumerable<Domain> GetImplicitDomains(IReadOnlyCollection<Domain> domains, int id)
+        GetImplicitDomains(domains, id, true).Select(x => x.Id).Last();
+
+
+    private static IEnumerable<Domain> GetImplicitDomains(IReadOnlyCollection<Domain> domains, int id, bool includeCurrent = false)
     {
         var currentDomain = domains.FirstOrDefault(d => d.Id == id);
         if (currentDomain is null)
             yield break;
+
+        if (includeCurrent)
+            yield return currentDomain;
 
         while (currentDomain.ParentDomain is not null)
         {

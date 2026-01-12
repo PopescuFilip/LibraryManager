@@ -207,4 +207,46 @@ public class DomainQueryServiceTests
 
         Assert.IsFalse(actualNames.Any());
     }
+
+    [TestMethod]
+    public void GetParentIds_ShouldReturnCorrectValues_WhenReceivingMultipleIds()
+    {
+        var parent2 = new Domain("nam3") { Id = 26 };
+        var parent1 = new Domain("nam1", parent2.Id)
+        {
+            Id = 24,
+            ParentDomain = parent2
+        };
+        var domain = new Domain("name1", parent1.Id)
+        {
+            Id = 1,
+            ParentDomain = parent1,
+        };
+        var otherDomain = new Domain("otherDomain", parent1.Id)
+        {
+            Id = 54,
+            ParentDomain = parent1
+        };
+        var separateParent = new Domain("separateParent", parent2.Id)
+        {
+            Id = 21,
+            ParentDomain = parent2,
+        };
+        var separateDomain = new Domain("separateDomain", separateParent.Id)
+        {
+            Id = 22,
+            ParentDomain = separateParent,
+        };
+        var parent = new Domain("parent") { Id = 30 };
+        var ids = new List<int>() { domain.Id, separateDomain.Id, parent.Id };
+        var domains = new List<Domain>()
+        { domain, parent1, parent2, otherDomain, separateParent, separateDomain, parent };
+        var expectedIds = new List<Domain>() { parent2, parent2, parent }
+            .Select(x => x.Id);
+        _repository.SetSourceValues(domains);
+
+        var actualIds = _domainQueryService.GetParentIds(ids);
+
+        Assert.IsTrue(actualIds.SequenceEqual(expectedIds));
+    }
 }
