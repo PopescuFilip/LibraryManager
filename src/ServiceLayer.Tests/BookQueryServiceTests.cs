@@ -27,6 +27,7 @@ public class BookQueryServiceTests
         var interestingIds = allIds.Take(10).ToIdCollection();
         var books = allIds.Select(id => new Book(BookStatus.Available, id)
         {
+            Id = id,
             BookEdition = Create(id)
         }).ToList();
         _fakeRepository.SetSourceValues(books);
