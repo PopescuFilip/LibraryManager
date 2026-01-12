@@ -30,7 +30,7 @@ public class BookEdition : IEntity
     [Required]
     public int BookDefinitionId { get; init; }
 
-    public BookDefinition BookDefinition { get; private set; } = null!;
+    public BookDefinition BookDefinition { get; init; } = null!;
 
     public IEnumerable<Book> BookRecords => _books;
 

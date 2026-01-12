@@ -66,7 +66,6 @@ internal class Program
         var bookDetails = booksQS.GetBookDetails(books.Select(x => x.Id).Distinct().ToIdCollection());
 
         var borrowService = scope.GetRequiredService<IBorrowService>();
-        var succ = borrowService.BorrowNoValidation(client.Id, employee.Id, options);
 
         var repo = scope.GetRequiredService<IRepository<BorrowRecord>>();
         var borrowRecords = options.Select(s => s.BookId)
@@ -145,6 +144,7 @@ internal class Program
         container.Register<IBorrowService, BorrowService>();
 
         container.Register<IExtensionService, ExtensionService>();
+        container.Register<IValidator<Extension>, ExtensionValidator>();
 
         LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
         container.Register<INLogLoggerFactory, NLogLoggerFactory>();

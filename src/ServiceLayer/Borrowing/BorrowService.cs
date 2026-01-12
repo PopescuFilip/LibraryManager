@@ -11,8 +11,6 @@ namespace ServiceLayer.Borrowing;
 public interface IBorrowService
 {
     bool Borrow(int borrowerId, int lenderId, ImmutableArray<BorrowOptions> options);
-
-    bool BorrowNoValidation(int borrowerId, int lenderId, ImmutableArray<BorrowOptions> options);
 }
 
 public class BorrowService(
@@ -115,20 +113,6 @@ public class BorrowService(
         {
             book.Status = BookStatus.Borrowed;
             book.BorrowedById = borrower.Id;
-        }
-        return _entityService.InsertRange(borrowRecords, _validator);
-    }
-
-    public bool BorrowNoValidation(int borrowerId, int lenderId, ImmutableArray<BorrowOptions> options)
-    {
-        var borrowRecords = options
-            .Select(options => new BorrowRecord(borrowerId, lenderId, options.BookId, options.BorrowUntil))
-            .ToImmutableArray();
-        var bookDetails = _bookQueryService.GetBookDetails(options.ToIdCollection());
-        foreach (var book in bookDetails.Select(x => x.Book))
-        {
-            book.Status = BookStatus.Borrowed;
-            book.BorrowedById = borrowerId;
         }
         return _entityService.InsertRange(borrowRecords, _validator);
     }
